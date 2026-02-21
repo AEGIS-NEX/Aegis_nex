@@ -2138,7 +2138,7 @@
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'completed');
+                    .eq('status', 'received');
                 if (error) throw error;
                 currentDeals = completed || 0;
                 document.getElementById('statDeals').textContent = currentDeals;
