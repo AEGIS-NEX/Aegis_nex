@@ -2210,16 +2210,19 @@
             return { percent, next, current: d };
         }
 
-        // 🔥 ONLINE STATUS (heartbeat)
+        // 🔥 ONLINE STATUS (heartbeat) - ปรับปรุงให้ error แสดงใน console
         async function updateLastSeen() {
             if (!currentUserData?.id) return;
             try {
-                await supa
+                const { error } = await supa
                     .from('users')
                     .update({ last_seen: new Date().toISOString() })
                     .eq('id', currentUserData.id);
+                if (error) {
+                    console.error('Heartbeat update error:', error.message); // แก้ไขให้แสดง message
+                }
             } catch (e) {
-                console.error('Heartbeat error:', e);
+                console.error('Heartbeat exception:', e.message); // แก้ไขให้แสดง message
             }
         }
 
@@ -2229,12 +2232,13 @@
             heartbeatInterval = setInterval(updateLastSeen, 30000); // ทุก 30 วินาที
         }
 
+        // FIX: ขยายเกณฑ์เป็น 5 นาที เพื่อความเสถียร
         function isOnline(lastSeen) {
             if (!lastSeen) return false;
             const now = new Date();
             const seen = new Date(lastSeen);
             const diff = (now - seen) / 1000 / 60; // minutes
-            return diff < 2; // online ถ้า last_seen ไม่เกิน 2 นาที
+            return diff < 5; // 5 นาที
         }
 
         // 🔥 FETCH USER STATS (deals, cancelled, rating)
@@ -2998,6 +3002,14 @@
                 initAI();
                 
                 setupBlacklistRealtime();
+
+                // FIX: เพิ่ม event beforeunload เพื่ออัปเดต last_seen ก่อนปิดหน้า
+                window.addEventListener('beforeunload', function() {
+                    updateLastSeen();
+                });
+                window.addEventListener('pagehide', function() {
+                    updateLastSeen();
+                });
                 
             } else { 
                 window.location.href = 'index.html'; 
