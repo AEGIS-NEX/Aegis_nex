@@ -1215,59 +1215,9 @@
 
             // ---------- ลืมรหัสผ่าน ----------
             window.showForgotPassword = function() {
-                const loginVal = loginInput.value.trim();
-                
-                if (!loginVal) {
-                    showCyberToast("⚠️ กรุณากรอกอีเมลหรือชื่อผู้ใช้งานก่อน", "warning");
-                    loginInput.focus();
-                    return;
-                }
-
-                // ป้องกันการกดซ้ำ
-                if (isProcessing) return;
-                isProcessing = true;
-
-                let emailToUse = loginVal;
-                
-                const processReset = (email) => {
-                    sendPasswordReset(email).finally(() => {
-                        isProcessing = false;
-                    });
-                };
-
-                if (!isEmail(loginVal)) {
-                    // ค้นหาอีเมลจาก username โดยใช้ .eq และแปลงเป็น lowercase
-                    const searchUsername = loginVal.trim().toLowerCase();  // เพิ่ม trim และ toLowerCase
-                    supa
-                        .from('users')
-                        .select('email')
-                        .eq('username', searchUsername)  // ใช้ .eq ให้ตรงกับที่เก็บใน DB
-                        .maybeSingle()
-                        .then(({ data, error }) => {
-                            if (error || !data) {
-                                showCyberToast("❌ ไม่พบชื่อผู้ใช้งานนี้ในระบบ");
-                                isProcessing = false;
-                                return;
-                            }
-                            processReset(data.email);
-                        });
-                } else {
-                    processReset(emailToUse);
-                }
+                // ไปที่หน้า recovery เพื่อขอรีเซ็ตรหัสผ่าน (กรอกอีเมลและ PIN)
+                window.location.href = 'recovery.html';
             };
-
-            async function sendPasswordReset(email) {
-                try {
-                    const { error } = await supa.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin + '/reset-password.html',
-                    });
-                    
-                    if (error) throw error;
-                    showCyberToast("✅ ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว", "success");
-                } catch (err) {
-                    showCyberToast("❌ ไม่สามารถส่งลิงก์รีเซ็ตรหัสผ่านได้: " + err.message);
-                }
-            }
 
             // ---------- รองรับการกด Enter ----------
             document.addEventListener('keydown', function(event) {
