@@ -251,7 +251,8 @@
         
         .header-actions { 
             display: flex; 
-            gap: 15px; 
+            gap: 10px; 
+            align-items: center;
         }
         
         .icon-btn { 
@@ -268,6 +269,7 @@
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
         }
         
         .icon-btn:hover {
@@ -287,6 +289,28 @@
             background: var(--danger); 
             border-radius: 50%; 
             border: 2px solid var(--dark-bg); 
+        }
+
+        /* ===== เครดิตเพลง (เพิ่มใหม่) ===== */
+        .music-credit {
+            max-width: 140px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: var(--primary);
+            font-size: 10px;
+            font-family: 'Orbitron';
+            padding: 0 8px;
+            border-right: 1px solid rgba(0,242,255,0.2);
+            border-left: 1px solid rgba(0,242,255,0.2);
+            line-height: 36px;
+            height: 36px;
+            cursor: default;
+            transition: all 0.3s ease;
+        }
+        .music-credit:hover {
+            text-shadow: 0 0 5px var(--primary);
+            background: rgba(0,242,255,0.05);
         }
 
         .rank-badge { 
@@ -1368,6 +1392,11 @@
                 padding: 6px 12px;
                 font-size: 11px;
             }
+
+            .music-credit {
+                max-width: 100px;
+                font-size: 9px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -1424,6 +1453,12 @@
                 font-size: 7px;
                 padding: 3px 6px;
                 min-width: 60px;
+            }
+
+            .music-credit {
+                max-width: 80px;
+                font-size: 8px;
+                padding: 0 4px;
             }
         }
 
@@ -1776,6 +1811,8 @@
         </div>
         <audio id="tickerSound" loop><source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"></audio>
         <audio id="adminAlertSound"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
+        <!-- เพิ่ม element เสียงสำหรับเพลง NCS -->
+        <audio id="ncsPlayer" preload="metadata"></audio>
         
         <!-- Dashboard Header -->
         <div class="dash-header">
@@ -1803,6 +1840,8 @@
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge"></div>
                 </div>
+                <!-- แสดงเครดิตเพลง -->
+                <div class="music-credit" id="musicCredit" title="🎵 NoCopyrightSounds">🎵 NCS Music</div>
                 <div class="icon-btn" onclick="toggleAudio()">
                     <i class="fas fa-volume-mute" id="headerAudioIcon"></i>
                 </div>
@@ -2936,6 +2975,77 @@
             }
         };
 
+        // ========== ฟังก์ชันดึงจำนวนดีลสำเร็จจากตาราง trades จริง ๆ ==========
+        async function fetchUserCompletedDeals(userId) {
+            try {
+                const { count, error } = await supa
+                    .from('trades')
+                    .select('*', { count: 'exact', head: true })
+                    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+                    .eq('status', 'received');
+                if (error) throw error;
+                return count || 0;
+            } catch (e) {
+                console.error('fetchUserCompletedDeals error:', e);
+                return 0;
+            }
+        }
+
+        // ========== อัปเดต UI แดชบอร์ด โดยใช้จำนวนดีลจริง ==========
+        async function updateDashboardUIWithRealDeals(data, uid) {
+            const realDeals = await fetchUserCompletedDeals(uid);
+            const rankInfo = getRank(realDeals, uid);
+            
+            // ชื่อ
+            const nameEl = document.getElementById('userName');
+            const displayName = data.display_name || data.username || 'USER';
+            let nameHtml = displayName.toUpperCase();
+            let tickHtml = '';
+            const isKYCVerified = data.kyc_verified === true || data.kyc_status === 'verified';
+            
+            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
+                tickHtml = ' <i class="fas fa-check-circle rainbow-tick" style="display:inline-block; margin-left:5px;"></i>';
+            } else if (isKYCVerified) {
+                tickHtml = ' <i class="fas fa-check-circle" style="display:inline-block; color:var(--primary); text-shadow:0 0 8px var(--primary); margin-left:5px;"></i>';
+            }
+            
+            nameEl.innerHTML = nameHtml + tickHtml;
+            nameEl.style.color = rankInfo.color;
+            nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
+            
+            // อวาตาร์
+            const avatarFrame = document.getElementById('headerAvatarFrame');
+            const glowStyle = getAvatarGlowStyle(rankInfo, uid);
+            avatarFrame.style.borderColor = rankInfo.border;
+            avatarFrame.style.borderWidth = glowStyle.borderWidth;
+            avatarFrame.style.boxShadow = glowStyle.boxShadow;
+            avatarFrame.style.animation = glowStyle.animation;
+            
+            document.getElementById('userRank').innerHTML = rankInfo.html;
+            
+            document.getElementById('userBalance').innerHTML = (data.balance || 0).toLocaleString();
+            document.getElementById('userBalanceAG').innerHTML = (data.balance_ag || 0).toLocaleString();
+            
+            const userImg = document.getElementById('userImg');
+            if(data.photo_url) {
+                userImg.src = data.photo_url;
+            } else {
+                userImg.src = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
+            }
+
+            // XP
+            const xp = getExpData(realDeals);
+            document.getElementById('xpBarFill').style.width = xp.percent + "%";
+            document.getElementById('xpBarFill').style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
+            document.getElementById('xpCurrent').innerText = xp.current + " XP";
+            document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
+            
+            document.getElementById('onlineDot').style.background = 'var(--success)';
+            document.getElementById('onlineDot').style.boxShadow = '0 0 5px var(--success)';
+            
+            document.getElementById('scanOverlay').style.display = 'none';
+        }
+
         // 🔥 INIT AUTH
         async function initAuth() {
             try {
@@ -2965,7 +3075,7 @@
                 }, payload => {
                     console.log('🔄 User data updated:', payload.new);
                     currentUserData = { ...currentUserData, ...payload.new };
-                    updateDashboardUI(currentUserData, userId);
+                    updateDashboardUIWithRealDeals(currentUserData, userId);
                 })
                 .subscribe();
         }
@@ -3016,7 +3126,7 @@
                     } else {
                         localStorage.removeItem('last_checkin_timestamp');
                         currentUserData = newProfile;
-                        updateDashboardUI(currentUserData, user.id);
+                        await updateDashboardUIWithRealDeals(currentUserData, user.id);
                         setupUserRealtime(user.id);
                         startHeartbeat();
                         window.completeQuest('pioneer_reg');
@@ -3031,7 +3141,7 @@
                 
                 if(profile) {
                     currentUserData = profile;
-                    updateDashboardUI(currentUserData, user.id);
+                    await updateDashboardUIWithRealDeals(currentUserData, user.id);
                     setupUserRealtime(user.id);
                     startHeartbeat();
                     checkQuestFromStorage();
@@ -3095,62 +3205,12 @@
             }
         }
 
-        function updateDashboardUI(data, uid) {
-            const rankInfo = getRank(data.completed_deals || 0, uid);
-            const nameEl = document.getElementById('userName');
-            const displayName = data.display_name || data.username || 'USER';
-            let nameHtml = displayName.toUpperCase();
-            let tickHtml = '';
-            const isKYCVerified = data.kyc_verified === true || data.kyc_status === 'verified';
-            
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                tickHtml = ' <i class="fas fa-check-circle rainbow-tick" style="display:inline-block; margin-left:5px;"></i>';
-            } else if (isKYCVerified) {
-                tickHtml = ' <i class="fas fa-check-circle" style="display:inline-block; color:var(--primary); text-shadow:0 0 8px var(--primary); margin-left:5px;"></i>';
-            }
-            
-            nameEl.innerHTML = nameHtml + tickHtml;
-            nameEl.style.color = rankInfo.color;
-            nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
-            
-            const avatarFrame = document.getElementById('headerAvatarFrame');
-            const glowStyle = getAvatarGlowStyle(rankInfo, uid);
-            avatarFrame.style.borderColor = rankInfo.border;
-            avatarFrame.style.borderWidth = glowStyle.borderWidth;
-            avatarFrame.style.boxShadow = glowStyle.boxShadow;
-            avatarFrame.style.animation = glowStyle.animation;
-            
-            document.getElementById('userRank').innerHTML = rankInfo.html;
-            
-            document.getElementById('userBalance').innerHTML = (data.balance || 0).toLocaleString();
-            document.getElementById('userBalanceAG').innerHTML = (data.balance_ag || 0).toLocaleString();
-            
-            const userImg = document.getElementById('userImg');
-            if(data.photo_url) {
-                userImg.src = data.photo_url;
-            } else {
-                userImg.src = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
-            }
-
-            const xp = getExpData(data.completed_deals || 0);
-            document.getElementById('xpBarFill').style.width = xp.percent + "%";
-            document.getElementById('xpBarFill').style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
-            document.getElementById('xpCurrent').innerText = xp.current + " XP";
-            document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
-            
-            document.getElementById('onlineDot').style.background = 'var(--success)';
-            document.getElementById('onlineDot').style.boxShadow = '0 0 5px var(--success)';
-            
-            document.getElementById('scanOverlay').style.display = 'none';
-        }
-
-        // 🔥 HALL OF FAME
+        // 🔥 HALL OF FAME (ปรับให้ใช้จำนวนดีลจริง)
         async function loadHallOfFame() {
             try {
                 const { data: users, error } = await supa
                     .from('users')
-                    .select('*')
-                    .order('completed_deals', { ascending: false });
+                    .select('*');
                 
                 if (error) throw error;
 
@@ -3159,12 +3219,20 @@
                     return;
                 }
 
+                // ดึงจำนวนดีลจริงสำหรับผู้ใช้ทุกคน (แบบ async พร้อมกัน)
+                const userDealsPromises = users.map(async (user) => {
+                    const deals = await fetchUserCompletedDeals(user.id);
+                    return { ...user, realDeals: deals };
+                });
+
+                const usersWithDeals = await Promise.all(userDealsPromises);
+
                 const specialIds = [MY_GOD_UID, MY_SPECIAL_UID];
-                const specials = users.filter(u => specialIds.includes(u.id));
-                const others = users.filter(u => !specialIds.includes(u.id));
+                const specials = usersWithDeals.filter(u => specialIds.includes(u.id));
+                const others = usersWithDeals.filter(u => !specialIds.includes(u.id));
                 
-                specials.sort((a,b) => (b.completed_deals||0) - (a.completed_deals||0));
-                others.sort((a,b) => (b.completed_deals||0) - (a.completed_deals||0));
+                specials.sort((a,b) => (b.realDeals||0) - (a.realDeals||0));
+                others.sort((a,b) => (b.realDeals||0) - (a.realDeals||0));
                 
                 const sorted = [...specials, ...others].slice(0, 50);
 
@@ -3173,7 +3241,7 @@
                 for (let i = 0; i < sorted.length; i++) {
                     const user = sorted[i];
                     const isSpecial = (user.id === MY_GOD_UID || user.id === MY_SPECIAL_UID);
-                    const rankInfo = getRank(user.completed_deals || 0, user.id);
+                    const rankInfo = getRank(user.realDeals || 0, user.id);
                     const online = isOnline(user.last_seen);
                     
                     let verifiedTick = '';
@@ -3200,7 +3268,7 @@
                     
                     const displayName = user.display_name || user.username || 'USER';
                     
-                    html += `<div class="user-list-item" onclick="viewProfile('${displayName.replace(/'/g, "\\'")}', '${user.photo_url || ''}', ${user.completed_deals || 0}, '${user.id}', '${user.kyc_status}', 0, 0, ${user.average_rating || 5.0})">
+                    html += `<div class="user-list-item" onclick="viewProfile('${displayName.replace(/'/g, "\\'")}', '${user.photo_url || ''}', ${user.realDeals || 0}, '${user.id}', '${user.kyc_status}', 0, 0, ${user.average_rating || 5.0})">
                                 ${rankDisplay}
                                 <div style="position:relative;">
                                     <img src="${user.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=100&h=100&fit=crop'}" 
@@ -3210,7 +3278,7 @@
                                 </div>
                                 <div class="list-info">
                                     <div class="list-name" style="color:${rankInfo.color}; text-shadow:${getTextShadowStyle(rankInfo, user.id)};">${displayName}${verifiedTick}${specialIcon}</div>
-                                    <div style="font-size:9px; color:#888;">ดีล ${user.completed_deals || 0}</div>
+                                    <div style="font-size:9px; color:#888;">ดีล ${user.realDeals || 0}</div>
                                     <div class="list-stars" style="margin-top:4px; font-size:12px;">${getStarRating(user.average_rating || 5.0, user.id)}</div>
                                 </div>
                                 <div style="flex-shrink:0;">
@@ -3629,30 +3697,16 @@
             }
         }
 
+        // ฟังก์ชัน toggleAudio เดิม ถูกแทนที่ด้วยฟังก์ชันใหม่ที่ควบคุม ncsPlayer
         function toggleAudio() {
-            const audio = document.getElementById('tickerSound');
-            const alertSound = document.getElementById('adminAlertSound');
-            const icon = document.getElementById('audioIcon');
-            const headerIcon = document.getElementById('headerAudioIcon');
-            
-            if (audio.paused) {
-                audio.volume = 0.2;
-                audio.play().catch(e => console.log("Audio play error:", e));
-                alertSound.volume = 0.3;
-                alertSound.play().then(() => { 
-                    alertSound.pause(); 
-                    alertSound.currentTime = 0; 
-                }).catch(e => console.log("Alert sound play error:", e));
-                icon.className = "fas fa-volume-up"; 
-                icon.style.color = "var(--success)";
-                headerIcon.className = "fas fa-volume-up";
-                headerIcon.style.color = "var(--success)";
+            if (ncsPlayer.paused) {
+                ncsPlayer.play();
+                document.getElementById('headerAudioIcon').className = 'fas fa-volume-up';
+                document.getElementById('audioIcon').className = 'fas fa-volume-up';
             } else {
-                audio.pause(); 
-                icon.className = "fas fa-volume-mute"; 
-                icon.style.color = "var(--primary)";
-                headerIcon.className = "fas fa-volume-mute";
-                headerIcon.style.color = "var(--primary)";
+                ncsPlayer.pause();
+                document.getElementById('headerAudioIcon').className = 'fas fa-volume-mute';
+                document.getElementById('audioIcon').className = 'fas fa-volume-mute';
             }
         }
 
@@ -3760,6 +3814,40 @@
         window.addEventListener('focus', function() {
             if (currentUserData?.id) checkQuestFromStorage();
         });
+
+        // ========== ส่วนควบคุมเพลง NCS ==========
+        const ncsPlayer = document.getElementById('ncsPlayer');
+        let currentSongIndex = 0;
+        const playlist = [
+            { 
+                title: "Warriyo - Mortals (feat. Laura Brehm)", 
+                file: "music/mortals.mp3",
+                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] | Music provided by NoCopyrightSounds | Watch: http://ncs.io/Mortals | Stream: http://ncs.io/Mortals"
+            },
+            { 
+                title: "On & On", 
+                file: "music/on_and_on.mp3",
+                credit: "Track: On & On [NCS Release] | Music provided by NoCopyrightSounds | Watch: https://ncs.io/onandon | Stream: https://ncs.io/onandon"
+            }
+        ];
+
+        function loadSong(index) {
+            const song = playlist[index];
+            ncsPlayer.src = song.file;
+            ncsPlayer.load();
+            document.getElementById('musicCredit').innerText = `🎵 ${song.title}`;
+            document.getElementById('musicCredit').title = song.credit;
+        }
+
+        // เมื่อเพลงจบให้เล่นเพลงถัดไป
+        ncsPlayer.addEventListener('ended', function() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+            if (!ncsPlayer.paused) ncsPlayer.play(); // ถ้ากำลังเล่นอยู่ให้เล่นต่อ
+        });
+
+        // เริ่มต้นโหลดเพลงแรก (แต่ยังไม่เล่น)
+        loadSong(0);
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('scanOverlay').style.display = 'flex';
