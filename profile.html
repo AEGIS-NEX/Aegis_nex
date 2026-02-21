@@ -1783,6 +1783,9 @@
         const CACHE_KEY = 'aegis_profile_cache';
         const CACHE_DURATION = 5 * 60 * 1000; // 5 นาที
 
+        // localStorage persistent key
+        const LOCAL_STORAGE_KEY = 'aegis_profile_persist';
+
         function saveUserCache(userData, uid, deals) {
             const cache = {
                 user: userData,
@@ -1803,6 +1806,41 @@
                     return null;
                 }
                 return data;
+            } catch {
+                return null;
+            }
+        }
+
+        // บันทึกข้อมูลลง localStorage (เฉพาะฟิลด์ที่จำเป็น)
+        function saveToLocalStorage(userData, uid, deals) {
+            if (!userData || !uid) return;
+            const dataToStore = {
+                display_name: userData.display_name,
+                username: userData.username,
+                photo_url: userData.photo_url,
+                average_rating: userData.average_rating || 5.0,
+                completed_deals: deals !== undefined ? deals : (userData.completed_deals || 0),
+                total_volume: userData.total_volume || 0,
+                success_rate: userData.success_rate || 100,
+                kyc_verified: userData.kyc_verified || false,
+                name_change_count: userData.name_change_count || 0,
+                // เก็บ uid ไว้ใน object ด้วย
+                uid: uid
+            };
+            const saveObj = {
+                data: dataToStore,
+                uid: uid,
+                deals: deals !== undefined ? deals : (userData.completed_deals || 0),
+                timestamp: Date.now()
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(saveObj));
+        }
+
+        function loadFromLocalStorage() {
+            const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (!stored) return null;
+            try {
+                return JSON.parse(stored);
             } catch {
                 return null;
             }
@@ -1929,30 +1967,132 @@
             }
         }
 
+        // ========== INTERNAL UI RENDER (ไม่บันทึก localStorage) ==========
+        function internalUpdateUI(data, uid, dealsFromParam) {
+            // ถ้ามี dealsFromParam ให้ใช้ มิฉะนั้นใช้ data.completed_deals
+            const deals = (dealsFromParam !== undefined) ? dealsFromParam : (data.completed_deals || 0);
+            const rankInfo = getRank(deals, uid);
+            
+            // ชื่อ
+            document.getElementById('displayName').textContent = (data.display_name || data.username || 'USER').toUpperCase();
+            document.getElementById('displayName').style.color = rankInfo.color;
+            document.getElementById('displayName').style.textShadow = getTextShadowStyle(rankInfo, uid);
+            
+            // UID
+            document.getElementById('displayUID').textContent = `UID: ${uid.substring(0, 8).toUpperCase()}`;
+            
+            // สถิติ
+            document.getElementById('statDeals').textContent = deals;
+            document.getElementById('statVolume').textContent = (data.total_volume || 0).toLocaleString();
+            const successRate = data.success_rate || 100;
+            document.getElementById('statRate').textContent = `${successRate}%`;
+            document.getElementById('statRate').style.color = successRate >= 90 ? 'var(--success)' : successRate >= 70 ? 'var(--warning)' : 'var(--danger)';
+            
+            // ดาว
+            const rating = data.average_rating || 5.0;
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) starsHtml += '<i class="fas fa-star"></i>';
+                else if (i - 0.5 <= rating) starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                else starsHtml += '<i class="far fa-star"></i>';
+            }
+            const starsContainer = document.getElementById('userStars');
+            starsContainer.innerHTML = starsHtml;
+            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
+                starsContainer.classList.add('rainbow-stars');
+            } else {
+                starsContainer.classList.remove('rainbow-stars');
+            }
+            document.getElementById('userScore').textContent = rating.toFixed(1);
+            
+            // อวาตาร์
+            const avatarImg = document.getElementById('userAvatar');
+            if (data.photo_url) avatarImg.src = data.photo_url;
+            const glowStyle = getAvatarGlowStyle(rankInfo, uid);
+            avatarImg.style.borderColor = rankInfo.border;
+            avatarImg.style.borderWidth = glowStyle.borderWidth;
+            avatarImg.style.boxShadow = glowStyle.boxShadow;
+            avatarImg.style.animation = glowStyle.animation;
+            
+            // ยศ
+            document.getElementById('userBadgeContainer').innerHTML = rankInfo.html;
+            
+            // เครื่องหมายยืนยัน
+            const verifyTick = document.getElementById('verifyTick');
+            const isKYCVerified = data.kyc_verified === true;
+            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
+                verifyTick.style.display = 'inline-block';
+                verifyTick.style.background = 'linear-gradient(45deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)';
+                verifyTick.style.backgroundSize = '400% 400%';
+                verifyTick.style.webkitBackgroundClip = 'text';
+                verifyTick.style.backgroundClip = 'text';
+                verifyTick.style.webkitTextFillColor = 'transparent';
+                verifyTick.style.textFillColor = 'transparent';
+                verifyTick.style.animation = 'rainbow 3s infinite linear';
+            } else if (isKYCVerified) {
+                verifyTick.style.display = 'inline-block';
+                verifyTick.style.color = 'var(--primary)';
+                verifyTick.style.textShadow = '0 0 7px var(--primary)';
+                verifyTick.style.animation = 'none';
+                verifyTick.style.background = 'none';
+                verifyTick.style.webkitTextFillColor = '';
+                verifyTick.style.textFillColor = '';
+            } else {
+                verifyTick.style.display = 'none';
+            }
+            
+            // XP
+            const xp = getExpData(deals);
+            const xpBarFill = document.getElementById('xpBarFill');
+            xpBarFill.style.width = xp.percent + "%";
+            xpBarFill.style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
+            document.getElementById('xpCurrent').innerText = xp.current + " XP";
+            document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
+        }
+
+        // ========== UPDATE PROFILE (เรียก internal + บันทึก) ==========
+        function updateProfileUI(data, uid) {
+            internalUpdateUI(data, uid, currentDeals);
+            // บันทึก session cache
+            saveUserCache(data, uid, currentDeals);
+            // บันทึก localStorage
+            saveToLocalStorage(data, uid, currentDeals);
+        }
+
         async function initAuth() {
             try {
                 const { data: { session }, error } = await supa.auth.getSession();
                 if (error) throw error;
                 if (session) {
                     const uid = session.user.id;
-                    // ลองอ่าน cache
+                    
+                    // ลองอ่าน cache จาก session ก่อน
                     const cached = loadUserCache();
                     if (cached && cached.uid === uid) {
-                        // ใช้ cache อัปเดต UI ทันที
-                        currentUserData = cached.user;
-                        currentDeals = cached.deals;
-                        updateProfileUI(currentUserData, uid);
+                        // ใช้ cache อัปเดต UI ทันที (ไม่บันทึก localStorage เพราะเดี๋ยว background จะบันทึก)
+                        internalUpdateUI(cached.user, uid, cached.deals);
                         // background refresh
                         loadUserData(uid, true);  // skipStats = true
                         loadUserStats(uid);
                     } else {
-                        // ไม่มี cache หรือ uid ไม่ตรง ให้โหลดจาก API (รอให้เสร็จก่อน)
-                        await loadUserData(uid, false);
+                        // ไม่มี cache ใน session ลองจาก localStorage
+                        const local = loadFromLocalStorage();
+                        if (local && local.uid === uid) {
+                            // แสดงจาก localStorage ทันที
+                            internalUpdateUI(local.data, uid, local.deals);
+                            // แล้วค่อยโหลดจาก server
+                            await loadUserData(uid, false); // จะเรียก updateProfileUI เมื่อโหลดเสร็จ
+                        } else {
+                            // ไม่มี cache เลย ต้องโหลดจาก server (จะเห็น LOADING จนกว่าจะโหลดเสร็จ)
+                            await loadUserData(uid, false);
+                        }
                     }
+                    
                     setupRealtimeUpdates(uid);
                 } else {
                     window.location.href = 'index.html';
                 }
+                
                 supa.auth.onAuthStateChange((event, session) => {
                     if (session) {
                         // เมื่อมีการเปลี่ยนแปลง ให้โหลดใหม่และล้าง cache
@@ -1983,6 +2123,8 @@
                     nameChangeCount = userData.name_change_count || 0;
                     if (!skipStats) {
                         await loadUserStats(userId);
+                    } else {
+                        // ถ้า skipStats จริง แสดงว่า background ยังไม่โหลด stats ต้องรอให้ loadUserStats เรียกอีกที
                     }
                 }
             } catch (error) {
@@ -2003,8 +2145,6 @@
                 // อัปเดต UI ด้วย currentUserData และ currentDeals
                 if (currentUserData && currentUserData.uid === userId) {
                     updateProfileUI(currentUserData, userId);
-                    // บันทึก cache
-                    saveUserCache(currentUserData, userId, currentDeals);
                 }
             } catch (error) {
                 console.error("Error loading user stats:", error);
@@ -2017,105 +2157,8 @@
                     currentUserData = { ...currentUserData, ...payload.new };
                     currentDeals = payload.new.completed_deals || currentDeals;
                     updateProfileUI(currentUserData, userId);
-                    saveUserCache(currentUserData, userId, currentDeals);
                 })
                 .subscribe();
-        }
-
-        // ฟังก์ชันแสดงดาวจาก average_rating (คะแนนความประพฤติ)
-        function getStarDisplayFromRating(rating, uid) {
-            let stars = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= Math.floor(rating)) stars += '<i class="fas fa-star"></i>';
-                else if (i - 0.5 <= rating) stars += '<i class="fas fa-star-half-alt"></i>';
-                else stars += '<i class="far fa-star"></i>';
-            }
-            // ถ้าเป็น CEO หรือ LEGENDARY ให้ดาวเป็นสีรุ้ง
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                return `<span class="rainbow-stars">${stars}</span>`;
-            }
-            return stars;
-        }
-
-        function updateStarsFromRating(rating, uid) {
-            const starsContainer = document.getElementById('userStars');
-            starsContainer.innerHTML = getStarDisplayFromRating(rating, uid);
-            
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                starsContainer.classList.add('rainbow-stars');
-            } else {
-                starsContainer.classList.remove('rainbow-stars');
-            }
-        }
-
-        // 🔧 แก้ไข: ใช้ display_name เป็นหลัก, fallback เป็น username
-        function updateProfileUI(data, uid) {
-            const rankInfo = getRank(data.completed_deals || 0, uid);
-            document.getElementById('displayName').textContent = (data.display_name || data.username || 'USER').toUpperCase();
-            document.getElementById('displayName').style.color = rankInfo.color;
-            document.getElementById('displayName').style.textShadow = getTextShadowStyle(rankInfo, uid);
-            document.getElementById('displayUID').textContent = `UID: ${uid.substring(0, 8).toUpperCase()}`;
-            document.getElementById('statVolume').textContent = (data.total_volume || 0).toLocaleString();
-            const successRate = data.success_rate || 100;
-            document.getElementById('statRate').textContent = `${successRate}%`;
-            document.getElementById('statRate').style.color = successRate >= 90 ? 'var(--success)' : successRate >= 70 ? 'var(--warning)' : 'var(--danger)';
-            
-            // อัปเดตดาวจาก average_rating
-            const rating = data.average_rating || 5.0;
-            updateStarsFromRating(rating, uid);
-            document.getElementById('userScore').textContent = rating.toFixed(1);
-            
-            const avatarImg = document.getElementById('userAvatar');
-            if (data.photo_url) avatarImg.src = data.photo_url;
-            const glowStyle = getAvatarGlowStyle(rankInfo, uid);
-            avatarImg.style.borderColor = rankInfo.border;
-            avatarImg.style.borderWidth = glowStyle.borderWidth;
-            avatarImg.style.boxShadow = glowStyle.boxShadow;
-            avatarImg.style.animation = glowStyle.animation;
-            document.getElementById('userBadgeContainer').innerHTML = rankInfo.html;
-            
-            const verifyTick = document.getElementById('verifyTick');
-            const isKYCVerified = data.kyc_verified === true;
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                verifyTick.style.display = 'inline-block';
-                verifyTick.style.background = 'linear-gradient(45deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)';
-                verifyTick.style.backgroundSize = '400% 400%';
-                verifyTick.style.webkitBackgroundClip = 'text';
-                verifyTick.style.backgroundClip = 'text';
-                verifyTick.style.webkitTextFillColor = 'transparent';
-                verifyTick.style.textFillColor = 'transparent';
-                verifyTick.style.animation = 'rainbow 3s infinite linear';
-            } else if (isKYCVerified) {
-                verifyTick.style.display = 'inline-block';
-                verifyTick.style.color = 'var(--primary)';
-                verifyTick.style.textShadow = '0 0 7px var(--primary)';
-                verifyTick.style.animation = 'none';
-                verifyTick.style.background = 'none';
-                verifyTick.style.webkitTextFillColor = '';
-                verifyTick.style.textFillColor = '';
-            } else {
-                verifyTick.style.display = 'none';
-            }
-            
-            const xp = getExpData(data.completed_deals || 0);
-            const xpBarFill = document.getElementById('xpBarFill');
-            xpBarFill.style.width = xp.percent + "%";
-            xpBarFill.style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
-            document.getElementById('xpCurrent').innerText = xp.current + " XP";
-            document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
-            updateAIMessage();
-        }
-
-        function updateAIMessage() {
-            const aiMessages = [
-                "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | โปรไฟล์: โหมดประมวลผลเรียลไทม์",
-                "การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
-                "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable",
-                "ตรวจสอบความปลอดภัยโปรไฟล์: ปกติ | ไม่พบกิจกรรมต้องสงสัย",
-                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน"
-            ];
-            const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-            document.getElementById('aiMsg').innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
         }
 
         function showBehaviorModal() {
@@ -2208,7 +2251,7 @@
                     
                     // อัปเดต currentUserData และ cache
                     currentUserData.photo_url = e.target.result;
-                    saveUserCache(currentUserData, currentUserData.uid, currentDeals);
+                    updateProfileUI(currentUserData, currentUserData.uid); // จะบันทึกลง localStorage ด้วย
                     
                     // ตรวจสอบว่านี่เป็นการอัปโหลดรูปครั้งแรกหรือไม่ (รูปเดิมเป็นค่าเริ่มต้น)
                     const defaultImage = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
@@ -2246,7 +2289,6 @@
             document.getElementById('newNameInput').value = '';
         }
 
-        // 🔧 แก้ไข: อัปเดตเฉพาะ display_name, name_change_count และหักเงินถ้าครั้งที่ 2+
         async function confirmNameChange() {
             const btn = document.getElementById('btnConfirmName');
             const input = document.getElementById('newNameInput');
@@ -2262,8 +2304,6 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังประมวลผล...';
             try {
-                // ไม่ตรวจสอบชื่อซ้ำ (ตามคำแนะนำ: โดยปกติไม่จำเป็น)
-                
                 if (nameChangeCount > 0) {
                     if ((currentUserData.balance || 0) < 10) {
                         throw new Error('ยอด AGS ไม่เพียงพอ ต้องการ 10 AGS');
@@ -2289,15 +2329,14 @@
                 if (nameChangeCount > 0) {
                     currentUserData.balance = (currentUserData.balance || 0) - 10;
                 }
-                // บันทึก cache
-                saveUserCache(currentUserData, currentUserData.uid, currentDeals);
+                // บันทึก cache และ localStorage
+                updateProfileUI(currentUserData, currentUserData.uid);
                 
                 // ถ้าเป็นการเปลี่ยนชื่อครั้งแรก ให้ complete quest
                 if (nameChangeCount === 1) { // เพราะเพิ่มแล้ว
                     await supa.rpc('complete_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup' });
                 }
                 
-                updateProfileUI(currentUserData, currentUserData.uid);
                 closeNameModal();
                 showAlert('✅ เปลี่ยนชื่อสำเร็จ!', 'success');
             } catch (error) {
@@ -2320,7 +2359,8 @@
             try {
                 const { error } = await supa.auth.signOut();
                 if (error) throw error;
-                sessionStorage.removeItem(CACHE_KEY); // ล้าง cache
+                sessionStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(LOCAL_STORAGE_KEY); // ลบข้อมูลใน localStorage
                 localStorage.clear();
                 window.location.href = 'index.html';
             } catch (error) {
@@ -2392,7 +2432,6 @@
             document.body.classList.add(`graphics-${level}`);
         }
 
-        // ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้" (เพิ่มใหม่)
         function showComingSoon() {
             document.getElementById('comingSoonModal').style.display = 'flex';
         }
@@ -2401,11 +2440,23 @@
             document.getElementById('comingSoonModal').style.display = 'none';
         }
 
+        // ========== รันเมื่อโหลดหน้า ==========
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             loadGraphicsLevel();
+            
+            // ดึงข้อมูลจาก localStorage มาแสดงทันที (ถ้ามี) เพื่อไม่ให้เห็น LOADING
+            const local = loadFromLocalStorage();
+            if (local) {
+                // internalUpdateUI โดยไม่บันทึก localStorage ซ้ำ
+                internalUpdateUI(local.data, local.uid, local.deals);
+            }
+            
+            // เริ่มต้นระบบ auth (จะโหลดข้อมูลจริงและอัปเดตภายหลัง)
             initAuth();
+            
             setInterval(updateAIMessage, 15000);
+            
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay[style*="flex"]').forEach(modal => {
@@ -2414,6 +2465,18 @@
                 }
             });
         });
+
+        function updateAIMessage() {
+            const aiMessages = [
+                "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | โปรไฟล์: โหมดประมวลผลเรียลไทม์",
+                "การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
+                "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable",
+                "ตรวจสอบความปลอดภัยโปรไฟล์: ปกติ | ไม่พบกิจกรรมต้องสงสัย",
+                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน"
+            ];
+            const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+            document.getElementById('aiMsg').innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
+        }
     </script>
 </body>
 </html>
