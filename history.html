@@ -365,7 +365,7 @@
         }
 
         /* ------------------------------------------------
-           📜 HISTORY LIST (ปรับปรุง)
+           📜 HISTORY LIST (ปรับปรุงใหม่)
            ------------------------------------------------ */
         .history-section {
             margin: 0 20px 25px;
@@ -395,17 +395,19 @@
             border-radius: 10px;
         }
         
+        /* 🔥 ปรับปรุง History Item ให้เป็น Grid */
         .history-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 18px;
-            display: flex;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            cursor: pointer;
         }
         
         .history-item:hover {
@@ -415,13 +417,13 @@
         }
         
         .history-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             flex-shrink: 0;
         }
         
@@ -444,7 +446,7 @@
         }
         
         .history-details {
-            flex: 1;
+            min-width: 0; /* เพื่อให้ข้อความยืดหดได้ */
         }
         
         .history-title {
@@ -455,6 +457,7 @@
             margin-bottom: 4px;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 6px;
         }
         
@@ -469,6 +472,7 @@
             gap: 4px;
             font-weight: normal;
             border: 1px solid rgba(0, 242, 255, 0.3);
+            white-space: nowrap;
         }
         
         .transfer-user-badge i {
@@ -488,6 +492,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            white-space: nowrap;
         }
         
         .history-amount {
@@ -495,8 +500,9 @@
             font-weight: bold;
             font-size: 14px;
             text-align: right;
-            min-width: 70px;
-            margin-right: 10px;
+            min-width: 85px;
+            padding-right: 5px;
+            white-space: nowrap;
         }
         
         .amount-positive {
@@ -510,18 +516,17 @@
         }
         
         .history-status {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 9px;
-            padding: 3px 8px;
+            font-size: 10px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(2px);
-            z-index: 2;
+            text-align: center;
+            min-width: 70px;
+            white-space: nowrap;
         }
         
         .status-completed {
@@ -559,7 +564,7 @@
         }
 
         /* ------------------------------------------------
-           📊 STATISTICS CARD (ปรับปรุงให้เล็กลง)
+           📊 STATISTICS CARD
            ------------------------------------------------ */
         .stats-card {
             margin: 0 20px 20px;
@@ -577,17 +582,17 @@
         
         .stat-item {
             text-align: center;
-            padding: 12px 8px;              /* เพิ่ม padding เล็กน้อย */
+            padding: 12px 8px;
             border-radius: 12px;
             background: rgba(0, 0, 0, 0.3);
         }
         
         .stat-value {
             font-family: 'Orbitron';
-            font-size: 16px;                 /* ลดจาก 20px เหลือ 16px */
+            font-size: 16px;
             font-weight: bold;
             margin-bottom: 5px;
-            line-height: 1.2;                 /* ปรับระยะห่าง */
+            line-height: 1.2;
         }
         
         .stat-label {
@@ -643,7 +648,7 @@
         }
 
         /* ------------------------------------------------
-           📱 BOTTOM NAVIGATION (แก้ปุ่มตลาด)
+           📱 BOTTOM NAVIGATION
            ------------------------------------------------ */
         .bottom-nav {
             position: fixed;
@@ -811,7 +816,7 @@
         }
 
         /* ------------------------------------------------
-           📱 MOBILE RESPONSIVE
+           📱 MOBILE RESPONSIVE (ปรับปรุง)
            ------------------------------------------------ */
         @media (max-width: 768px) {
             .app-container {
@@ -850,54 +855,84 @@
             
             .history-amount {
                 font-size: 13px;
-                min-width: 65px;
+                min-width: 80px;
             }
 
             .stat-value {
-                font-size: 14px;   /* เล็กลงอีกในมือถือ */
+                font-size: 14px;
             }
         }
         
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dash-header {
-                padding: 15px 15px 12px;
-            }
-            
-            .balance-amount {
-                font-size: 28px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
+        @media (max-width: 500px) {
             .history-item {
-                padding: 15px;
-                gap: 10px;
+                grid-template-columns: auto 1fr auto;
+                grid-template-rows: auto auto;
+                gap: 8px 10px;
+                padding: 12px;
             }
-            
+
             .history-icon {
+                grid-row: span 2;
                 width: 40px;
                 height: 40px;
                 font-size: 18px;
             }
-            
-            .history-amount {
-                font-size: 12px;
-                min-width: 60px;
-            }
-            
-            .history-status {
-                font-size: 8px;
-                padding: 2px 6px;
+
+            .history-details {
+                grid-column: 2;
+                grid-row: 1;
             }
 
-            .stat-value {
+            .history-amount {
+                grid-column: 3;
+                grid-row: 1;
+                min-width: 70px;
                 font-size: 13px;
+                text-align: right;
+            }
+
+            .history-status {
+                grid-column: 2 / span 2;
+                grid-row: 2;
+                justify-self: end;
+                min-width: auto;
+                font-size: 9px;
+                padding: 3px 8px;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .history-item {
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 8px;
+            }
+
+            .history-icon {
+                grid-row: span 3;
+                width: 40px;
+                height: 40px;
+            }
+
+            .history-details {
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .history-amount {
+                grid-column: 2;
+                grid-row: 2;
+                text-align: left;
+                min-width: auto;
+                font-size: 13px;
+            }
+
+            .history-status {
+                grid-column: 2;
+                grid-row: 3;
+                justify-self: start;
+                font-size: 9px;
+                padding: 3px 8px;
             }
         }
 
@@ -1006,7 +1041,7 @@
             </button>
         </div>
 
-        <!-- Bottom Navigation (แก้ปุ่มตลาดให้เรียก modal) -->
+        <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <a href="dashboard.html" class="nav-link">
                 <i class="fas fa-home"></i>
@@ -1108,10 +1143,10 @@
         </div>
     </div>
 
-    <!-- Coming Soon Modal (เพิ่มใหม่) -->
+    <!-- Coming Soon Modal -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal-box">
-            <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
+            <i class="fas fa-clock" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
             <div class="modal-title">กำลังมาเร็วๆ นี้</div>
             <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
             <button class="modal-btn btn-primary" onclick="closeComingSoon()">OK</button>
@@ -1230,7 +1265,7 @@
                     </div>
                 `;
                 
-                // Load transactions from Supabase (เพิ่มการ select field ที่จำเป็น)
+                // Load transactions from Supabase
                 const { data: transactions, error } = await supa
                     .from('transactions')
                     .select('*')
@@ -1242,18 +1277,15 @@
 
                 allTransactions = transactions || [];
                 
-                // --- เริ่มแก้ไข: ดึง username ปัจจุบันสำหรับธุรกรรมโอนเงิน (real-time) ---
+                // --- ดึง username ปัจจุบันสำหรับธุรกรรมโอนเงิน ---
                 if (allTransactions.length > 0) {
-                    // เก็บ ID ของคู่ธุรกรรม (ที่ไม่ใช่ตัวเรา)
                     const otherPartyIds = new Set();
                     
                     allTransactions.forEach(t => {
                         if (t.type === 'transfer') {
-                            // กรณีได้รับโอน (direction = 'in') : ผู้ส่งคือ sender_id
                             if (t.direction === 'in' && t.sender_id && t.sender_id !== currentUserId) {
                                 otherPartyIds.add(t.sender_id);
                             }
-                            // กรณีโอนออก (direction = 'out') : ผู้รับคือ recipient_id
                             else if (t.direction === 'out' && t.recipient_id && t.recipient_id !== currentUserId) {
                                 otherPartyIds.add(t.recipient_id);
                             }
@@ -1261,7 +1293,6 @@
                     });
                     
                     if (otherPartyIds.size > 0) {
-                        // ดึง username จากตาราง users แบบเรียลไทม์
                         const { data: users, error: userError } = await supa
                             .from('users')
                             .select('id, username')
@@ -1271,13 +1302,12 @@
                             const usernameMap = {};
                             users.forEach(u => { usernameMap[u.id] = u.username; });
                             
-                            // อัปเดต transaction object ด้วยชื่อปัจจุบัน
                             allTransactions.forEach(t => {
                                 if (t.type === 'transfer') {
                                     if (t.direction === 'in' && t.sender_id && usernameMap[t.sender_id]) {
-                                        t.sender_name = usernameMap[t.sender_id];  // ใช้ชื่อปัจจุบัน
+                                        t.sender_name = usernameMap[t.sender_id];
                                     } else if (t.direction === 'out' && t.recipient_id && usernameMap[t.recipient_id]) {
-                                        t.recipient_name = usernameMap[t.recipient_id]; // ใช้ชื่อปัจจุบัน
+                                        t.recipient_name = usernameMap[t.recipient_id];
                                     }
                                 }
                             });
@@ -1311,7 +1341,6 @@
 
         // 🔥 UPDATE STATISTICS
         function updateStatistics() {
-            // Calculate statistics
             const totalTopup = allTransactions
                 .filter(t => t.type === 'topup' && t.status === 'completed')
                 .reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -1323,7 +1352,6 @@
             const completedTransactions = allTransactions
                 .filter(t => t.status === 'completed').length;
             
-            // Update stats grid
             const statsGrid = document.getElementById('statsGrid');
             statsGrid.innerHTML = `
                 <div class="stat-item">
@@ -1345,7 +1373,6 @@
         function filterHistory(type) {
             currentFilter = type;
             
-            // Update active tab
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -1358,17 +1385,14 @@
                 }
             });
             
-            // Filter transactions
             if (type === 'ALL') {
                 filteredTransactions = allTransactions;
             } else {
                 filteredTransactions = allTransactions.filter(t => t.type === type.toLowerCase());
             }
             
-            // Render filtered transactions
             renderHistoryList();
             
-            // Update AI message
             const typeNames = {
                 'ALL': 'ทั้งหมด',
                 'TOPUP': 'เติมเงิน',
@@ -1378,7 +1402,7 @@
             updateAIMessage(`แสดงประวัติ: ${typeNames[type]} (${filteredTransactions.length} รายการ)`);
         }
 
-        // 🔥 RENDER HISTORY LIST (แก้ไขส่วนแสดงชื่อผู้ใช้)
+        // 🔥 RENDER HISTORY LIST
         function renderHistoryList() {
             const historyList = document.getElementById('historyList');
             
@@ -1404,7 +1428,6 @@
                 historyItem.className = 'history-item';
                 historyItem.onclick = () => showTransactionDetail(transaction);
                 
-                // Determine icon and color based on type
                 let iconClass, iconBg, typeText;
                 if (transaction.type === 'topup') {
                     iconClass = 'fas fa-plus-circle';
@@ -1420,7 +1443,6 @@
                     typeText = 'โอนเงิน';
                 }
                 
-                // Format date
                 const date = new Date(transaction.created_at);
                 const dateStr = date.toLocaleDateString('th-TH', { 
                     day: '2-digit', 
@@ -1432,7 +1454,6 @@
                     minute: '2-digit' 
                 });
                 
-                // ✅ ใช้ direction ในการกำหนดสีและเครื่องหมาย
                 let amountColor, amountPrefix;
                 if (transaction.type === 'topup') {
                     amountColor = 'amount-positive';
@@ -1453,7 +1474,6 @@
                     amountPrefix = '-';
                 }
                 
-                // Determine status
                 let statusClass, statusText;
                 if (transaction.status === 'completed') {
                     statusClass = 'status-completed';
@@ -1466,7 +1486,6 @@
                     statusText = 'ล้มเหลว';
                 }
                 
-                // ✅ เพิ่มส่วนแสดงชื่อผู้ใช้สำหรับ transfer (ใช้ค่าที่อัปเดตแล้ว)
                 let userDisplay = '';
                 if (transaction.type === 'transfer') {
                     if (transaction.direction === 'in') {
@@ -1503,7 +1522,6 @@
 
         // 🔥 SHOW TRANSACTION DETAIL
         function showTransactionDetail(transaction) {
-            // Determine type text
             let typeText, typeIcon;
             if (transaction.type === 'topup') {
                 typeText = 'เติมเงิน';
@@ -1516,7 +1534,6 @@
                 typeIcon = 'fas fa-exchange-alt';
             }
             
-            // Determine status
             let statusText, statusColor;
             if (transaction.status === 'completed') {
                 statusText = 'สำเร็จ';
@@ -1529,7 +1546,6 @@
                 statusColor = 'var(--danger)';
             }
             
-            // Format date
             const date = new Date(transaction.created_at);
             const dateStr = date.toLocaleDateString('th-TH', { 
                 weekday: 'long',
@@ -1543,13 +1559,10 @@
                 second: '2-digit'
             });
             
-            // Set modal title
             document.getElementById('detailTitle').innerHTML = `<i class="${typeIcon}"></i> ${typeText}`;
             
-            // Build details HTML
             let detailsHTML = '';
             
-            // Basic info
             detailsHTML += `
                 <div class="detail-item">
                     <span class="detail-label">ประเภท:</span>
@@ -1578,7 +1591,6 @@
                 </div>
             `;
             
-            // Transaction-specific info
             if (transaction.reference) {
                 detailsHTML += `
                     <div class="detail-item">
@@ -1597,7 +1609,6 @@
                 `;
             }
             
-            // สำหรับ transfer แสดงชื่อผู้ที่เกี่ยวข้อง (ใช้ค่าที่อัปเดตแล้ว)
             if (transaction.type === 'transfer') {
                 if (transaction.direction === 'in') {
                     detailsHTML += `
@@ -1634,7 +1645,6 @@
             
             document.getElementById('transactionDetails').innerHTML = detailsHTML;
             
-            // Show the modal
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -1659,7 +1669,7 @@
             document.getElementById('downloadModal').style.display = 'flex';
         }
 
-        // 🔥 GENERATE PDF (ใช้งานได้จริง)
+        // 🔥 GENERATE PDF
         function generatePDF() {
             showAIAlert('กำลังสร้างรายงาน PDF...', 'info');
             
@@ -1669,9 +1679,8 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // ตั้งค่าหัวข้อรายงาน
                 doc.setFontSize(18);
-                doc.setTextColor(0, 242, 255); // สี primary
+                doc.setTextColor(0, 242, 255);
                 doc.text('AEGIS NEX - รายงานการเงิน', 14, 20);
                 
                 doc.setFontSize(11);
@@ -1679,7 +1688,6 @@
                 doc.text(`วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`, 14, 30);
                 doc.text(`ผู้ใช้งาน: ${currentUserId.substring(0, 8)}`, 14, 36);
                 
-                // สร้างตารางข้อมูล
                 const tableColumn = ["ประเภท", "จำนวนเงิน", "สถานะ", "วันที่", "เวลา", "รหัสอ้างอิง"];
                 const tableRows = [];
                 
@@ -1727,20 +1735,18 @@
                     },
                 });
                 
-                // บันทึกไฟล์ PDF
                 doc.save(`AEGIS_NEX_Report_${new Date().toISOString().split('T')[0]}.pdf`);
                 showAIAlert('สร้างรายงาน PDF สำเร็จ!', 'success');
             }, 1500);
         }
 
-        // 🔥 GENERATE CSV (ใช้งานได้จริง)
+        // 🔥 GENERATE CSV
         function generateCSV() {
             showAIAlert('กำลังสร้างไฟล์ CSV...', 'info');
             
             setTimeout(() => {
                 closeDownloadModal();
                 
-                // Create CSV content
                 let csvContent = "ประเภท,จำนวนเงิน,สถานะ,วันที่,เวลา,รหัสอ้างอิง\n";
                 
                 allTransactions.forEach(t => {
@@ -1756,14 +1762,12 @@
                     const amount = (t.type === 'topup' ? '+' : '-') + (t.amount || 0).toLocaleString();
                     const status = t.status === 'completed' ? 'สำเร็จ' : t.status === 'pending' ? 'รอดำเนินการ' : 'ล้มเหลว';
                     
-                    // Escape commas
                     const safeType = typeName.replace(/,/g, ';');
                     const safeRef = (t.reference || '-').replace(/,/g, ';');
                     
                     csvContent += `${safeType},${amount},${status},${dateStr},${timeStr},${safeRef}\n`;
                 });
                 
-                // Download
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -1776,14 +1780,13 @@
             }, 1500);
         }
 
-        // 🔥 GENERATE EXCEL (ใช้งานได้จริง - ใช้ CSV format)
+        // 🔥 GENERATE EXCEL
         function generateExcel() {
             showAIAlert('กำลังสร้างไฟล์ Excel...', 'info');
             
             setTimeout(() => {
                 closeDownloadModal();
                 
-                // Create CSV content (Excel สามารถเปิดไฟล์ CSV ได้)
                 let csvContent = "ประเภท,จำนวนเงิน,สถานะ,วันที่,เวลา,รหัสอ้างอิง\n";
                 
                 allTransactions.forEach(t => {
@@ -1805,7 +1808,6 @@
                     csvContent += `${safeType},${amount},${status},${dateStr},${timeStr},${safeRef}\n`;
                 });
                 
-                // Download as .xls (Excel จะเปิดไฟล์นี้ได้)
                 const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -1823,11 +1825,9 @@
             const details = document.getElementById('transactionDetails');
             const type = document.getElementById('detailTitle').textContent.replace('📄 ', '');
             
-            // Create share text
             const shareText = `รายการ${type} จาก AEGIS NEX\n\n` + 
                              `ดูรายละเอียดเพิ่มเติมที่: https://aegis-nex.com/history`;
             
-            // Use Web Share API if available
             if (navigator.share) {
                 navigator.share({
                     title: `รายการ${type} - AEGIS NEX`,
@@ -1860,7 +1860,7 @@
             aiMsg.innerHTML = `<b>AEGIS AI:</b> "${message}"`;
         }
 
-        // 🔥 SHOW AI ALERT (for notifications)
+        // 🔥 SHOW AI ALERT
         function showAIAlert(message, type) {
             const colors = {
                 'success': 'var(--success)',
@@ -1896,7 +1896,7 @@
             document.getElementById('helpModal').style.display = 'flex';
         }
 
-        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้" (เพิ่มใหม่)
+        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้"
         function showComingSoon() {
             document.getElementById('comingSoonModal').style.display = 'flex';
         }
@@ -1909,7 +1909,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             initAuth();
             
-            // Random AI messages
             const aiMessages = [
                 "ระบบประวัติการเงิน: พร้อมใช้งาน | รายการล่าสุด: กำลังโหลด...",
                 "ระบบวิเคราะห์การเงิน: เปิดใช้งาน | แสดงสถิติ: เรียลไทม์",
@@ -1918,13 +1917,11 @@
                 "คลิกรายการเพื่อดูรายละเอียดแบบเต็มรูปแบบ"
             ];
             
-            // Update AI message randomly
             setInterval(() => {
                 const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
                 updateAIMessage(randomMsg);
             }, 15000);
             
-            // Set up event listeners
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     const modals = document.querySelectorAll('.modal-overlay[style*="flex"]');
@@ -1934,7 +1931,6 @@
                 }
             });
             
-            // Auto-refresh every 60 seconds
             setInterval(() => {
                 if (document.visibilityState === 'visible') {
                     loadTransactionHistory();
