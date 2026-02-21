@@ -3454,6 +3454,23 @@
 
 <script>
     // ============================================
+    // 🔥 GLOBAL VARIABLES (ประกาศก่อน debug console)
+    // ============================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('id') || 'TR-GEN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    const mode = urlParams.get('mode') || 'general';
+    const role = urlParams.get('role') || 'buyer';
+    const adminAccess = urlParams.get('adminAccess'); // สำหรับ Admin วาร์ป
+
+    // 🔥 ADMIN UID ของคุณ (เปลี่ยนเป็น UID จริง)
+    const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
+    // 🔥 SPECIAL UID สำหรับยศ LEGENDARY (เปลี่ยนเป็น UID จริงของคุณ)
+    const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000"; // ← ใส่ UID จริงถ้ามี
+    const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop';
+
+    console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role, 'AdminAccess:', adminAccess);
+
+    // ============================================
     // 🐞 DEBUG CONSOLE: เก็บ log และ error ทุกอย่างไว้ใน div
     // ============================================
     (function() {
@@ -3524,22 +3541,8 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ============================================
-    // 🔥 GLOBAL VARIABLES
+    // 🔥 GLOBAL VARIABLES (ต่อ)
     // ============================================
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('id') || 'TR-GEN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-    const mode = urlParams.get('mode') || 'general';
-    const role = urlParams.get('role') || 'buyer';
-    const adminAccess = urlParams.get('adminAccess'); // สำหรับ Admin วาร์ป
-    
-    console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role, 'AdminAccess:', adminAccess);
-
-    // 🔥 ADMIN UID ของคุณ (เปลี่ยนเป็น UID จริง)
-    const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
-    // 🔥 SPECIAL UID สำหรับยศ LEGENDARY (เปลี่ยนเป็น UID จริงของคุณ)
-    const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000"; // ← ใส่ UID จริงถ้ามี
-    const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop';
-    
     let currentUser = null;
     let tradeData = null;
     let tradeStatus = 'waiting_payment';
