@@ -2588,7 +2588,6 @@
             color: #0ff;
         }
 
-        /* เพิ่มปุ่ม debug */
         #debug-buttons {
             position: fixed;
             bottom: 160px;
@@ -2612,6 +2611,20 @@
             padding: 4px 8px;
             font-size: 10px;
             flex: 1 0 auto;
+        }
+
+        /* ===== 🆕 CSS สำรองเพื่อบังคับแสดงช่องพิมพ์ ===== */
+        .chat-input-area,
+        .media-buttons,
+        .message-input-wrapper,
+        .message-input,
+        .send-btn {
+            display: flex !important;
+        }
+        .chat-input-area {
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
         }
     </style>
 </head>
@@ -3429,7 +3442,7 @@
 <!-- ===== 🆕 DEBUG CONSOLE ===== -->
 <div id="debug-console"></div>
 
-<!-- ===== 🆕 DEBUG BUTTONS (เพิ่มมาเช็คว่าฟังก์ชันมีอยู่) ===== -->
+<!-- ===== 🆕 DEBUG BUTTONS ===== -->
 <div id="debug-buttons">
     <button onclick="alert('openTransferModal: ' + (typeof window.openTransferModal))">Check Transfer</button>
     <button onclick="alert('openCancelModal: ' + (typeof window.openCancelModal))">Check Cancel</button>
@@ -4311,7 +4324,7 @@
         if (el) el.style.display = 'none';
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmTransfer ==========
+    // ========== แก้ไขฟังก์ชัน confirmTransfer (เปลี่ยน type transaction) ==========
     window.confirmTransfer = async function() {
         const confirmBtn = document.getElementById('confirmTransferBtn');
         confirmBtn.disabled = true;
@@ -4370,12 +4383,13 @@
             return;
         }
 
+        // ✅ เปลี่ยน type จาก 'trade_hold' เป็น 'hold' (สมมติว่า constraint ใช้ค่านี้)
         const { error: txError } = await supabaseClient
             .from('transactions')
             .insert([{
                 user_id: currentUser.id,
                 amount: -total,
-                type: 'trade_hold',
+                type: 'hold',
                 direction: 'out',
                 status: 'completed',
                 reference: roomId,
@@ -4553,6 +4567,7 @@
         }
     };
 
+    // ========== แก้ไขฟังก์ชัน confirmGeneralReceive (เปลี่ยน type transaction) ==========
     window.confirmGeneralReceive = async function() {
         closeGeneralReceiveConfirmModal();
         
@@ -4578,10 +4593,11 @@
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
+            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
-                type: 'trade_release',
+                type: 'release',
                 direction: 'in',
                 status: 'completed',
                 reference: trade.room_id,
@@ -4621,6 +4637,7 @@
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
 
+    // ========== แก้ไขฟังก์ชัน confirmGameReceive (เปลี่ยน type transaction) ==========
     window.confirmGameReceive = async function() {
         closeGameReceiveConfirmModal();
         
@@ -4646,10 +4663,11 @@
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
+            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
-                type: 'trade_release',
+                type: 'release',
                 direction: 'in',
                 status: 'completed',
                 reference: trade.room_id,
@@ -4722,6 +4740,7 @@
         modal.style.display = 'flex';
     };
 
+    // ========== แก้ไขฟังก์ชัน confirmCancel (เปลี่ยน type transaction) ==========
     window.confirmCancel = async function() {
         closeModal('cancelModal');
         
@@ -4747,10 +4766,11 @@
                         .from('users')
                         .update({ balance: newBalance, updated_at: new Date() })
                         .eq('id', trade.buyer_id);
+                    // ✅ เปลี่ยน type จาก 'trade_refund' เป็น 'refund'
                     await supabaseClient.from('transactions').insert([{
                         user_id: trade.buyer_id,
                         amount: trade.total,
-                        type: 'trade_refund',
+                        type: 'refund',
                         direction: 'in',
                         status: 'completed',
                         reference: trade.room_id,
@@ -4790,12 +4810,13 @@
                 .eq('id', trade.seller_id);
             if (updateError) throw updateError;
 
+            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             const { error: txError } = await supabaseClient
                 .from('transactions')
                 .insert([{
                     user_id: trade.seller_id,
                     amount: trade.product_price,
-                    type: 'trade_release',
+                    type: 'release',
                     direction: 'in',
                     status: 'completed',
                     reference: trade.room_id,
