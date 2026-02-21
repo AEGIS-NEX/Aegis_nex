@@ -2607,6 +2607,35 @@
             box-shadow: none !important;
             animation: none !important;
         }
+
+        /* ===== 🆕 DEBUG CONSOLE (เพิ่มใหม่) ===== */
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 100000;
+            border-top: 2px solid #f00;
+            display: block;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        #debug-console .error {
+            color: #f66;
+        }
+        #debug-console .warn {
+            color: #ff0;
+        }
+        #debug-console .info {
+            color: #0ff;
+        }
     </style>
 </head>
 <body>
@@ -3420,7 +3449,73 @@
     </div>
 </div>
 
+<!-- ===== 🆕 DEBUG CONSOLE ===== -->
+<div id="debug-console"></div>
+
 <script>
+    // ============================================
+    // 🐞 DEBUG CONSOLE: เก็บ log และ error ทุกอย่างไว้ใน div
+    // ============================================
+    (function() {
+        const debugDiv = document.getElementById('debug-console');
+        if (!debugDiv) return;
+
+        // เก็บต้นฉบับ console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const originalInfo = console.info;
+
+        function addToConsole(level, args) {
+            const msg = Array.from(args).map(arg => {
+                try {
+                    if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
+                    return String(arg);
+                } catch (e) {
+                    return '[circular]';
+                }
+            }).join(' ');
+            const line = document.createElement('div');
+            line.className = level;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${level.toUpperCase()}: ${msg}`;
+            debugDiv.appendChild(line);
+            debugDiv.scrollTop = debugDiv.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('info', args);
+        };
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('error', args);
+        };
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('warn', args);
+        };
+        console.info = function(...args) {
+            originalInfo.apply(console, args);
+            addToConsole('info', args);
+        };
+
+        // จับ error ที่ไม่ถูก catch (unhandled rejection)
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled Rejection:', event.reason);
+        });
+
+        // จับ error ทั่วไป
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error ? event.error.message : event.message);
+        });
+
+        // เพิ่มข้อความเริ่มต้น
+        console.log('🐞 Debug Console started');
+        console.log('Room ID:', roomId);
+        console.log('Mode:', mode);
+        console.log('Role:', role);
+    })();
+
     // ============================================
     // 🎯 SUPABASE INITIALIZATION (ใช้ชื่อ supabaseClient ป้องกันชน)
     // ============================================
@@ -3589,6 +3684,7 @@
     // 👤 AUTH: ดึงข้อมูลผู้ใช้ปัจจุบัน (ปรับปรุงให้โหลดเร็วขึ้น) - ข้อ 2
     // ============================================
     async function initAuth() {
+        console.log('🚀 initAuth started');
         // Disable all buttons immediately
         document.getElementById('btnTransfer').disabled = true;
         document.getElementById('btnShip').disabled = true;
@@ -3601,6 +3697,7 @@
             if (error) throw error;
             
             if (!session) {
+                console.log('No session, redirecting to index');
                 window.location.href = 'index.html';
                 return;
             }
@@ -3616,6 +3713,7 @@
             }
             
             // โหลดข้อมูลผู้ใช้และห้องเทรดพร้อมกัน (Parallel)
+            console.log('Fetching user and trade data...');
             const [userResult, tradeResult] = await Promise.all([
                 supabaseClient
                     .from('users')
@@ -3681,6 +3779,7 @@
             
             // จัดการ tradeData
             if (!tradeResult.data) {
+                console.log('Trade not found, creating new trade...');
                 // สร้างห้องใหม่
                 const newTrade = {
                     room_id: roomId,
@@ -3752,18 +3851,22 @@
             updateTimerDisplay();
             
             // โหลดข้อมูลคู่ค้า
+            console.log('Loading partner info...');
             await loadPartnerInfo();
             
             // โหลดข้อความเก่า
+            console.log('Loading messages...');
             await loadMessages();
             
             // เริ่ม timer และ realtime
+            console.log('Starting timer and realtime...');
             startTradeTimer();
             setupRealtime();
             
         } catch (err) {
             console.error('❌ Auth error:', err);
-            window.location.href = 'index.html';
+            // ไม่ redirect ทันที ให้ debug ก่อน
+            addAiAlertMessage('❌ เกิดข้อผิดพลาด: ' + err.message);
         } finally {
             isLoadingRoom = false;
             updateUIByStatus(); // อัปเดต UI หลังจากโหลดเสร็จ
