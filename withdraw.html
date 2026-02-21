@@ -1109,7 +1109,7 @@
             }
         }
 
-        // 🔥 PROCESS WITHDRAWAL (ปรับปรุง: เพิ่มตรวจสอบ IP ซ้ำ, ลบ setTimeout)
+        // 🔥 PROCESS WITHDRAWAL (ปรับปรุง: ปิดการตรวจสอบ IP ซ้ำชั่วคราว)
         async function processWithdrawal() {
             const amountInput = document.getElementById('amountInput');
             const accountInput = document.getElementById('accountInput');
@@ -1158,7 +1158,8 @@
             document.getElementById('processingModal').style.display = 'flex';
             
             try {
-                // ✅ ตรวจสอบ IP ซ้ำ (เรียก Edge Function)
+                // 🔥 ปิดการตรวจสอบ IP ซ้ำชั่วคราว (comment ไว้)
+                /*
                 const { data: ipCheck, error: ipError } = await supa.functions.invoke('super-processor', {
                     body: { userId: currentUserId }
                 });
@@ -1171,6 +1172,7 @@
                 if (!ipCheck.allowed) {
                     throw { message: ipCheck.message, code: 'IP_DUPLICATE' };
                 }
+                */
 
                 // ✅ ตรวจสอบว่าผู้ใช้มีดีลสำเร็จอย่างน้อย 1 ครั้งหรือไม่
                 const hasCompletedTrade = await checkUserHasCompletedTrade();
