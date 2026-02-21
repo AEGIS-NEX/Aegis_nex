@@ -2560,60 +2560,84 @@
             animation: none !important;
         }
 
-        #debug-console {
+        /* ===== 🆕 DEBUG ELEMENTS (ปรับใหม่ ไม่บังเนื้อหา) ===== */
+        .debug-wrapper {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.9);
+            top: 10px;
+            right: 10px;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+            max-width: 90%;
+        }
+
+        #debug-toggle-btn {
+            background: #f00;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(255,0,0,0.5);
+            z-index: 20001;
+        }
+
+        #debug-panel {
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #f0f;
+            border-radius: 10px;
+            padding: 10px;
+            width: 300px;
+            max-width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: 0 5px 20px rgba(255,0,255,0.5);
+        }
+
+        #debug-panel.visible {
+            display: flex;
+        }
+
+        #debug-console {
+            background: #111;
             color: #0f0;
             font-family: monospace;
-            font-size: 11px;
-            padding: 8px;
+            font-size: 10px;
+            padding: 5px;
             max-height: 150px;
             overflow-y: auto;
-            z-index: 100000;
-            border-top: 2px solid #f00;
-            display: block;
+            border: 1px solid #0f0;
+            border-radius: 5px;
             white-space: pre-wrap;
             word-break: break-all;
         }
-        #debug-console .error {
-            color: #f66;
-        }
-        #debug-console .warn {
-            color: #ff0;
-        }
-        #debug-console .info {
-            color: #0ff;
-        }
+        #debug-console .error { color: #f66; }
+        #debug-console .warn { color: #ff0; }
+        #debug-console .info { color: #0ff; }
 
         #debug-buttons {
-            position: fixed;
-            bottom: 160px;
-            left: 0;
-            right: 0;
-            background: #111;
-            color: #0f0;
-            padding: 5px;
-            font-size: 10px;
-            z-index: 100000;
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            border-top: 1px solid #f0f;
+            gap: 5px;
         }
         #debug-buttons button {
             background: #333;
             color: #0f0;
             border: 1px solid #0f0;
             border-radius: 4px;
-            padding: 4px 8px;
+            padding: 5px 8px;
             font-size: 10px;
             flex: 1 0 auto;
         }
 
-        /* ===== 🆕 CSS สำรองเพื่อบังคับแสดงช่องพิมพ์ ===== */
+        /* ===== CSS สำรองเพื่อบังคับแสดงแชท ===== */
         .chat-input-area,
         .media-buttons,
         .message-input-wrapper,
@@ -3439,16 +3463,19 @@
     </div>
 </div>
 
-<!-- ===== 🆕 DEBUG CONSOLE ===== -->
-<div id="debug-console"></div>
-
-<!-- ===== 🆕 DEBUG BUTTONS ===== -->
-<div id="debug-buttons">
-    <button onclick="alert('openTransferModal: ' + (typeof window.openTransferModal))">Check Transfer</button>
-    <button onclick="alert('openCancelModal: ' + (typeof window.openCancelModal))">Check Cancel</button>
-    <button onclick="alert('currentUser: ' + (currentUser ? 'yes : ' + currentUser.id : 'no'))">Check User</button>
-    <button onclick="alert('tradeStatus: ' + tradeStatus)">Status</button>
-    <button onclick="location.reload()">Reload</button>
+<!-- ===== 🆕 DEBUG WRAPPER (ไม่บังเนื้อหา) ===== -->
+<div class="debug-wrapper">
+    <button id="debug-toggle-btn" onclick="toggleDebugPanel()">🐞 Debug</button>
+    <div id="debug-panel">
+        <div id="debug-console"></div>
+        <div id="debug-buttons">
+            <button onclick="alert('openTransferModal: ' + (typeof window.openTransferModal))">Check Transfer</button>
+            <button onclick="alert('openCancelModal: ' + (typeof window.openCancelModal))">Check Cancel</button>
+            <button onclick="alert('currentUser: ' + (currentUser ? 'yes : ' + currentUser.id : 'no'))">Check User</button>
+            <button onclick="alert('tradeStatus: ' + tradeStatus)">Status</button>
+            <button onclick="location.reload()">Reload</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -5663,6 +5690,12 @@
             };
             reader.readAsDataURL(input.files[0]);
         }
+    };
+
+    // ฟังก์ชัน toggle debug panel
+    window.toggleDebugPanel = function() {
+        const panel = document.getElementById('debug-panel');
+        panel.classList.toggle('visible');
     };
 
     document.addEventListener('DOMContentLoaded', function() {
