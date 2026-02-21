@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ยืนยันตัวตน KYC | AEGIS NEX</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bc13fe;
+            --accent: #ff0080;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --dark-bg: #050b14;
+            --card-bg: rgba(20, 30, 50, 0.7);
+            --border: 1px solid rgba(0, 242, 255, 0.3);
+            --glass: rgba(5, 10, 20, 0.85);
+            --glow-primary: 0 0 20px rgba(0, 242, 255, 0.7);
+            --glow-secondary: 0 0 20px rgba(188, 19, 254, 0.7);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body {
+            margin: 0; 
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.05) 0%, transparent 20%),
+                linear-gradient(135deg, #050b14 0%, #0a1528 50%, #050b14 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f2ff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ------------------------------------------------
+           📢 ENHANCED NEWS TICKER
+           ------------------------------------------------ */
+        .news-ticker {
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0, 242, 255, 0.15) 10%, 
+                rgba(0, 242, 255, 0.25) 50%, 
+                rgba(0, 242, 255, 0.15) 90%, 
+                rgba(0,0,0,0) 100%);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+            height: 38px; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center;
+            position: relative; 
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .news-ticker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(188, 19, 254, 0) 0%, 
+                rgba(188, 19, 254, 0.2) 50%, 
+                rgba(188, 19, 254, 0) 100%);
+            animation: scanline 3s linear infinite;
+        }
+        
+        .ticker-content {
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+            font-size: 13px; 
+            color: var(--primary);
+            font-family: 'Orbitron'; 
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
+            padding: 5px 0;
+        }
+        
+        @keyframes ticker { 
+            0% { transform: translateX(100vw); } 
+            100% { transform: translateX(-100%); } 
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ------------------------------------------------
+           🏰 ENHANCED KYC HERO
+           ------------------------------------------------ */
+        .hero-section {
+            min-height: calc(100vh - 100px);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            text-align: center; 
+            position: relative;
+            padding: 40px 20px 100px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(255, 0, 128, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .hero-badge {
+            background: linear-gradient(45deg, rgba(188, 19, 254, 0.2), rgba(0, 242, 255, 0.2));
+            border: 1px solid var(--secondary);
+            padding: 12px 30px; 
+            border-radius: 25px; 
+            font-size: 14px; 
+            color: #fff;
+            margin-bottom: 40px; 
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+        }
+        
+        .hero-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+            z-index: -1;
+        }
+
+        /* ------------------------------------------------
+           📦 GLASS KYC CARD
+           ------------------------------------------------ */
+        .glass-box {
+            width: 95%; 
+            max-width: 550px; 
+            background: var(--card-bg);
+            border: var(--border); 
+            border-radius: 25px;
+            padding: 40px 35px; 
+            backdrop-filter: blur(25px);
+            position: relative; 
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            margin: 0 auto;
+        }
+
+        .glass-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(188, 19, 254, 0.05));
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .logo-area { 
+            text-align: center; 
+            margin-bottom: 35px; 
+            position: relative;
+        }
+        
+        .logo-area h1 { 
+            font-family: 'Orbitron'; 
+            font-size: 38px; 
+            margin: 0 0 10px 0; 
+            letter-spacing: 4px;
+            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.6));
+        }
+        
+        .logo-area p { 
+            font-size: 13px; 
+            color: #aaa; 
+            margin-top: 5px; 
+            letter-spacing: 2px; 
+            font-weight: 300;
+        }
+
+        /* 🛡️ SECURITY NOTICE */
+        .security-notice {
+            background: rgba(0, 242, 255, 0.08); 
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .security-notice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.05), transparent);
+            animation: scanline 4s linear infinite;
+        }
+        
+        .security-notice h4 { 
+            color: var(--primary); 
+            margin: 0 0 10px 0; 
+            font-size: 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-family: 'Orbitron';
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+        
+        .security-notice p { 
+            font-size: 13px; 
+            color: #ccc; 
+            margin: 0; 
+            line-height: 1.6; 
+            font-weight: 400;
+        }
+        
+        .security-notice b { 
+            color: #fff; 
+            border-bottom: 1px dashed var(--primary); 
+            font-weight: 600;
+        }
+
+        /* 🎯 BENEFITS SECTION */
+        .benefits-section {
+            background: rgba(0, 255, 136, 0.08); 
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 30px;
+            border-left: 4px solid var(--success);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .benefits-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.05), transparent);
+            animation: scanline 5s linear infinite;
+        }
+        
+        .benefits-header {
+            color: var(--success);
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron';
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #ddd;
+        }
+        
+        .benefit-icon {
+            color: var(--success);
+            font-size: 16px;
+            min-width: 20px;
+        }
+
+        /* 📝 FORM STYLING */
+        .field-box { 
+            margin-bottom: 25px; 
+            position: relative; 
+        }
+        
+        .field-label { 
+            font-size: 12px; 
+            color: var(--primary); 
+            margin-bottom: 8px; 
+            display: block; 
+            font-weight: 600; 
+            font-family: 'Orbitron'; 
+            letter-spacing: 1px;
+        }
+        
+        .field-input {
+            width: 100%; 
+            padding: 18px 18px 18px 55px; 
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 15px;
+            color: #fff; 
+            font-family: 'Chakra Petch'; 
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .field-input:focus {
+            border-color: var(--primary); 
+            background: rgba(0, 242, 255, 0.08);
+            outline: none; 
+            box-shadow: var(--glow-primary);
+        }
+        
+        .field-icon { 
+            position: absolute; 
+            left: 20px; 
+            top: 42px; 
+            color: #64748b; 
+            font-size: 18px; 
+            transition: 0.3s; 
+        }
+        
+        .field-input:focus + .field-icon { 
+            color: var(--primary); 
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
+        }
+
+        /* 🔐 PIN FIELD */
+        .pin-field {
+            text-align: center; 
+            letter-spacing: 12px; 
+            font-size: 22px; 
+            border-color: rgba(188, 19, 254, 0.4);
+            background: rgba(188, 19, 254, 0.05);
+        }
+        
+        .pin-field:focus {
+            border-color: var(--secondary);
+            box-shadow: var(--glow-secondary);
+        }
+
+        /* 📷 FILE UPLOAD STYLING */
+        .file-upload-box {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .file-upload-label {
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+            font-family: 'Orbitron';
+            letter-spacing: 1px;
+        }
+        
+        .file-upload-area {
+            width: 100%;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.08);
+        }
+        
+        .file-upload-area.active {
+            border-color: var(--success);
+            background: rgba(0, 255, 136, 0.08);
+        }
+        
+        .file-upload-icon {
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+        
+        .file-upload-area:hover .file-upload-icon {
+            color: var(--primary);
+        }
+        
+        .file-upload-text {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .file-upload-hint {
+            font-size: 11px;
+            color: #777;
+        }
+        
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .file-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .file-name {
+            font-size: 12px;
+            color: var(--primary);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* 🚀 VERIFY BUTTON */
+        .btn-submit {
+            width: 100%; 
+            padding: 20px; 
+            border: none; 
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #000; 
+            font-family: 'Orbitron'; 
+            font-weight: 800; 
+            font-size: 16px;
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            margin-top: 20px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(188, 19, 254, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.6s;
+            z-index: -1;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.5); 
+            filter: brightness(1.1);
+        }
+        
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ✅ SUCCESS MESSAGE */
+        .success-message {
+            background: rgba(0, 255, 136, 0.08); 
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px; 
+            padding: 25px; 
+            margin-bottom: 30px;
+            border-left: 4px solid var(--success);
+            text-align: center;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .success-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.05), transparent);
+            animation: scanline 4s linear infinite;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: var(--success);
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        .success-title {
+            color: var(--success);
+            font-family: 'Orbitron';
+            font-size: 18px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .success-text {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* 🔗 BACK TO DASHBOARD LINK */
+        .dashboard-link { 
+            text-align: center; 
+            margin-top: 30px; 
+            font-size: 14px; 
+            color: #64748b; 
+            font-weight: 300;
+        }
+        
+        .dashboard-link span { 
+            color: var(--primary); 
+            cursor: pointer; 
+            font-weight: 700; 
+            text-decoration: none;
+            transition: 0.3s;
+            border-bottom: 1px dashed var(--primary);
+        }
+        
+        .dashboard-link span:hover { 
+            color: #fff; 
+            border-bottom-color: #fff;
+        }
+
+        /* 🛡️ SCAN OVERLAY */
+        .scan-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 11, 20, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+        }
+        
+        .scan-animation {
+            width: 300px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 30px var(--primary);
+            position: relative;
+            animation: scanning 2s infinite linear;
+        }
+        
+        @keyframes scanning {
+            0% { top: -100px; }
+            100% { top: 100vh; }
+        }
+        
+        .scan-text {
+            margin-top: 30px;
+            font-family: 'Orbitron';
+            font-size: 18px;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.7);
+            letter-spacing: 2px;
+        }
+
+        /* 🏢 ENHANCED FOOTER */
+        footer {
+            background: linear-gradient(to top, #020408, #050b14);
+            padding: 40px 20px; 
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+        }
+        
+        .footer-logo { 
+            font-family: 'Orbitron'; 
+            font-size: 20px; 
+            color: #777; 
+            margin-bottom: 20px; 
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-logo span {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+        
+        .footer-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+        
+        .footer-links { 
+            font-size: 12px; 
+            color: #666; 
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* 📱 MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .glass-box {
+                padding: 30px 25px;
+                border-radius: 20px;
+                width: 90%;
+            }
+            
+            .hero-section {
+                padding: 30px 15px 80px;
+                min-height: calc(100vh - 80px);
+            }
+            
+            .logo-area h1 {
+                font-size: 32px;
+            }
+            
+            .field-input {
+                padding: 16px 16px 16px 50px;
+            }
+            
+            .field-icon {
+                top: 40px;
+                left: 18px;
+            }
+            
+            .hero-badge {
+                font-size: 13px;
+                padding: 10px 25px;
+            }
+            
+            .file-upload-area {
+                padding: 20px 15px;
+            }
+            
+            .file-upload-icon {
+                font-size: 30px;
+            }
+            
+            .btn-submit {
+                padding: 18px;
+            }
+            
+            .success-message {
+                padding: 20px 15px;
+            }
+        }
+
+        /* ✨ ADDITIONAL ANIMATIONS */
+        @keyframes pulse {
+            0% { 
+                box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.4); 
+                transform: scale(1);
+            } 
+            50% { 
+                transform: scale(1.03);
+            }
+            70% { 
+                box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); 
+            } 
+            100% { 
+                box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); 
+                transform: scale(1);
+            } 
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        /* เส้นแสงเคลื่อนที่ */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 10px var(--primary);
+            z-index: 0;
+            animation: scanMove 8s linear infinite;
+        }
+        
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* อนุภาคพื้นหลัง */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle linear infinite;
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        /* 🚨 CYBER TOAST NOTIFICATION */
+        #cyberAlert {
+            position: fixed; 
+            top: 70px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 9999; 
+            padding: 15px 30px; 
+            border-radius: 50px;
+            display: none; 
+            font-weight: 600; 
+            font-size: 14px;
+            backdrop-filter: blur(20px); 
+            border: 1px solid;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Chakra Petch';
+            text-align: center;
+            min-width: 300px;
+            max-width: 90%;
+        }
+        
+        @keyframes toastIn { 
+            from { 
+                top: -100px; 
+                opacity: 0; 
+            } 
+            to { 
+                top: 70px; 
+                opacity: 1; 
+            } 
+        }
+    </style>
+</head>
+<body>
+    <!-- เส้นแสงเคลื่อนที่ -->
+    <div class="scan-line"></div>
+    
+    <!-- อนุภาคพื้นหลัง -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- สแกนนิ่งเอฟเฟกต์ -->
+    <div class="scan-overlay" id="scanOverlay">
+        <div class="scan-animation"></div>
+        <div class="scan-text">กำลังยืนยันตัวตนด้วยระบบ Jeanny AI...</div>
+    </div>
+
+    <div class="news-ticker">
+        <div class="ticker-content">
+            ★ AEGIS NEX KYC VERIFICATION PORTAL ★ ยืนยันตัวตนเพื่อเปิดใช้สิทธิ์ P2P TRANSFER สูงสุด 50,000 AGS/วัน ★ ปลอดภัยด้วยระบบ Jeanny AI ★
+        </div>
+    </div>
+
+    <section class="hero-section">
+        <div class="hero-badge"><i class="fa-solid fa-user-shield"></i> PORTAL: KYC VERIFICATION</div>
+        
+        <div class="glass-box">
+            <div class="logo-area">
+                <h1>AEGIS <span>NEX</span></h1>
+                <p>ยืนยันตัวตนขั้นสูง (KYC)</p>
+            </div>
+
+            <div class="security-notice">
+                <h4><i class="fa-solid fa-shield-halved"></i> ประกาศความปลอดภัยระบบ AEGIS NEX</h4>
+                <p>
+                    การยืนยันตัวตน (KYC) เป็นมาตรการ <b>ความปลอดภัยขั้นสูงสุด</b> เพื่อป้องกันการฉ้อโกง 
+                    บัญชีม้า และกิจกรรมผิดกฎหมายในระบบ AGS เพื่อความปลอดภัยของทุกผู้ใช้งาน 
+                    <b>ข้อมูลส่วนตัวของคุณจะถูกเก็บเป็นความลับสูงสุด</b> และใช้สำหรับยืนยันตัวตนเท่านั้น
+                </p>
+            </div>
+
+            <div class="benefits-section">
+                <h4 class="benefits-header"><i class="fa-solid fa-gem"></i> สิทธิประโยชน์หลังผ่านการยืนยันตัวตน</h4>
+                <div class="benefit-item">
+                    <i class="fas fa-check-circle benefit-icon"></i>
+                    <span>ได้รับ <b>เครื่องหมายยืนยันตัวตนสีฟ้า (✓)</b> หลังชื่อในโปรไฟล์</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-coins benefit-icon"></i>
+                    <span>สามารถโอนเงินแบบ P2P ด้วยสกุลเงิน <b>AGS ได้สูงสุด 50,000 AGS ต่อวัน</b></span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-star benefit-icon"></i>
+                    <span>สิทธิ์เข้าถึงฟีเจอร์พิเศษและโปรโมชั่นสุดเอ็กซ์คลูซีฟ</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt benefit-icon"></i>
+                    <span>ความปลอดภัยบัญชีในระดับสูงสุด พร้อมการแจ้งเตือนแบบเรียลไทม์</span>
+                </div>
+            </div>
+
+            <div id="kycForm">
+                <!-- ไม่มีช่องกรอกอีเมลแล้ว ใช้ session แทน -->
+                <div class="field-box">
+                    <label class="field-label" style="color:var(--secondary);">รหัส PIN นิรภัย 6 หลัก</label>
+                    <input type="password" id="pin" class="field-input pin-field" placeholder="••••••" maxlength="6" inputmode="numeric">
+                    <i class="fa-solid fa-lock-keyhole field-icon" style="left: auto; right: 20px;"></i>
+                </div>
+
+                <div class="file-upload-box">
+                    <label class="file-upload-label"><i class="fa-solid fa-id-card"></i> บัตรประชาชน (ด้านหน้า)</label>
+                    <div class="file-upload-area" id="idCardArea">
+                        <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                        <div class="file-upload-text">คลิกเพื่ออัปโหลดรูปบัตรประชาชนด้านหน้า</div>
+                        <div class="file-upload-hint">ไฟล์ JPG หรือ PNG ไม่เกิน 5MB</div>
+                        <input type="file" id="idCard" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="file-preview" id="idCardPreview">
+                        <img id="idCardImage" src="" alt="Preview">
+                        <div class="file-name" id="idCardName"></div>
+                    </div>
+                </div>
+
+                <div class="file-upload-box">
+                    <label class="file-upload-label"><i class="fa-solid fa-user-check"></i> รูปถ่ายตนเองพร้อมถือบัตรประชาชน</label>
+                    <div class="file-upload-area" id="selfieArea">
+                        <i class="fas fa-camera file-upload-icon"></i>
+                        <div class="file-upload-text">คลิกเพื่ออัปโหลดรูปเซลฟี่พร้อมถือบัตร</div>
+                        <div class="file-upload-hint">ไฟล์ JPG หรือ PNG ไม่เกิน 5MB • ต้องเห็นใบหน้าชัดเจน</div>
+                        <input type="file" id="selfie" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="file-preview" id="selfiePreview">
+                        <img id="selfieImage" src="" alt="Preview">
+                        <div class="file-name" id="selfieName"></div>
+                    </div>
+                </div>
+
+                <button class="btn-submit" onclick="processKYC()" id="submitBtn">
+                    <i class="fa-solid fa-fingerprint"></i> ยืนยันตัวตนด้วยระบบ Jeanny AI
+                </button>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="success-title" id="successTitle">ยืนยันตัวตนสำเร็จ!</div>
+                <div class="success-text" id="successText">
+                    ระบบได้ทำการยืนยันตัวตนของคุณเรียบร้อยแล้ว<br>
+                    ตอนนี้คุณสามารถใช้งานฟีเจอร์ <b>P2P TRANSFER</b> ได้สูงสุด <b>50,000 AGS ต่อวัน</b><br>
+                    และได้รับ <b>เครื่องหมายยืนยันตัวตนสีฟ้า (✓)</b> ในโปรไฟล์แล้ว<br><br>
+                    <small style="color:#888;">(ระบบจะแจ้งสิทธิ์พิเศษเพิ่มเติมทางอีเมลในภายหลัง)</small>
+                </div>
+                <button class="btn-submit" onclick="window.location.href='dashboard.html'" style="background: linear-gradient(135deg, var(--success), #00cc6a);">
+                    <i class="fa-solid fa-chart-line"></i> ไปยังแดชบอร์ด
+                </button>
+            </div>
+
+            <div class="dashboard-link">
+                ข้ามขั้นตอนนี้ไปก่อน? <span onclick="window.location.href='dashboard.html'">กลับไปแดชบอร์ด</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">AEGIS <span>NEX</span> CORP.</div>
+        <div class="footer-links">
+            TERMS OF SERVICE • PRIVACY POLICY • KYC POLICY • CONTACT US<br><br>
+            COPYRIGHT © 2026 AEGIS NEX TECHNOLOGY
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase Config
+        const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Hash PIN with SHA‑256
+        async function hashPIN(pin) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(pin);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Create particles background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 5 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                const colors = ['#00f2ff', '#bc13fe', '#ff0080', '#00e676', '#ffd700'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+
+        // File upload handling
+        document.getElementById('idCard').addEventListener('change', function(e) {
+            handleFileUpload(e, 'idCard');
+        });
+        
+        document.getElementById('selfie').addEventListener('change', function(e) {
+            handleFileUpload(e, 'selfie');
+        });
+        
+        document.getElementById('idCardArea').addEventListener('click', function() {
+            document.getElementById('idCard').click();
+        });
+        
+        document.getElementById('selfieArea').addEventListener('click', function() {
+            document.getElementById('selfie').click();
+        });
+        
+        function handleFileUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showCyberToast("⚠️ ขนาดไฟล์ใหญ่เกินไป (สูงสุด 5MB)");
+                return;
+            }
+            
+            if (!file.type.match('image.*')) {
+                showCyberToast("⚠️ กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (type === 'idCard') {
+                    document.getElementById('idCardImage').src = e.target.result;
+                    document.getElementById('idCardPreview').style.display = 'block';
+                    document.getElementById('idCardName').textContent = file.name;
+                    document.getElementById('idCardArea').classList.add('active');
+                } else {
+                    document.getElementById('selfieImage').src = e.target.result;
+                    document.getElementById('selfiePreview').style.display = 'block';
+                    document.getElementById('selfieName').textContent = file.name;
+                    document.getElementById('selfieArea').classList.add('active');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Cyber Toast Notification
+        function showCyberToast(text, status = 'error') {
+            const toast = document.createElement('div');
+            toast.id = 'cyberAlert';
+            toast.innerText = text;
+            toast.style.display = 'block';
+            toast.style.backgroundColor = status === 'success' ? 'rgba(0, 255, 136, 0.15)' : 
+                                         status === 'warning' ? 'rgba(255, 215, 0, 0.15)' : 
+                                         'rgba(255, 0, 85, 0.15)';
+            toast.style.borderColor = status === 'success' ? 'var(--success)' : 
+                                     status === 'warning' ? 'var(--warning)' : 
+                                     'var(--danger)';
+            toast.style.color = status === 'success' ? 'var(--success)' : 
+                               status === 'warning' ? 'var(--warning)' : 
+                               'var(--danger)';
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => { 
+                toast.style.display = 'none';
+                document.body.removeChild(toast);
+            }, 4000);
+        }
+
+        // Get client IP (simplified)
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch {
+                return 'unknown';
+            }
+        }
+
+        // ========== เริ่ม processKYC ใหม่ตามที่กำหนด ==========
+        async function processKYC() {
+            const { data: { session }, error: sessionError } = await supa.auth.getSession();
+            if (sessionError || !session) {
+                showCyberToast("❌ กรุณาเข้าสู่ระบบก่อนทำ KYC");
+                setTimeout(() => window.location.href = 'login.html', 2000);
+                return;
+            }
+            const userId = session.user.id;
+            console.log('✅ currentUserId:', userId);
+
+            const pin = document.getElementById('pin').value;
+            const idCardFile = document.getElementById('idCard').files[0];
+            const selfieFile = document.getElementById('selfie').files[0];
+            const btn = document.getElementById('submitBtn');
+            const scanOverlay = document.getElementById('scanOverlay');
+            const kycForm = document.getElementById('kycForm');
+            const successMessage = document.getElementById('successMessage');
+            const successTitle = document.getElementById('successTitle');
+            const successText = document.getElementById('successText');
+
+            if (!pin) { showCyberToast("⚠️ กรุณากรอกรหัส PIN"); return; }
+            if (pin.length !== 6 || isNaN(pin)) { showCyberToast("⚠️ รหัส PIN ต้องเป็นตัวเลข 6 หลัก"); return; }
+            if (!idCardFile) { showCyberToast("⚠️ กรุณาอัปโหลดรูปบัตรประชาชน"); return; }
+            if (!selfieFile) { showCyberToast("⚠️ กรุณาอัปโหลดรูปเซลฟี่"); return; }
+
+            scanOverlay.style.display = 'flex';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังวิเคราะห์...';
+
+            try {
+                const hashedPin = await hashPIN(pin);
+
+                const { data: user, error: pinError } = await supa
+                    .from('users')
+                    .select('kyc_verified')
+                    .eq('id', userId)
+                    .eq('pin', hashedPin)
+                    .single();
+
+                if (pinError || !user) throw new Error('PIN ไม่ถูกต้อง');
+                if (user.kyc_verified) throw new Error('คุณ已验证ตัวตนแล้ว');
+
+                const { data: pendingSubmission } = await supa
+                    .from('kyc_submissions')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('status', 'pending')
+                    .maybeSingle();
+
+                if (pendingSubmission) throw new Error('คุณมีคำขอ KYC ที่รอตรวจสอบอยู่แล้ว');
+
+                // แปลงไฟล์เป็น Base64
+                function fileToBase64(file) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = (error) => reject(error);
+                    });
+                }
+
+                const idCardBase64 = await fileToBase64(idCardFile);
+                const selfieBase64 = await fileToBase64(selfieFile);
+
+                // Insert ลง kyc_submissions
+                const { error: kycError } = await supa
+                    .from('kyc_submissions')
+                    .insert({
+                        user_id: userId,
+                        status: 'pending',
+                        id_card_base64: idCardBase64,
+                        selfie_base64: selfieBase64,
+                        ip_address: await getClientIP(),
+                        created_at: new Date().toISOString()
+                    });
+
+                if (kycError) throw new Error('บันทึกข้อมูลไม่สำเร็จ: ' + kycError.message);
+
+                await supa.from('user_activities').insert({
+                    user_id: userId,
+                    activity_type: 'kyc_submission',
+                    description: 'ผู้ใช้ส่งคำขอ KYC (รอตรวจสอบ)',
+                    ip_address: await getClientIP()
+                });
+
+                scanOverlay.style.display = 'none';
+                successTitle.innerText = 'ส่งคำขอ KYC สำเร็จ!';
+                successText.innerHTML = 'ระบบได้รับคำขอ KYC ของคุณแล้ว<br>กรุณารอการตรวจสอบจาก Admin';
+                kycForm.style.display = 'none';
+                successMessage.style.display = 'block';
+
+            } catch (err) {
+                scanOverlay.style.display = 'none';
+                showCyberToast("❌ " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-fingerprint"></i> ยืนยันตัวตน';
+            }
+        }
+        // ========== จบ processKYC ใหม่ ==========
+
+        // ฟังก์ชันสำหรับเรียกโดย Admin เมื่ออนุมัติ KYC (เพิ่มตามคำสั่ง)
+        async function approveKYC(userId) {
+            try {
+                const { error } = await supa.rpc('complete_quest', { p_user_id: userId, p_slug: 'pioneer_kyc' });
+                if (error) throw error;
+                console.log('Quest completed for user:', userId);
+            } catch (err) {
+                console.error('Error completing quest:', err);
+            }
+        }
+
+        // Enter key support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                processKYC();
+            }
+        });
+
+        // โฟกัสที่ช่อง PIN เมื่อโหลดหน้า
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pin').focus();
+        });
+    </script>
+</body>
+</html>

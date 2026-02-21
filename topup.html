@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>เดิมเงิน | AEGIS NEX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bc13fe;
+            --accent: #ff0080;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --dark-bg: #050b14;
+            --card-bg: rgba(20, 30, 50, 0.7);
+            --border: 1px solid rgba(0, 242, 255, 0.3);
+            --glass: rgba(5, 10, 20, 0.85);
+            --glow-primary: 0 0 20px rgba(0, 242, 255, 0.7);
+            --glow-secondary: 0 0 20px rgba(188, 19, 254, 0.7);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+            user-select: none; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            margin: 0; 
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(135deg, #050b14 0%, #0a1528 50%, #050b14 100%);
+            position: relative;
+            min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f2ff' fill-opacity='0.02'%3E%3Cpath d='M50 50v-6h-4v6h-6v4h6v6h4v-6h6v-4h-6zm0-40V0h-4v10h-6v4h6v6h4V14h6v-4h-6zM10 50v-6H6v6H0v4h6v6h4v-6h6v-4h-6zM10 10V0H6v10H0v4h6v6h4V14h6v-4h-6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ------------------------------------------------
+           📢 ENHANCED NEWS TICKER
+           ------------------------------------------------ */
+        .news-ticker {
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0, 242, 255, 0.15) 10%, 
+                rgba(0, 242, 255, 0.25) 50%, 
+                rgba(0, 242, 255, 0.15) 90%, 
+                rgba(0,0,0,0) 100%);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+            height: 38px; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center;
+            position: relative; 
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transform: translateZ(0);
+        }
+        
+        .ticker-content {
+            white-space: nowrap;
+            animation: ticker 30s linear infinite;
+            font-size: 13px; 
+            color: var(--primary);
+            font-family: 'Orbitron'; 
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+            padding: 5px 0;
+        }
+        
+        @keyframes ticker { 
+            0% { transform: translateX(100vw); } 
+            100% { transform: translateX(-100%); } 
+        }
+
+        /* ------------------------------------------------
+           🏰 ENHANCED APP CONTAINER
+           ------------------------------------------------ */
+        .app-container {
+            width: 100%; 
+            max-width: 600px; 
+            background: var(--dark-bg);
+            min-height: 100vh; 
+            position: relative; 
+            padding-bottom: 100px;
+            margin: 0 auto;
+            z-index: 1;
+            border-left: 1px solid rgba(0, 242, 255, 0.1);
+            border-right: 1px solid rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0);
+        }
+
+        /* เส้นแสงเคลื่อนที่ */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 5px var(--primary);
+            z-index: 0;
+            animation: scanMove 10s linear infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* อนุภาคพื้นหลัง */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: floatParticle linear infinite;
+            will-change: transform;
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100vh) rotate(180deg); opacity: 0; }
+        }
+
+        /* ------------------------------------------------
+           👤 DASHBOARD HEADER
+           ------------------------------------------------ */
+        .dash-header {
+            padding: 20px 20px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            z-index: 10;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            background: rgba(5, 11, 20, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron'; 
+            font-size: 18px; 
+            color: var(--primary); 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            letter-spacing: 1px;
+        }
+        
+        .header-actions { 
+            display: flex; 
+            gap: 15px; 
+        }
+        
+        .icon-btn { 
+            font-size: 20px; 
+            color: #fff; 
+            position: relative; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .icon-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+
+        /* ------------------------------------------------
+           🧠 AI SECTION
+           ------------------------------------------------ */
+        .ai-section { 
+            margin: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: rgba(0, 242, 255, 0.05); 
+            padding: 15px; 
+            border-radius: 15px; 
+            border-left: 4px solid var(--primary); 
+            transition: all 0.3s ease; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .ai-face { 
+            width: 45px; 
+            height: 45px;
+            animation: float 4s infinite ease-in-out; 
+            filter: drop-shadow(0 0 5px var(--primary));
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .ai-msg { 
+            font-size: 11px; 
+            color: #cbd5e1; 
+            line-height: 1.5; 
+            transition: 0.3s; 
+            flex: 1;
+        }
+        
+        .ai-msg b {
+            color: var(--primary);
+            font-family: 'Orbitron';
+            font-size: 12px;
+        }
+        
+        @keyframes float { 
+            0% { transform: translateY(0px); } 
+            50% { transform: translateY(-5px); } 
+            100% { transform: translateY(0px); } 
+        }
+
+        /* ------------------------------------------------
+           💰 TOP UP BALANCE CARD
+           ------------------------------------------------ */
+        .balance-card {
+            margin: 15px 20px; 
+            padding: 25px; 
+            border-radius: 20px; 
+            background: linear-gradient(135deg, rgba(188, 19, 254, 0.15), rgba(0, 242, 255, 0.08));
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+            text-align: center; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transform: translateZ(0);
+        }
+        
+        .balance-label { 
+            font-size: 11px; 
+            color: #cbd5e1; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            font-family: 'Orbitron';
+            margin-bottom: 8px;
+        }
+        
+        .balance-amount { 
+            font-family: 'Orbitron'; 
+            font-size: 36px; 
+            font-weight: 900; 
+            margin: 10px 0 20px; 
+            text-shadow: 0 0 15px var(--primary);
+            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+        }
+        
+        .balance-amount span { 
+            font-size: 18px; 
+            color: var(--primary); 
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        /* ------------------------------------------------
+           🏦 PAYMENT METHOD SELECTION
+           ------------------------------------------------ */
+        .method-section {
+            margin: 0 20px 20px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+        }
+        
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .method-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 12px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            aspect-ratio: 1 / 1;
+            width: 100%;
+        }
+        
+        .method-card:hover {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: rgba(0, 242, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .method-card.active {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.2);
+        }
+        
+        .method-icon {
+            font-size: 28px;
+            color: var(--primary);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 242, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        .method-name {
+            font-size: 12px;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Rajdhani';
+            letter-spacing: 0.5px;
+        }
+
+        /* ------------------------------------------------
+           📝 TOP UP FORM
+           ------------------------------------------------ */
+        .form-section {
+            margin: 0 20px 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            font-family: 'Rajdhani';
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Chakra Petch';
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
+        }
+
+        /* form-input disabled style */
+        .form-input:disabled {
+            background: rgba(255, 255, 255, 0.01);
+            color: #aaa;
+            border-color: rgba(255, 255, 255, 0.05);
+            cursor: not-allowed;
+        }
+        
+        /* File Upload Styling */
+        .file-upload-area {
+            border: 2px dashed rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.05);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .file-upload-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-text {
+            color: #ccc;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .file-upload-hint {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--primary);
+            word-break: break-all;
+        }
+
+        /* ------------------------------------------------
+           🚀 TOP UP BUTTON
+           ------------------------------------------------ */
+        .action-buttons {
+            margin: 0 20px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .topup-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: #fff;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(188, 19, 254, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .topup-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(188, 19, 254, 0.4);
+        }
+        
+        .topup-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .topup-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .cancel-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #aaa;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ------------------------------------------------
+           📱 BOTTOM NAVIGATION (เหมือนไฟล์ change_password)
+           ------------------------------------------------ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 600px;
+            height: 80px;
+            background: rgba(10, 15, 25, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid var(--primary);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            padding: 0 10px;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        
+        .nav-link i {
+            font-size: 20px;
+            transition: 0.3s;
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary);
+            transform: translateY(-5px);
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+        }
+
+        /* ------------------------------------------------
+           🪟 MODAL STYLES
+           ------------------------------------------------ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 11, 20, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            padding: 15px;
+        }
+        
+        .modal-box {
+            width: 90%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0);
+            text-align: center;
+        }
+        
+        .modal-success {
+            border-color: var(--success);
+            box-shadow: 0 15px 30px -8px rgba(0, 255, 136, 0.3);
+        }
+        
+        .modal-error {
+            border-color: var(--danger);
+            box-shadow: 0 15px 30px -8px rgba(255, 0, 85, 0.3);
+        }
+        
+        .modal-processing {
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px -8px rgba(0, 242, 255, 0.3);
+        }
+        
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .modal-title {
+            font-family: 'Orbitron';
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+        }
+        
+        .modal-message {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00b8cc);
+            color: #000;
+            box-shadow: 0 3px 12px rgba(0, 242, 255, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #cc0044);
+            color: white;
+            box-shadow: 0 3px 12px rgba(255, 0, 85, 0.4);
+        }
+
+        /* QR Code Modal */
+        .qr-container {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin: 20px auto;   /* จัดกึ่งกลาง */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+        }
+        
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .qr-note {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+        
+        .payment-details {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .detail-label {
+            color: #aaa;
+        }
+        
+        .detail-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* ปุ่มคัดลอกเบอร์ */
+        .copy-phone-btn {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Rajdhani';
+            font-weight: bold;
+            font-size: 11px;
+            transition: 0.3s;
+            margin-top: 5px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .copy-phone-btn:hover {
+            background: rgba(0, 242, 255, 0.2);
+        }
+
+        .copy-phone-btn.copied {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 242, 255, 0.3);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9) translateY(15px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* ------------------------------------------------
+           📱 MOBILE RESPONSIVE
+           ------------------------------------------------ */
+        @media (max-width: 768px) {
+            .app-container {
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+                box-shadow: none;
+            }
+            
+            .balance-amount {
+                font-size: 32px;
+            }
+            
+            .bottom-nav {
+                height: 75px;
+            }
+            
+            .nav-link {
+                font-size: 9px;
+                padding: 6px 8px;
+                min-width: 55px;
+            }
+            
+            .nav-link i {
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dash-header {
+                padding: 15px 15px 12px;
+            }
+            
+            .balance-amount {
+                font-size: 28px;
+            }
+            
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        .method-card:active, .topup-btn:active, .cancel-btn:active, .icon-btn:active {
+            transform: scale(0.97);
+            transition: transform 0.1s ease;
+        }
+        
+        .method-card, .topup-btn, .modal-box {
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- เส้นแสงเคลื่อนที่ -->
+    <div class="scan-line"></div>
+    
+    <!-- อนุภาคพื้นหลัง -->
+    <div class="particles" id="particles"></div>
+
+    <div class="app-container">
+        
+        <!-- News Ticker -->
+        <div class="news-ticker">
+            <div class="ticker-content">
+                💰 [เติมเงิน] ระบบเติมเงิน AEGIS NEX พร้อมใช้งาน | ⚡ [Speed] ระบบเติมเงินอัตโนมัติภายใน 3-5 นาที | 🔒 [Security] การันตีความปลอดภัย 100%
+            </div>
+        </div>
+        
+        <!-- Dashboard Header -->
+        <div class="dash-header">
+            <div class="header-title">
+                <i class="fas fa-chevron-left" onclick="location.href='dashboard.html'" style="cursor:pointer"></i>
+                <span>เดิมเงิน</span>
+            </div>
+            <div class="header-actions">
+                <div class="icon-btn" onclick="showHelp()">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="icon-btn" onclick="location.href='dashboard.html'">
+                    <i class="fas fa-home"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Section -->
+        <div class="ai-section">
+            <div class="ai-face">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-msg" id="aiMsg">
+                <b>AEGIS AI:</b> "ระบบเติมเงินอัตโนมัติ: พร้อมใช้งาน | ตรวจสอบสลิป: AI Active | เวลาดำเนินการ: 3-5 นาที"
+            </div>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-label">ยอดเงินปัจจุบัน</div>
+            <div class="balance-amount" id="balanceAmount">0.00 <span>AGS</span></div>
+        </div>
+
+        <!-- Payment Method Selection (2 คอลัมน์) -->
+        <div class="method-section">
+            <div class="section-title">
+                <i class="fas fa-mobile-alt"></i> เลือกช่องทางการเติมเงิน
+            </div>
+            <div class="method-grid" id="methodGrid">
+                <!-- Methods will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Top Up Form -->
+        <div class="form-section">
+            <div class="form-group">
+                <label class="form-label">จำนวนเงินที่ต้องการเติม (AGS)</label>
+                <input type="number" id="amountInput" class="form-input" placeholder="20" min="20" step="1" value="20">
+                <div style="font-size: 10px; color: #888; margin-top: 5px;">
+                    ขั้นต่ำ 20 AGS | อัตราแลกเปลี่ยน 1 AGS = 1 บาท
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">ผู้รับเงิน</label>
+                <!-- เปลี่ยนเป็นชื่อภาษาอังกฤษ ห้ามแก้ไข -->
+                <input type="text" id="usernameInput" class="form-input" value="MR.SINTHON KOLKOKRUAD" disabled>
+            </div>
+            
+            <!-- File Upload for Slip -->
+            <div class="form-group">
+                <label class="form-label">อัพโหลดสลิปโอนเงิน (ถ้ามี)</label>
+                <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="file-upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="file-upload-text">คลิกเพื่ออัพโหลดสลิปโอนเงิน</div>
+                    <div class="file-upload-hint">รองรับไฟล์: JPG, PNG, PDF (สูงสุด 5MB)</div>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+                <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="topup-btn" id="topupBtn" onclick="showConfirmModal()">
+                <i class="fas fa-bolt"></i> ยืนยันการเติมเงิน
+            </button>
+            <button class="cancel-btn" onclick="location.href='dashboard.html'">
+                <i class="fas fa-times"></i> ยกเลิก
+            </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-link" onclick="showComingSoonModal()">
+                <i class="fas fa-store"></i>
+                <span>ตลาด</span>
+            </a>
+            <a href="#" class="nav-link active">
+                <i class="fas fa-bolt"></i>
+                <span>เติมเงิน</span>
+            </a>
+            <a href="withdraw.html" class="nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>ถอนเงิน</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <i class="fas fa-user"></i>
+                <span>โปรไฟล์</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="modal-overlay" id="processingModal">
+        <div class="modal-box modal-processing">
+            <div class="spinner"></div>
+            <div class="modal-title">กำลังประมวลผล</div>
+            <div class="modal-message" id="processingMessage">ระบบกำลังตรวจสอบข้อมูลการเติมเงิน...</div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal (แยกการแสดงผลตาม method) -->
+    <div class="modal-overlay" id="qrModal">
+        <div class="modal-box">
+            <div class="modal-title" id="qrModalTitle">
+                <i class="fas fa-qrcode"></i> QR Code สำหรับเติมเงิน
+            </div>
+            
+            <div class="payment-details">
+                <div class="detail-item">
+                    <span class="detail-label">ช่องทาง:</span>
+                    <span class="detail-value" id="qrMethod">TrueMoney Wallet</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">จำนวนเงิน:</span>
+                    <span class="detail-value" id="qrAmount">20 AGS</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">ผู้รับเงิน:</span>
+                    <span class="detail-value" id="qrUsername">MR.SINTHON KOLKOKRUAD</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">รหัสอ้างอิง:</span>
+                    <span class="detail-value" id="qrRef">AGS-TOPUP-XXXXXX</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">เบอร์ร้านค้า:</span>
+                    <span class="detail-value">096-185-1245</span>
+                </div>
+            </div>
+
+            <!-- ปุ่มคัดลอกเบอร์ (ใช้ได้ทั้งสองช่องทาง) -->
+            <button class="copy-phone-btn" id="copyPhoneBtn" onclick="copyPhoneNumber()">
+                <i class="fas fa-copy"></i> คัดลอกเบอร์ 096-185-1245
+            </button>
+            
+            <!-- QR Container (จะซ่อนสำหรับ TrueMoney Wallet) -->
+            <div class="qr-container">
+                <div class="qr-code" id="qrCodeDisplay">
+                    <img id="qrCodeImage" src="" alt="QR Code" style="width:100%; height:100%; object-fit:contain;">
+                </div>
+            </div>
+            
+            <!-- หมายเหตุขั้นตอน (จะเปลี่ยนตาม method) -->
+            <div class="qr-note" id="qrNote">
+                <!-- ข้อความจะถูกเปลี่ยนแปลงใน showQRModal() -->
+            </div>
+            
+            <button class="modal-btn btn-primary" onclick="closeQRModal()">
+                <i class="fas fa-check"></i> เข้าใจแล้ว
+            </button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-box modal-success">
+            <i class="fas fa-check-circle modal-icon" style="color: var(--success);"></i>
+            <div class="modal-title">สำเร็จ!</div>
+            <div class="modal-message" id="successMessage">ระบบได้รับคำขอเติมเงินของคุณแล้ว กรุณารอการตรวจสอบสลิปภายใน 3-5 นาที</div>
+            <button class="modal-btn btn-primary" onclick="closeSuccessModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-box modal-error">
+            <i class="fas fa-exclamation-triangle modal-icon" style="color: var(--danger);"></i>
+            <div class="modal-title" id="errorTitle">เกิดข้อผิดพลาด</div>
+            <div class="modal-message" id="errorMessage">กรุณาตรวจสอบข้อมูลอีกครั้ง</div>
+            <button class="modal-btn btn-danger" onclick="closeErrorModal()">ลองอีกครั้ง</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <div class="modal-title"><i class="fas fa-question-circle"></i> คำแนะนำการเติมเงิน</div>
+            <div class="modal-message">
+                <p><strong>ขั้นต่ำการเติมเงิน:</strong> 20 AGS</p>
+                <p><strong>อัตราแลกเปลี่ยน:</strong> 1 AGS = 1 บาท</p>
+                <p><strong>ช่องทางการเติมเงิน:</strong></p>
+                <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li><strong>TrueMoney Wallet / พร้อมเพย์:</strong> โอนเงินผ่านแอป TrueMoney Wallet หรือแอปธนาคารที่รองรับพร้อมเพย์ (เบอร์ร้านค้า 096-185-1245)</li>
+                </ul>
+                <p><strong>ขั้นตอนการเติมเงิน:</strong></p>
+                <ol style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li>เลือกช่องทางการเติมเงิน</li>
+                    <li>กรอกจำนวนเงิน (ผู้รับเงินเป็นชื่อร้านค้าอัตโนมัติ)</li>
+                    <li>ระบบจะแสดง QR Code สำหรับการชำระเงิน (หรือแสดงเบอร์โทรสำหรับ TrueMoney Wallet)</li>
+                    <li>สแกน QR Code ด้วยแอปธนาคาร หรือ คัดลอกเบอร์ไปโอนผ่าน TrueMoney Wallet</li>
+                    <li>ตรวจสอบจำนวนเงิน แล้วกดยืนยันการโอน</li>
+                    <li>อัปโหลดสลิปโอนเงิน (แนะนำ) แล้วกดยืนยันการเติมเงิน</li>
+                </ol>
+                <p><strong>หากเงินไม่เข้าภายใน 10 นาที:</strong> กรุณาติดต่อแอดมิน พร้อมแจ้งรหัสอ้างอิง</p>
+            </div>
+            <button class="modal-btn btn-primary" onclick="closeHelpModal()">เข้าใจแล้ว</button>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal (สำหรับปุ่มตลาด) -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal-box">
+            <i class="fas fa-clock modal-icon" style="color: var(--primary);"></i>
+            <div class="modal-title">กำลังมาเร็วๆ นี้</div>
+            <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
+            <button class="modal-btn btn-primary" onclick="closeComingSoonModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Confirm Payment Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <i class="fas fa-exclamation-triangle modal-icon" style="color: var(--warning);"></i>
+            <div class="modal-title">ยืนยันการโอนเงิน</div>
+            <div class="modal-message" style="text-align: left;">
+                <p>กรุณาตรวจสอบว่าคุณได้โอนเงินไปยังบัญชีบริษัทเรียบร้อยแล้ว</p>
+                <div class="payment-details" style="margin: 15px 0; background: rgba(0,0,0,0.3);">
+                    <div class="detail-item">
+                        <span class="detail-label">ช่องทาง:</span>
+                        <span class="detail-value" id="confirmMethod">TrueMoney Wallet</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">จำนวนเงิน:</span>
+                        <span class="detail-value" id="confirmAmount">20 AGS</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ผู้รับเงิน:</span>
+                        <span class="detail-value">MR.SINTHON KOLKOKRUAD</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">เบอร์ร้านค้า:</span>
+                        <span class="detail-value">096-185-1245</span>
+                    </div>
+                </div>
+                <p style="color: var(--warning);"><i class="fas fa-clock"></i> หากยังไม่ได้โอนเงิน กรุณากดยกเลิกและทำรายการให้ครบถ้วน</p>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="modal-btn btn-primary" style="flex:1;" onclick="confirmPayment()">
+                    <i class="fas fa-check"></i> ยืนยัน
+                </button>
+                <button class="modal-btn btn-danger" style="flex:1;" onclick="closeConfirmModal()">
+                    <i class="fas fa-times"></i> ยกเลิก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // 🔥 AEGIS CONFIG
+        const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 🔥 เบอร์ร้านค้า
+        const SHOP_PHONE = '0961851245';
+
+        // ข้อมูลช่องทางการเติมเงิน (เพิ่ม property hasQR)
+        const paymentMethods = [
+            { 
+                id: 'TRUEMONEY', 
+                name: 'TrueMoney Wallet', 
+                icon: 'fas fa-mobile-alt',
+                color: '#ff6b00',
+                hasQR: false  // ไม่มี QR ใช้เบอร์โทรแทน
+            },
+            { 
+                id: 'PROMPTPAY', 
+                name: 'พร้อมเพย์', 
+                icon: 'fas fa-qrcode', 
+                color: '#1e7e34',
+                hasQR: true   // มี QR
+            }
+        ];
+
+        // ตัวแปร global
+        let selectedMethod = '';
+        let userBalance = 0;
+        let currentUserId = '';
+        let uploadedFile = null;
+        let referenceId = '';
+
+        // สร้างอนุภาคพื้นหลัง
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                const colors = ['#00f2ff', '#bc13fe', '#ff0080'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                
+                const duration = Math.random() * 30 + 20;
+                const delay = Math.random() * 5;
+                particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        createParticles();
+
+        // 🔥 INITIALIZE AUTHENTICATION
+        async function initAuth() {
+            try {
+                const { data: { session }, error } = await supa.auth.getSession();
+                if (error) throw error;
+                
+                if (session) {
+                    currentUserId = session.user.id;
+                    await loadUserData();
+                } else {
+                    window.location.href = 'index.html';
+                }
+
+                supa.auth.onAuthStateChange((event, session) => {
+                    if (session) {
+                        currentUserId = session.user.id;
+                        loadUserData();
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                });
+            } catch (error) {
+                console.error("Auth initialization error:", error);
+                showError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // 🔥 LOAD USER DATA
+        async function loadUserData() {
+            try {
+                const { data: userData, error } = await supa
+                    .from('users')
+                    .select('balance, username')
+                    .eq('id', currentUserId)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    userBalance = userData.balance || 0;
+                    
+                    document.getElementById('balanceAmount').innerHTML = 
+                        userBalance.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + 
+                        ' <span>AGS</span>';
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+            }
+        }
+
+        // 🔥 INITIALIZE PAYMENT METHODS
+        function initPaymentMethods() {
+            const methodGrid = document.getElementById('methodGrid');
+            methodGrid.innerHTML = '';
+            
+            paymentMethods.forEach(method => {
+                const methodCard = document.createElement('div');
+                methodCard.className = 'method-card';
+                methodCard.onclick = () => selectMethod(method.id, methodCard);
+                methodCard.style.borderColor = method.color + '30';
+                
+                methodCard.innerHTML = `
+                    <div class="method-icon" style="color: ${method.color};">
+                        <i class="${method.icon}"></i>
+                    </div>
+                    <div class="method-name">${method.name}</div>
+                `;
+                
+                methodGrid.appendChild(methodCard);
+            });
+        }
+
+        // 🔥 SELECT PAYMENT METHOD (แสดง QR Modal ทันที)
+        function selectMethod(methodId, element) {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            if (isNaN(amount) || amount < 20) {
+                showError('จำนวนเงินไม่ถูกต้อง', 'กรุณากรอกจำนวนเงินขั้นต่ำ 20 AGS');
+                return;
+            }
+
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            element.classList.add('active');
+            selectedMethod = methodId;
+
+            showQRModal();
+            
+            updateAIMessage(`เลือกช่องทาง ${methodId} สำหรับการเติมเงิน`);
+        }
+
+        // 🔥 อัปเดต QR Code ตามจำนวนเงินที่กรอก (ใช้สำหรับ PROMPTPAY)
+        function updateQRCode() {
+            if (!selectedMethod) return;
+
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            if (isNaN(amount) || amount < 20) {
+                return;
+            }
+
+            const qrUrl = `https://promptpay.io/${SHOP_PHONE}/${amount}`;
+            const qrImg = document.getElementById('qrCodeImage');
+            if (qrImg) {
+                qrImg.src = qrUrl;
+            }
+
+            document.getElementById('qrAmount').textContent = `${amount} AGS`;
+
+            referenceId = 'AGS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            document.getElementById('qrRef').textContent = referenceId;
+        }
+
+        // 🔥 SHOW QR MODAL (แก้ไขให้แยกการแสดงผลตาม method และภาษาไทยถูกต้อง)
+        function showQRModal() {
+            if (!selectedMethod) {
+                showError('กรุณาเลือกช่องทางการเติมเงิน', '');
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            if (isNaN(amount) || amount < 20) {
+                showError('จำนวนเงินไม่ถูกต้อง', 'กรุณากรอกจำนวนเงินขั้นต่ำ 20 AGS');
+                return;
+            }
+
+            const method = paymentMethods.find(m => m.id === selectedMethod);
+            if (method) {
+                document.getElementById('qrMethod').textContent = method.name;
+                document.getElementById('qrModalTitle').innerHTML = `<i class="fas fa-qrcode"></i> ${method.name}`;
+            }
+
+            document.getElementById('qrUsername').textContent = 'MR.SINTHON KOLKOKRUAD';
+
+            // สร้าง QR Code (แต่ถ้าเป็น TrueMoney Wallet จะซ่อน QR container)
+            if (method && method.hasQR) {
+                updateQRCode();
+                document.querySelector('.qr-container').style.display = 'flex';
+                document.getElementById('qrNote').innerHTML = `<strong>ขั้นตอนการเติมเงิน (พร้อมเพย์):</strong><br>
+                    1. เปิดแอปธนาคารที่รองรับพร้อมเพย์<br>
+                    2. สแกน QR Code ด้านบน หรือ คัดลอกเบอร์ไปโอน<br>
+                    3. ตรวจสอบจำนวนเงินและผู้รับให้ถูกต้อง<br>
+                    4. ยืนยันการโอนเงิน<br>
+                    5. กลับมาอัปโหลดสลิป (ถ้ามี) แล้วกดยืนยัน`;
+            } else {
+                // TrueMoney Wallet: ซ่อน QR, แสดงขั้นตอนการใช้เบอร์โทร
+                document.querySelector('.qr-container').style.display = 'none';
+                document.getElementById('qrNote').innerHTML = `<strong>ขั้นตอนการเติมเงิน (TrueMoney Wallet):</strong><br>
+                    1. เปิดแอป TrueMoney Wallet<br>
+                    2. เลือก "โอนเงิน" หรือ "สแกน"<br>
+                    3. กรอกเบอร์ผู้รับ: 096-185-1245<br>
+                    4. ระบุจำนวนเงิน ${amount} บาท<br>
+                    5. ตรวจสอบและยืนยันการโอน<br>
+                    6. กลับมาอัปโหลดสลิป (ถ้ามี) แล้วกดยืนยัน`;
+            }
+
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+
+        // 🔥 คัดลอกเบอร์โทร
+        function copyPhoneNumber() {
+            const phone = '096-185-1245';
+            const copyBtn = document.getElementById('copyPhoneBtn');
+            
+            navigator.clipboard.writeText(phone).then(() => {
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> คัดลอกเบอร์แล้ว';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> คัดลอกเบอร์ 096-185-1245';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                showError('ไม่สามารถคัดลอกเบอร์ได้', 'กรุณาลองใหม่อีกครั้ง');
+            });
+        }
+
+        // 🔥 UPDATE AI MESSAGE
+        function updateAIMessage(message) {
+            const aiMsg = document.getElementById('aiMsg');
+            aiMsg.innerHTML = `<b>AEGIS AI:</b> "${message}"`;
+        }
+
+        // ========== ฟังก์ชัน incrementQuest (เพิ่มเควสรายวัน) ==========
+        async function incrementQuest(questName, amount = 1) {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const { data: existing, error: selectError } = await supa
+                    .from('user_quests')
+                    .select('*')
+                    .eq('user_id', currentUserId)
+                    .eq('quest_name', questName)
+                    .eq('quest_date', today)
+                    .maybeSingle();
+
+                if (selectError && selectError.code !== 'PGRST116') throw selectError;
+
+                if (existing) {
+                    const { error: updateError } = await supa
+                        .from('user_quests')
+                        .update({ progress: existing.progress + amount })
+                        .eq('id', existing.id);
+                    if (updateError) throw updateError;
+                } else {
+                    const { error: insertError } = await supa
+                        .from('user_quests')
+                        .insert({
+                            user_id: currentUserId,
+                            quest_name: questName,
+                            quest_date: today,
+                            progress: amount,
+                            completed: false
+                        });
+                    if (insertError) throw insertError;
+                }
+            } catch (error) {
+                console.error('Error incrementing quest:', error);
+            }
+        }
+
+        // ========== ฟังก์ชันอัปโหลดสลิป ==========
+        async function uploadSlip(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${currentUserId}/${Date.now()}.${fileExt}`;
+            const { error, data } = await supa.storage
+                .from('slip_uploads')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+            if (error) throw error;
+            const { data: publicUrl } = supa.storage
+                .from('slip_uploads')
+                .getPublicUrl(fileName);
+            return publicUrl.publicUrl;
+        }
+
+        // 🔥 PROCESS TOP UP
+        async function processTopUp() {
+            const amountInput = document.getElementById('amountInput');
+            const topupBtn = document.getElementById('topupBtn');
+            
+            const amount = parseFloat(amountInput.value);
+            const username = 'MR.SINTHON KOLKOKRUAD';
+            
+            if (!selectedMethod) {
+                showError('กรุณาเลือกช่องทางการเติมเงิน', 'เลือกรายการจากเมนูด้านบน');
+                return;
+            }
+            
+            if (!amount || amount < 20) {
+                showError('ยอดเติมไม่ถูกต้อง', 'ยอดเติมขั้นต่ำคือ 20 AGS');
+                return;
+            }
+            
+            topupBtn.disabled = true;
+            topupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังประมวลผล...';
+            
+            document.getElementById('processingMessage').textContent = 'ระบบกำลังบันทึกข้อมูลการเติมเงิน...';
+            document.getElementById('processingModal').style.display = 'flex';
+            
+            setTimeout(async () => {
+                try {
+                    let evidenceUrl = null;
+                    if (uploadedFile) {
+                        try {
+                            evidenceUrl = await uploadSlip(uploadedFile);
+                        } catch (uploadError) {
+                            console.error('Upload error:', uploadError);
+                            showError('อัปโหลดสลิปไม่สำเร็จ', 'กรุณาลองอีกครั้ง');
+                            topupBtn.disabled = false;
+                            topupBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการเติมเงิน';
+                            document.getElementById('processingModal').style.display = 'none';
+                            return;
+                        }
+                    }
+                    
+                    if (!referenceId) {
+                        referenceId = 'AGS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                    }
+                    
+                    const { error: transError } = await supa
+                        .from('transactions')
+                        .insert({
+                            user_id: currentUserId,
+                            type: 'topup',
+                            amount: amount,
+                            method: selectedMethod,
+                            username: username,
+                            reference: referenceId,
+                            status: 'pending',
+                            slip_uploaded: !!uploadedFile,
+                            evidence: evidenceUrl,
+                            created_at: new Date().toISOString()
+                        });
+                    
+                    if (transError) throw transError;
+
+                    // ✅ เพิ่มเควส daily_topup
+                    await incrementQuest('daily_topup', 1);
+
+                    // 📢 เก็บสถานะว่าเพิ่งเติมเงินสำเร็จ แล้วกลับไป Dashboard
+                    localStorage.setItem('quest_topup', 'true');
+                    window.location.href = 'dashboard.html';
+                    
+                    document.getElementById('processingModal').style.display = 'none';
+                    document.getElementById('successMessage').textContent = 
+                        `คำขอเติมเงิน ${amount.toLocaleString()} AGS ผ่าน ${selectedMethod} สำเร็จ! รหัสอ้างอิง: ${referenceId}`;
+                    document.getElementById('successModal').style.display = 'flex';
+                    
+                    amountInput.value = '20';
+                    document.getElementById('fileName').textContent = '';
+                    uploadedFile = null;
+                    
+                    document.querySelectorAll('.method-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    selectedMethod = '';
+                    
+                } catch (error) {
+                    console.error('Top-up error:', error);
+                    showError('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้งในภายหลัง');
+                } finally {
+                    topupBtn.disabled = false;
+                    topupBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการเติมเงิน';
+                }
+            }, 2000);
+        }
+
+        // ========== ฟังก์ชันสำหรับ Confirm Modal ==========
+        function showConfirmModal() {
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            if (!selectedMethod) {
+                showError('กรุณาเลือกช่องทางการเติมเงิน', 'เลือกรายการจากเมนูด้านบน');
+                return;
+            }
+            if (isNaN(amount) || amount < 20) {
+                showError('ยอดเติมไม่ถูกต้อง', 'ยอดเติมขั้นต่ำคือ 20 AGS');
+                return;
+            }
+
+            const methodName = paymentMethods.find(m => m.id === selectedMethod)?.name || selectedMethod;
+            document.getElementById('confirmMethod').textContent = methodName;
+            document.getElementById('confirmAmount').textContent = amount + ' AGS';
+
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function confirmPayment() {
+            closeConfirmModal();
+            processTopUp();
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // 🔥 SHOW ERROR MODAL
+        function showError(title, message) {
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+
+        // 🔥 CLOSE MODALS
+        function closeProcessingModal() {
+            document.getElementById('processingModal').style.display = 'none';
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            location.href = 'dashboard.html';
+        }
+        
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+        
+        function closeQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+        
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'flex';
+        }
+        
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        function showComingSoonModal() {
+            document.getElementById('comingSoonModal').style.display = 'flex';
+        }
+
+        function closeComingSoonModal() {
+            document.getElementById('comingSoonModal').style.display = 'none';
+        }
+
+        // 🔥 INITIALIZE ON LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            initAuth();
+            initPaymentMethods();
+            
+            const fileInput = document.getElementById('fileInput');
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const fileName = document.getElementById('fileName');
+            
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    uploadedFile = file;
+                    fileName.textContent = file.name;
+                    updateAIMessage(`ตรวจพบไฟล์สลิป: ${file.name} | ระบบ AI กำลังวิเคราะห์...`);
+                }
+            });
+            
+            fileUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+            
+            fileUploadArea.addEventListener('dragleave', function() {
+                fileUploadArea.classList.remove('dragover');
+            });
+            
+            fileUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    uploadedFile = file;
+                    fileName.textContent = file.name;
+                    updateAIMessage(`ตรวจพบไฟล์สลิป: ${file.name} | ระบบ AI กำลังวิเคราะห์...`);
+                }
+            });
+            
+            document.getElementById('amountInput').addEventListener('input', function() {
+                if (document.getElementById('qrModal').style.display === 'flex') {
+                    updateQRCode();
+                }
+            });
+            
+            const aiMessages = [
+                "ระบบเติมเงินอัตโนมัติ: พร้อมใช้งาน | ตรวจสอบสลิป: AI Active",
+                "อัตราแลกเปลี่ยน 1 AGS = 1 บาท | สแกน QR จ่ายได้เลย",
+                "ระบบตรวจสอบสลิปอัตโนมัติ: พร้อมใช้งาน | เวลาดำเนินการ: 3-5 นาที",
+                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน",
+                "ผู้รับเงิน: MR.SINTHON KOLKOKRUAD"
+            ];
+            
+            setInterval(() => {
+                const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+                updateAIMessage(randomMsg);
+            }, 15000);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal-overlay[style*="flex"]');
+                    modals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

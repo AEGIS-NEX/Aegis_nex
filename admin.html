@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AEGIS·CEO | ศูนย์บัญชาการ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://wwrvvnwdmqwoimvaazhb.supabase.co">
+    <link rel="dns-prefetch" href="https://wwrvvnwdmqwoimvaazhb.supabase.co">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== GLOBAL CYBER CEO STYLE (REFINED) ===== */
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bc13fe;
+            --accent: #ff0080;
+            --danger: #ff3366;
+            --success: #00e676;
+            --warning: #ffc107;
+            --admin-gold: #ffc107;
+            --admin-red: #ff3333;
+            --admin-dark: #07090f;
+            --card-bg: rgba(15, 20, 30, 0.7);
+            --border: 1px solid rgba(255, 193, 7, 0.2);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --safe-top: env(safe-area-inset-top, 20px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: var(--admin-dark);
+            color: #e0e6ed;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(255, 193, 7, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(255, 51, 102, 0.03) 0%, transparent 40%),
+                linear-gradient(180deg, #07090f 0%, #0c1017 100%);
+            position: relative;
+            padding-bottom: var(--safe-bottom);
+            padding-top: var(--safe-top);
+        }
+
+        /* เส้นสแกนเคลื่อนที่ (บางลง) */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 193, 7, 0.8) 20%, 
+                rgba(255, 51, 102, 0.8) 50%, 
+                rgba(255, 193, 7, 0.8) 80%, 
+                transparent 100%);
+            box-shadow: 0 0 10px rgba(255,193,7,0.4);
+            z-index: 99999;
+            opacity: 0.5;
+            animation: scanMove 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* อนุภาคพื้นหลัง */
+        .particle-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,193,7,0.3) 0%, transparent 80%);
+            border-radius: 50%;
+            width: 2px;
+            height: 2px;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(1); opacity: 0.2; }
+            100% { transform: translateY(-20vh) scale(0.5); opacity: 0; }
+        }
+
+        /* คอนเทนเนอร์หลัก */
+        .app-container {
+            max-width: 1200px;
+            width: 96%;
+            margin: 0 auto 30px;
+            position: relative;
+            z-index: 50;
+            padding-top: 20px;
+        }
+
+        /* ===== HEADER ===== */
+        .ceo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 14px 24px;
+            background: rgba(12, 16, 26, 0.8);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 193, 7, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: var(--admin-gold);
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .realtime-badge {
+            background: rgba(0, 230, 118, 0.1) !important;
+            padding: 4px 10px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .admin-badge {
+            background: rgba(255, 51, 51, 0.1);
+            padding: 6px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 51, 51, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffcccc;
+        }
+
+        .admin-badge i {
+            color: var(--danger);
+            font-size: 14px;
+        }
+
+        .god-mode {
+            background: rgba(0,0,0,0.4);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--admin-gold);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* ===== STAT CARDS ===== */
+        .stat-dashboard {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 193, 7, 0.3);
+            transform: translateY(-2px);
+            background: rgba(20, 26, 38, 0.8);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            color: var(--admin-gold);
+            background: rgba(255, 193, 7, 0.1);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+        
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8b9bb4;
+            font-weight: 500;
+        }
+
+        /* ===== TABS ===== */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: rgba(0,0,0,0.2);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #8b9bb4;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 0 1 auto;
+        }
+
+        .tab-btn i {
+            font-size: 14px;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--admin-gold);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        /* ===== PANELS ===== */
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== DATA CARDS ===== */
+        .data-panel {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--admin-gold);
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e0e6ed;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Chakra Petch', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+            color: var(--admin-gold);
+        }
+
+        /* รายการธุรกรรม */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item-card {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.2);
+            border-left: 3px solid var(--warning);
+            border-radius: 12px;
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: 0.2s;
+            gap: 16px;
+        }
+
+        .item-card:hover {
+            background: rgba(255, 193, 7, 0.03);
+            border-left-color: var(--admin-gold);
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .user-badge {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #8b9bb4;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .item-amount-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .amount-negative {
+            color: var(--danger);
+        }
+
+        .evidence-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+            object-fit: cover;
+        }
+
+        .evidence-thumb:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-approve, .btn-reject, .btn-view, .btn-warp {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-approve {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .btn-reject {
+            background: rgba(255, 51, 102, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+
+        .btn-view {
+            background: rgba(255, 255, 255, 0.05);
+            color: #b0bec5;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-warp {
+            background: rgba(188, 19, 254, 0.1);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            color: #d86cff;
+        }
+
+        .btn-approve:hover { background: var(--success); color: #000; }
+        .btn-reject:hover { background: var(--danger); color: #fff; }
+        .btn-view:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .btn-warp:hover { background: var(--secondary); color: #fff; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #62728a;
+            font-size: 14px;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            color: rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+        }
+
+        /* ===== LOADING SPINNER ===== */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--admin-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: #11151e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: popModal 0.2s ease-out;
+        }
+
+        @keyframes popModal {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-body {
+            color: #b0bec5;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .modal-body p {
+            margin-bottom: 8px;
+        }
+
+        .modal-body strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-confirm {
+            background: var(--success);
+            color: #000;
+        }
+        
+        .btn-confirm:hover {
+            background: #00c853;
+        }
+
+        .btn-cancel {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e0e6ed;
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        #toastMessage {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #11151e;
+            border: 1px solid var(--admin-gold);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-family: 'Chakra Petch', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 9999999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+        }
+
+        @keyframes slideUp {
+            from { bottom: 0; opacity: 0; transform: translate(-50%, 10px); }
+            to { bottom: 24px; opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* ===== AUDIO PLAYER (MINIMAL) ===== */
+        .audio-zone {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99999;
+            background: rgba(15, 20, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .audio-btn {
+            background: transparent;
+            border: none;
+            color: #8b9bb4;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .audio-btn:hover {
+            color: var(--admin-gold);
+            transform: scale(1.1);
+        }
+
+        #audioFile {
+            display: none;
+        }
+
+        .audio-label {
+            color: #8b9bb4;
+            font-size: 11px;
+            max-width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .stat-dashboard { grid-template-columns: repeat(3,1fr); }
+            .item-card { flex-direction: column; align-items: flex-start; }
+            .item-actions { width: 100%; justify-content: flex-start; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
+        }
+
+        @media (max-width: 600px) {
+            .stat-dashboard { grid-template-columns: repeat(2,1fr); }
+            .ceo-header { justify-content: center; }
+            .admin-tabs { justify-content: center; }
+            .tab-btn { flex: 1; justify-content: center; padding: 8px; font-size: 12px; }
+            .audio-zone { bottom: 10px; right: 10px; left: 10px; width: auto; justify-content: center; }
+        }
+
+        /* custom scroll */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #07090f; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,193,7,0.3); }
+    </style>
+</head>
+<body>
+    <div class="scan-line"></div>
+    
+    <div class="particle-field" id="particleField"></div>
+
+    <div class="audio-zone">
+        <button class="audio-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
+        <button class="audio-btn" id="stopBtn"><i class="fas fa-stop"></i></button>
+        <label for="audioFile" class="audio-btn" title="เลือกเพลงจากเครื่อง"><i class="fas fa-music"></i></label>
+        <input type="file" id="audioFile" accept="audio/*">
+        <span class="audio-label" id="nowPlaying">🎵 ปิดเสียง</span>
+    </div>
+    <audio id="bgAudio" loop preload="none"></audio>
+
+    <div class="app-container">
+        <div class="ceo-header">
+            <div class="logo-group">
+                <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="logo-text">AEGIS·CMD</div>
+                <span class="realtime-badge">
+                    <i class="fas fa-circle"></i> SYNC
+                </span>
+            </div>
+            <div class="admin-badge">
+                <i class="fas fa-shield-halved"></i>
+                <span id="adminName">SYSTEM</span>
+                <span class="god-mode" id="adminUidShort">——</span>
+            </div>
+        </div>
+
+        <div class="stat-dashboard">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statDeposit">0</span>
+                    <span class="stat-label">เติมเงินรออนุมัติ</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--danger); background:rgba(255,51,102,0.1);"><i class="fas fa-money-bill-transfer"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statWithdraw">0</span>
+                    <span class="stat-label">ถอนเงินรออนุมัติ</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--primary); background:rgba(0,242,255,0.1);"><i class="fas fa-headset"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statTicket">0</span>
+                    <span class="stat-label">Ticket รอตอบ</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--warning); background:rgba(255,193,7,0.1);"><i class="fas fa-id-card"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statKyc">0</span>
+                    <span class="stat-label">KYC รออนุมัติ</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--success); background:rgba(0,230,118,0.1);"><i class="fas fa-server"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statActive">1</span>
+                    <span class="stat-label">ADMIN ONLINE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="tab1"><i class="fas fa-wallet"></i> แจ้งฝาก</button>
+            <button class="tab-btn" data-tab="tab2"><i class="fas fa-money-bill-transfer"></i> แจ้งถอน</button>
+            <button class="tab-btn" data-tab="tab3"><i class="fas fa-ticket-alt"></i> ซัพพอร์ต</button>
+            <button class="tab-btn" data-tab="tab4"><i class="fas fa-door-open"></i> ตรวจสอบห้อง</button>
+            <button class="tab-btn" data-tab="tab5"><i class="fas fa-id-card"></i> KYC รออนุมัติ</button>
+            <button class="tab-btn" data-tab="tab6"><i class="fas fa-terminal"></i> ตั้งค่าระบบ</button>
+        </div>
+
+        <!-- TAB 1: แจ้งฝาก -->
+        <div id="tab1" class="panel active">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-clock"></i> รายการเติมเงินรอตรวจสอบ</div>
+                    <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                
+                <div style="background: rgba(255, 193, 7, 0.05); border-left: 4px solid var(--warning); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px;">
+                    <i class="fas fa-lightbulb" style="color: var(--warning); margin-right: 8px;"></i>
+                    <strong>วิธีตรวจสอบว่าโอนจริง:</strong> เปิดแอปธนาคาร ดูรายการเดินบัญชี 
+                    <span style="color: var(--primary);">เวลา + จำนวนเงิน + Reference ID</span> 
+                    ต้องตรงกับที่ลูกค้ากดยืนยัน
+                </div>
+
+                <div id="depositList" class="item-list">
+                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab2" class="panel">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-clock"></i> รายการถอนเงินรอตรวจสอบ</div>
+                    <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="withdrawList" class="item-list">
+                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab3" class="panel">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-headset"></i> ข้อความที่ต้องการความช่วยเหลือ</div>
+                    <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="ticketList" class="item-list">
+                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="tab4" class="panel">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> ตรวจสอบห้องเทรดที่มีปัญหา</div>
+                    <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="tradeRoomList" class="item-list">
+                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: KYC รออนุมัติ -->
+        <div id="tab5" class="panel">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-clock"></i> รายการยืนยันตัวตน (KYC) รอตรวจสอบ</div>
+                    <button class="refresh-btn" onclick="refreshKyc()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="kycList" class="item-list">
+                </div>
+            </div>
+        </div>
+
+        <div id="tab6" class="panel">
+            <div class="data-panel">
+                <div class="section-title" style="margin-bottom: 20px;"><i class="fas fa-server"></i> System Status</div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+                    <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); padding:20px; border-radius:12px;">
+                        <p style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;"><i class="fas fa-check-circle" style="color:var(--success);"></i> Supabase Realtime</p>
+                        <p style="font-size:12px; color:#8b9bb4; margin-top:8px;">Project: wwrvvnwdmqwoimvaazhb</p>
+                        <p style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fas fa-bolt"></i> WebSocket Connected</p>
+                    </div>
+                    <div style="background:rgba(255,193,7,0.05); border:1px solid rgba(255,193,7,0.2); padding:20px; border-radius:12px; border-left:4px solid var(--admin-gold);">
+                        <p style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;"><i class="fas fa-key" style="color:var(--admin-gold);"></i> Authorization</p>
+                        <p style="font-size:12px; margin-top:8px; color:#8b9bb4;">Admin UID:</p>
+                        <p id="footerUid" style="font-family:monospace; background:rgba(0,0,0,0.3); padding:6px 8px; border-radius:6px; font-size:11px; margin-top:4px; color:#fff; word-break: break-all;">——</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle"><i class="fas fa-info-circle"></i> รายละเอียด</div>
+            <div class="modal-body" id="modalBodyContent"></div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeModal()">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmActionModal">
+        <div class="modal-box" style="border: 1px solid var(--warning);">
+            <div class="modal-title" id="confirmTitle"><i class="fas fa-circle-question"></i> ยืนยันคำสั่ง</div>
+            <div class="modal-body" id="confirmMessage"></div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-confirm" id="confirmYesBtn">ยืนยัน</button>
+                <button class="modal-btn btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastMessage" style="display: none;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // --------------------------------------------------------------
+        // 🔥 AEGIS NEX CEO PANEL - PRODUCTION READY
+        // 🔥 SUPABASE CONFIG
+        // --------------------------------------------------------------
+        const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            realtime: { params: { eventsPerSecond: 10 } },
+            auth: { persistSession: true, autoRefreshToken: true }
+        });
+
+        // 🔥 UID ผู้บริหารสูงสุด (CEO / GOD)
+        const CEO_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
+        const ADMIN_UIDS = [CEO_UID];
+
+        // --------------------------------------------------------------
+        // GLOBAL VARIABLES
+        // --------------------------------------------------------------
+        let currentUser = null;
+        let pendingDeposits = [];
+        let pendingWithdraws = [];
+        let pendingTickets = [];
+        let tradeRoomTickets = [];
+        let pendingKyc = [];
+        let kycChannel = null;
+        let depositChannel = null;
+        let withdrawChannel = null;
+        let ticketChannel = null;
+        let isManualRefresh = false;
+
+        // --------------------------------------------------------------
+        // UTILITY: Toast
+        // --------------------------------------------------------------
+        function showToast(message, type = 'success', duration = 4000) {
+            const toast = document.getElementById('toastMessage');
+            toast.style.display = 'flex';
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'triangle-exclamation'}" style="color:${type === 'success' ? 'var(--success)' : 'var(--danger)'};"></i> ${message}`;
+            toast.style.borderColor = type === 'success' ? 'rgba(0, 230, 118, 0.5)' : 'rgba(255, 51, 102, 0.5)';
+            setTimeout(() => { toast.style.display = 'none'; }, duration);
+        }
+
+        // --------------------------------------------------------------
+        // PARTICLES
+        // --------------------------------------------------------------
+        function initParticles() {
+            const container = document.getElementById('particleField');
+            container.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = p.style.height = (Math.random() * 4 + 1) + 'px';
+                p.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        // --------------------------------------------------------------
+        // AUTH
+        // --------------------------------------------------------------
+        async function initAdminSession() {
+            try {
+                const { data: { session }, error } = await supa.auth.getSession();
+                if (error || !session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                const user = session.user;
+                if (!ADMIN_UIDS.includes(user.id)) {
+                    showToast('⛔ คุณไม่มีสิทธิ์เข้าใช้งานพื้นที่แอดมิน', 'error', 5000);
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+                    return;
+                }
+                currentUser = user;
+                document.getElementById('adminName').innerText = user.email?.split('@')[0] || 'ADMIN';
+                document.getElementById('adminUidShort').innerText = user.id.substring(0, 8).toUpperCase();
+                document.getElementById('footerUid').innerText = user.id;
+
+                await refreshData();
+                await loadPendingKyc();
+                setupRealtimeSubscriptions();
+                initAudioController();
+            } catch (e) {
+                console.error('Session init error:', e);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // --------------------------------------------------------------
+        // DATA FETCHING
+        // --------------------------------------------------------------
+        async function loadPendingDeposits() {
+            try {
+                const { data, error } = await supa
+                    .from('transactions')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email, balance )
+                    `)
+                    .eq('type', 'topup')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                pendingDeposits = data || [];
+                renderDeposits();
+            } catch (e) {
+                console.error('loadPendingDeposits error:', e);
+                document.getElementById('depositList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        async function loadPendingWithdrawals() {
+            try {
+                const { data, error } = await supa
+                    .from('transactions')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email, balance )
+                    `)
+                    .eq('type', 'withdraw')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                pendingWithdraws = data || [];
+                renderWithdrawals();
+            } catch (e) {
+                console.error('loadPendingWithdrawals error:', e);
+                document.getElementById('withdrawList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        async function loadPendingTickets() {
+            try {
+                const { data, error } = await supa
+                    .from('support_tickets')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email )
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                pendingTickets = data || [];
+                renderTickets();
+            } catch (e) {
+                console.error('loadPendingTickets error:', e);
+                document.getElementById('ticketList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        async function loadTradeRoomTickets() {
+            try {
+                const { data, error } = await supa
+                    .from('support_tickets')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email )
+                    `)
+                    .eq('status', 'pending')
+                    .or('detail.ilike.%TR-GEN-%,detail.ilike.%TR-G-%')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                tradeRoomTickets = data || [];
+                renderTradeRooms();
+            } catch (e) {
+                console.error('loadTradeRoomTickets error:', e);
+                document.getElementById('tradeRoomList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        async function loadPendingKyc() {
+            try {
+                const { data, error } = await supa
+                    .from('kyc_submissions')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email, balance, kyc_verified )
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                pendingKyc = data || [];
+                renderKyc();
+                document.getElementById('statKyc').innerText = pendingKyc.length;
+            } catch (e) {
+                console.error('loadPendingKyc error:', e);
+                document.getElementById('kycList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // RENDER FUNCTIONS
+        // --------------------------------------------------------------
+        function escapeHTML(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>"]/g, function(c) {
+                if(c === '&') return '&amp;';
+                if(c === '<') return '&lt;';
+                if(c === '>') return '&gt;';
+                if(c === '"') return '&quot;';
+                return c;
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ คัดลอก Reference ID แล้ว', 'success');
+            }).catch(() => {
+                showToast('❌ ไม่สามารถคัดลอกได้', 'error');
+            });
+        }
+
+        function renderDeposits() {
+            const container = document.getElementById('depositList');
+            if (!pendingDeposits.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีรายการแจ้งฝาก</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingDeposits.forEach(tx => {
+                const user = tx.users || { username: 'ไม่ทราบ', email: '' };
+                const username = escapeHTML(user.username || user.email || 'ผู้ใช้');
+                const ref = escapeHTML(tx.reference || '');
+                const method = escapeHTML(tx.method || 'ธนาคาร');
+                const amount = tx.amount || 0;
+                const evidence = tx.evidence || (tx.slip_url ? tx.slip_url : null);
+                const createdDate = tx.created_at ? new Date(tx.created_at) : null;
+                const dateStr = createdDate ? createdDate.toLocaleString('th-TH', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                }) : 'ไม่มีเวลา';
+
+                html += `<div class="item-card" style="border-left-color: var(--primary);">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${username}</span>
+                            <span class="status-badge"><i class="fas fa-clock"></i> รอตรวจสอบ</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 8px; margin: 8px 0; flex-wrap: wrap;">
+                            <span style="color: #8b9bb4; font-size: 12px;"><i class="fas fa-hashtag"></i> Ref:</span>
+                            <span style="font-family: monospace; font-size: 14px; color: var(--primary); font-weight: 600;">${ref}</span>
+                            <button class="btn-view" style="padding: 4px 10px; font-size: 11px;" onclick='copyToClipboard("${ref}")'><i class="fas fa-copy"></i> คัดลอก</button>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${dateStr}</span>
+                            <span><i class="fas fa-building-columns"></i> ${method}</span>
+                        </div>
+                        <div class="item-amount-wrapper">
+                            <span class="item-amount">+${amount.toLocaleString('th-TH')} AGS</span>
+                            ${evidence ? `<img src="${escapeHTML(evidence)}" class="evidence-thumb" onclick='showEvidence("${escapeHTML(evidence)}")'>` : '<span style="color:#62728a; font-size:11px;"><i class="fas fa-file-slash"></i> ไม่มีสลิป</span>'}
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #aaa; background: rgba(255,255,255,0.02); padding: 6px; border-radius: 6px;">
+                            <i class="fas fa-info-circle" style="color: var(--warning);"></i> 
+                            ตรวจสอบกับธนาคาร: เวลา <strong>${dateStr}</strong> จำนวน <strong>${amount.toLocaleString('th-TH')} บาท</strong> (Ref: ${ref})
+                        </div>
+                    </div>
+                    <div class="item-actions" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                        <button class="btn-view" onclick='viewDetail("deposit", "${tx.id}")'><i class="fas fa-search"></i> ดูข้อมูล</button>
+                        <button class="btn-approve" onclick='openApproveModal("deposit", "${tx.id}", ${amount}, "${tx.user_id}")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectModal("deposit", "${tx.id}")'><i class="fas fa-xmark"></i> ปฏิเสธ</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderWithdrawals() {
+            const container = document.getElementById('withdrawList');
+            if (!pendingWithdraws.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีรายการแจ้งถอน</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingWithdraws.forEach(tx => {
+                const user = tx.users || { username: 'ไม่ทราบ' };
+                const username = escapeHTML(user.username || '');
+                const bank = escapeHTML(tx.bank || '');
+                const account = escapeHTML(tx.account || '');
+                const amount = tx.amount || 0;
+                const ref = escapeHTML(tx.reference || '');
+                const date = tx.created_at ? new Date(tx.created_at).toLocaleString('th-TH') : '';
+
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${username}</span>
+                            <span class="status-badge"><i class="fas fa-clock"></i> รอตรวจสอบ</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-building-columns"></i> ${bank}</span>
+                            <span><i class="fas fa-credit-card"></i> ${account}</span>
+                            <span><i class="fas fa-hashtag"></i> ${ref}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                        </div>
+                        <div class="item-amount-wrapper">
+                            <span class="item-amount amount-negative">-${amount.toLocaleString('th-TH')} AGS</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-view" onclick='viewDetail("withdraw", "${tx.id}")'><i class="fas fa-search"></i> ตรวจสอบ</button>
+                        <button class="btn-approve" onclick='openApproveModal("withdraw", "${tx.id}", ${amount}, "${tx.user_id}")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectModal("withdraw", "${tx.id}", ${amount}, "${tx.user_id}")'><i class="fas fa-ban"></i> ปฏิเสธ</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTickets() {
+            const container = document.getElementById('ticketList');
+            if (!pendingTickets.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>เคลียร์งานครบแล้ว ยอดเยี่ยม!</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingTickets.forEach(tk => {
+                const user = tk.users || { username: 'unknown' };
+                const username = escapeHTML(user.username || '');
+                const ticketId = escapeHTML(tk.ticket_id || tk.id);
+                const topic = escapeHTML(tk.topic || 'ทั่วไป');
+                const detail = escapeHTML(tk.detail || '');
+                const date = tk.created_at ? new Date(tk.created_at).toLocaleString('th-TH') : '';
+                const evidenceUrl = tk.evidence_url || tk.evidence || tk.slip_url || null;
+                const hasRoom = /TR-GEN-|TR-G-/i.test(detail);
+                const warpBtn = hasRoom ? `<button class="btn-warp" onclick='warpFromDetail("${escapeHTML(detail)}")'><i class="fas fa-right-to-bracket"></i> วาร์ปห้อง</button>` : '';
+
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${username}</span>
+                            <span class="status-badge" style="background:rgba(0,242,255,0.1); color:var(--primary);"><i class="fas fa-ticket"></i> #${ticketId}</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-tag"></i> ${topic}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:8px; margin:10px 0; font-size:13px; border:1px solid rgba(255,255,255,0.05); color:#cdd4df;">
+                            ${detail}
+                        </div>
+                        ${evidenceUrl ? `<img src="${escapeHTML(evidenceUrl)}" class="evidence-thumb" style="width:60px; height:60px;" onclick='showEvidence("${escapeHTML(evidenceUrl)}")'>` : ''}
+                    </div>
+                    <div class="item-actions" style="align-self: flex-end;">
+                        ${warpBtn}
+                        <button class="btn-approve" onclick='closeTicket("${tk.id}")'><i class="fas fa-check-double"></i> เคลียร์งาน</button>
+                        <button class="btn-view" onclick='rejectTicket("${tk.id}")'><i class="fas fa-eye-slash"></i> ซ่อน</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTradeRooms() {
+            const container = document.getElementById('tradeRoomList');
+            if (!tradeRoomTickets.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-shield-check" style="font-size:40px; color:var(--success);"></i><p>สเตตัสปกติ ไม่มีรายงานห้องเทรด</p></div>`;
+                return;
+            }
+            let html = '';
+            tradeRoomTickets.forEach(tk => {
+                const user = tk.users || { username: 'unknown' };
+                const username = escapeHTML(user.username || '');
+                const detail = escapeHTML(tk.detail || '');
+                const roomMatch = detail.match(/(TR-GEN-[A-Z0-9]+|TR-G-[A-Z0-9]+)/i);
+                const roomId = roomMatch ? roomMatch[0] : 'ไม่พบรหัสห้อง';
+                const mode = roomId.includes('TR-G-') ? 'game' : 'general';
+
+                html += `<div class="item-card" style="border-left-color:var(--danger);">
+                    <div class="item-info">
+                        <div style="font-size:14px; margin-bottom:6px;"><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> <strong>แจ้งเตือนจากผู้เล่น:</strong> ${username}</div>
+                        <div style="font-size:13px; color:#8b9bb4; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; border:1px solid rgba(255,51,102,0.1);">
+                            ${detail.substring(0,120)}${detail.length > 120 ? '…' : ''}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-warp" onclick='warpToSpecificRoom("${roomId}", "${mode}")'><i class="fas fa-street-view"></i> วาร์ปตรวจสอบ ${roomId}</button>
+                        <button class="btn-view" onclick='viewDetail("ticket", "${tk.id}")'><i class="fas fa-info-circle"></i> ดูข้อมูล</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderKyc() {
+            const container = document.getElementById('kycList');
+            if (!container) return;
+            if (!pendingKyc.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีรายการ KYC รอตรวจสอบ</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingKyc.forEach(item => {
+                const user = item.users || { username: 'ไม่ทราบ', email: '' };
+                const username = escapeHTML(user.username || user.email || 'ผู้ใช้');
+                const date = item.created_at ? new Date(item.created_at).toLocaleString('th-TH') : '';
+
+                const idCardBtn = item.id_card_base64 
+                    ? `<button class="btn-view" onclick='showBase64Image("${item.id_card_base64}")'><i class="fas fa-id-card"></i> ดูบัตร</button>` 
+                    : '';
+                const selfieBtn = item.selfie_base64 
+                    ? `<button class="btn-view" onclick='showBase64Image("${item.selfie_base64}")'><i class="fas fa-user-check"></i> ดูเซลฟี่</button>` 
+                    : '';
+
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${username}</span>
+                            <span class="status-badge"><i class="fas fa-clock"></i> รอตรวจสอบ</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                            ${idCardBtn} ${selfieBtn}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-approve" onclick='openApproveKycModal("${item.id}", "${item.user_id}")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectKycModal("${item.id}")'><i class="fas fa-ban"></i> ปฏิเสธ</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // --------------------------------------------------------------
+        // KYC ACTIONS
+        // --------------------------------------------------------------
+        function viewKycDetail(kycId) {
+            const item = pendingKyc.find(k => k.id === kycId);
+            if (!item) return;
+            let html = `<p><strong>ID:</strong> <span style="font-family:monospace; color:#8b9bb4;">${escapeHTML(item.id)}</span></p>`;
+            html += `<p><strong>ผู้ร้องขอ:</strong> ${escapeHTML(item.users?.username || item.user_id)}</p>`;
+            html += `<p><strong>อีเมล:</strong> ${escapeHTML(item.users?.email || '')}</p>`;
+            html += `<p><strong>วันเวลา:</strong> ${item.created_at ? new Date(item.created_at).toLocaleString('th-TH') : ''}</p>`;
+            if (item.id_card_base64) html += `<div style="margin-top:16px;"><strong>รูปบัตรประชาชน:</strong><br><img src="${escapeHTML(item.id_card_base64)}" style="max-width:100%; border-radius:8px;"></div>`;
+            if (item.selfie_base64) html += `<div style="margin-top:16px;"><strong>รูปเซลฟี่:</strong><br><img src="${escapeHTML(item.selfie_base64)}" style="max-width:100%; border-radius:8px;"></div>`;
+            document.getElementById('modalBodyContent').innerHTML = html;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-id-card" style="color:var(--primary);"></i> รายละเอียด KYC';
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function openApproveKycModal(kycId, userId) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> ยืนยันการอนุมัติ KYC';
+            document.getElementById('confirmMessage').innerHTML = 'คุณต้องการอนุมัติการยืนยันตัวตน (KYC) นี้ใช่หรือไม่?';
+            const btn = document.getElementById('confirmYesBtn');
+            btn.className = 'modal-btn btn-confirm';
+            btn.onclick = () => {
+                executeApproveKyc(kycId, userId);
+                closeConfirmModal();
+            };
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        // 🔥 แก้ไขฟังก์ชันนี้เพื่อเรียก complete_quest เมื่ออนุมัติ KYC
+        async function executeApproveKyc(kycId, userId) {
+            try {
+                const { error: userError } = await supa
+                    .from('users')
+                    .update({ kyc_verified: true, updated_at: new Date() })
+                    .eq('id', userId);
+                if (userError) throw userError;
+
+                const { error: kycError } = await supa
+                    .from('kyc_submissions')
+                    .update({ status: 'approved', reviewed_at: new Date(), reviewed_by: currentUser?.id || CEO_UID })
+                    .eq('id', kycId);
+                if (kycError) throw kycError;
+
+                // 🔥 เพิ่มการ complete quest pioneer_kyc
+                const { error: questError } = await supa.rpc('complete_quest', {
+                    p_user_id: userId,
+                    p_slug: 'pioneer_kyc'
+                });
+                if (questError) console.error('complete quest error:', questError);
+
+                showToast('✅ อนุมัติ KYC สำเร็จ', 'success');
+                await loadPendingKyc();
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
+            }
+        }
+
+        function openRejectKycModal(kycId) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);"></i> ยืนยันการปฏิเสธ KYC';
+            document.getElementById('confirmMessage').innerHTML = 'คุณต้องการปฏิเสธการยืนยันตัวตน (KYC) นี้ใช่หรือไม่?';
+            const btn = document.getElementById('confirmYesBtn');
+            btn.className = 'modal-btn';
+            btn.style.background = 'var(--danger)';
+            btn.style.color = '#fff';
+            btn.onclick = () => {
+                executeRejectKyc(kycId);
+                closeConfirmModal();
+                btn.style = '';
+            };
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        async function executeRejectKyc(kycId) {
+            try {
+                const { error } = await supa
+                    .from('kyc_submissions')
+                    .update({ status: 'rejected', reviewed_at: new Date(), reviewed_by: currentUser?.id || CEO_UID })
+                    .eq('id', kycId);
+                if (error) throw error;
+                showToast('✅ ปฏิเสธ KYC สำเร็จ', 'success');
+                await loadPendingKyc();
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
+            }
+        }
+
+        function refreshKyc() {
+            loadPendingKyc();
+        }
+
+        // --------------------------------------------------------------
+        // REFRESH ALL DATA
+        // --------------------------------------------------------------
+        async function refreshData() {
+            isManualRefresh = true;
+            const loaderHtml = `<div class="loading-spinner"><div class="spinner"></div></div>`;
+            document.getElementById('depositList').innerHTML = loaderHtml;
+            document.getElementById('withdrawList').innerHTML = loaderHtml;
+            document.getElementById('ticketList').innerHTML = loaderHtml;
+            document.getElementById('tradeRoomList').innerHTML = loaderHtml;
+
+            await Promise.all([
+                loadPendingDeposits(),
+                loadPendingWithdrawals(),
+                loadPendingTickets(),
+                loadTradeRoomTickets()
+            ]);
+
+            updateStats();
+            setTimeout(() => { isManualRefresh = false; }, 500);
+        }
+
+        function updateStats() {
+            document.getElementById('statDeposit').innerText = pendingDeposits.length;
+            document.getElementById('statWithdraw').innerText = pendingWithdraws.length;
+            document.getElementById('statTicket').innerText = pendingTickets.length;
+        }
+
+        // --------------------------------------------------------------
+        // ACTION: DEPOSIT/WITHDRAW APPROVE/REJECT
+        // --------------------------------------------------------------
+        async function executeApproveDeposit(txId, amount, userId) {
+            try {
+                const { data: user, error: fetchError } = await supa
+                    .from('users')
+                    .select('balance')
+                    .eq('id', userId)
+                    .single();
+                if (fetchError) throw fetchError;
+                const newBalance = (user.balance || 0) + amount;
+                const { error: updateError } = await supa
+                    .from('users')
+                    .update({ balance: newBalance, updated_at: new Date() })
+                    .eq('id', userId);
+                if (updateError) throw updateError;
+                const { error: txError } = await supa
+                    .from('transactions')
+                    .update({ status: 'completed', updated_at: new Date() })
+                    .eq('id', txId);
+                if (txError) throw txError;
+                showToast(`✅ อนุมัติการฝาก ${amount.toLocaleString()} AGS สำเร็จ`, 'success');
+                await loadPendingDeposits();
+                updateStats();
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
+            }
+        }
+
+        async function executeApproveWithdraw(txId, amount, userId) {
+            try {
+                const { error: txError } = await supa
+                    .from('transactions')
+                    .update({ status: 'completed', updated_at: new Date() })
+                    .eq('id', txId);
+                if (txError) throw txError;
+                showToast(`✅ อนุมัติการถอน ${amount.toLocaleString()} AGS สำเร็จ`, 'success');
+                await loadPendingWithdrawals();
+                updateStats();
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
+            }
+        }
+
+        async function executeRejectWithdraw(txId, amount, userId) {
+            try {
+                const { data: user, error: fetchError } = await supa
+                    .from('users')
+                    .select('balance')
+                    .eq('id', userId)
+                    .single();
+                if (fetchError) throw fetchError;
+                const newBalance = (user.balance || 0) + amount;
+                const { error: updateError } = await supa
+                    .from('users')
+                    .update({ balance: newBalance, updated_at: new Date() })
+                    .eq('id', userId);
+                if (updateError) throw updateError;
+                const { error: txError } = await supa
+                    .from('transactions')
+                    .update({ status: 'failed', updated_at: new Date() })
+                    .eq('id', txId);
+                if (txError) throw txError;
+                showToast(`✅ ปฏิเสธการถอน คืนเงิน ${amount.toLocaleString()} AGS`, 'success');
+                await loadPendingWithdrawals();
+                updateStats();
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
+            }
+        }
+
+        async function executeRejectTransaction(txId, type) {
+            try {
+                const { error } = await supa
+                    .from('transactions')
+                    .update({ status: 'failed', updated_at: new Date() })
+                    .eq('id', txId);
+                if (error) throw error;
+                showToast(`✅ ยกเลิกรายการสำเร็จ`, 'success');
+                if (type === 'deposit') await loadPendingDeposits();
+                else await loadPendingWithdrawals();
+                updateStats();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        // --------------------------------------------------------------
+        // TICKET ACTIONS (FIXED: now they reload data after update)
+        // --------------------------------------------------------------
+        async function executeCloseTicket(ticketId) {
+            try {
+                const { error } = await supa
+                    .from('support_tickets')
+                    .update({ status: 'completed', updated_at: new Date() })
+                    .eq('id', ticketId);
+                if (error) throw error;
+                showToast('✅ ปิดงานสำเร็จ', 'success');
+                
+                isManualRefresh = true;
+                await Promise.all([
+                    loadPendingTickets(),
+                    loadTradeRoomTickets()
+                ]);
+                updateStats();
+                setTimeout(() => { isManualRefresh = false; }, 500);
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        async function executeRejectTicket(ticketId) {
+            try {
+                const { error } = await supa
+                    .from('support_tickets')
+                    .update({ status: 'ignored', updated_at: new Date() })
+                    .eq('id', ticketId);
+                if (error) throw error;
+                showToast('✅ ละเว้นรายการนี้แล้ว', 'success');
+                
+                isManualRefresh = true;
+                await Promise.all([
+                    loadPendingTickets(),
+                    loadTradeRoomTickets()
+                ]);
+                updateStats();
+                setTimeout(() => { isManualRefresh = false; }, 500);
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        function closeTicket(ticketId) {
+            openConfirmCustom('เคลียร์งาน (ปิดเคส)', 'ยืนยันว่าปัญหาใน Ticket นี้ได้รับการแก้ไขและต้องการปิดเคสใช่หรือไม่?', () => executeCloseTicket(ticketId));
+        }
+
+        function rejectTicket(ticketId) {
+            openConfirmCustom('ละเว้น (ซ่อนเคส)', 'ต้องการเปลี่ยนสถานะเป็นละเว้น (Ignored) ใช่หรือไม่?', () => executeRejectTicket(ticketId));
+        }
+
+        function openConfirmCustom(title, message, callback) {
+            document.getElementById('confirmTitle').innerHTML = `<i class="fas fa-circle-question" style="color:var(--primary);"></i> ${title}`;
+            document.getElementById('confirmMessage').innerHTML = message;
+            const btn = document.getElementById('confirmYesBtn');
+            btn.className = 'modal-btn btn-confirm';
+            btn.style = '';
+            btn.onclick = () => { callback(); closeConfirmModal(); };
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        // --------------------------------------------------------------
+        // MODAL CONFIRM (for approve/reject)
+        // --------------------------------------------------------------
+        function openApproveModal(type, txId, amount, userId) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> ยืนยันการอนุมัติ';
+            document.getElementById('confirmMessage').innerHTML = `ยืนยันการอนุมัติรายการ${type === 'deposit' ? 'แจ้งฝาก' : 'แจ้งถอน'} จำนวน <strong style="color:var(--${type === 'deposit' ? 'success' : 'danger'}); font-size:18px;">${amount.toLocaleString('th-TH')} AGS</strong> ใช่หรือไม่?`;
+            const btn = document.getElementById('confirmYesBtn');
+            btn.className = 'modal-btn btn-confirm';
+            btn.onclick = () => {
+                if (type === 'deposit') executeApproveDeposit(txId, amount, userId);
+                else executeApproveWithdraw(txId, amount, userId);
+                closeConfirmModal();
+            };
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        function openRejectModal(type, txId, amount = null, userId = null) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-circle-xmark" style="color:var(--danger);"></i> ยืนยันการปฏิเสธ';
+            document.getElementById('confirmMessage').innerHTML = `คุณต้องการ <strong>ปฏิเสธและยกเลิก</strong> รายการนี้ใช่หรือไม่? ${type === 'withdraw' ? '(เงินจะถูกคืนให้ผู้ใช้)' : ''}`;
+            const btn = document.getElementById('confirmYesBtn');
+            btn.className = 'modal-btn';
+            btn.style.background = 'var(--danger)';
+            btn.style.color = '#fff';
+            btn.onclick = () => {
+                if (type === 'deposit') {
+                    executeRejectTransaction(txId, type);
+                } else if (type === 'withdraw') {
+                    if (amount && userId) {
+                        executeRejectWithdraw(txId, amount, userId);
+                    } else {
+                        showToast('❌ ข้อมูลไม่ครบถ้วน', 'error');
+                    }
+                }
+                closeConfirmModal();
+                btn.style = '';
+            };
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmActionModal').style.display = 'none';
+        }
+
+        // --------------------------------------------------------------
+        // VIEW DETAIL / EVIDENCE
+        // --------------------------------------------------------------
+        function viewDetail(type, id) {
+            let item;
+            if (type === 'deposit') item = pendingDeposits.find(d => d.id === id);
+            else if (type === 'withdraw') item = pendingWithdraws.find(w => w.id === id);
+            else if (type === 'ticket') item = pendingTickets.find(t => t.id === id);
+            if (!item) return;
+
+            let html = `<p><strong>ID:</strong> <span style="font-family:monospace; color:#8b9bb4;">${escapeHTML(item.id)}</span></p>`;
+            html += `<p><strong>ผู้ร้องขอ:</strong> ${escapeHTML(item.users?.username || item.user_id)}</p>`;
+            html += `<p><strong>ยอดเงิน:</strong> ${(item.amount || 0).toLocaleString('th-TH')} AGS</p>`;
+            html += `<p><strong>วันเวลา:</strong> ${item.created_at ? new Date(item.created_at).toLocaleString('th-TH') : ''}</p>`;
+            if (item.method) html += `<p><strong>ช่องทาง:</strong> ${escapeHTML(item.method)}</p>`;
+            if (item.reference) html += `<p><strong>เลขอ้างอิง:</strong> ${escapeHTML(item.reference)}</p>`;
+            if (item.bank) html += `<p><strong>ธนาคาร:</strong> ${escapeHTML(item.bank)}</p>`;
+            if (item.account) html += `<p><strong>เลขบัญชี:</strong> ${escapeHTML(item.account)}</p>`;
+            if (item.detail) html += `<div style="margin-top:12px;"><strong>รายละเอียดเพิ่มเติม:</strong><div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; margin-top:6px; font-size:13px;">${escapeHTML(item.detail)}</div></div>`;
+            const ev = item.evidence_url || item.evidence || item.slip_url;
+            if (ev) html += `<div style="margin-top:16px;"><strong>รูปภาพแนบ:</strong><br><img src="${escapeHTML(ev)}" style="max-width:100%; border-radius:8px; margin-top:8px;"></div>`;
+
+            document.getElementById('modalBodyContent').innerHTML = html;
+            document.getElementById('modalTitle').innerHTML = `<i class="fas fa-file-lines" style="color:var(--primary);"></i> ข้อมูล${type === 'deposit' ? 'แจ้งฝาก' : type === 'withdraw' ? 'แจ้งถอน' : 'ซัพพอร์ต'}`;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function showEvidence(url) {
+            document.getElementById('modalBodyContent').innerHTML = `<img src="${escapeHTML(url)}" style="width:100%; border-radius:8px;">`;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-image" style="color:var(--admin-gold);"></i> รูปภาพหลักฐาน';
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        window.showBase64Image = (base64) => {
+            document.getElementById('modalBodyContent').innerHTML = `<img src="${base64}" style="max-width:100%; border-radius:8px;">`;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-image" style="color:var(--admin-gold);"></i> รูปภาพ';
+            document.getElementById('detailModal').style.display = 'flex';
+        };
+
+        // --------------------------------------------------------------
+        // WARP FUNCTIONS
+        // --------------------------------------------------------------
+        function warpFromDetail(detailText) {
+            const match = detailText.match(/(TR-GEN-[A-Z0-9]+|TR-G-[A-Z0-9]+)/i);
+            if (match) {
+                const roomId = match[0];
+                const mode = roomId.includes('TR-G-') ? 'game' : 'general';
+                warpToSpecificRoom(roomId, mode);
+            } else {
+                showToast('❌ ไม่พบรหัสห้องที่ถูกต้อง', 'error');
+            }
+        }
+
+        function warpToSpecificRoom(roomId, mode) {
+            const url = `general_trade_hybrid.html?mode=${mode}&id=${roomId}&role=admin&adminAccess=${CEO_UID}`;
+            window.open(url, '_blank');
+            showToast(`🚪 กำลังเข้าแทรกแซงห้อง ${roomId}`, 'success');
+        }
+
+        // --------------------------------------------------------------
+        // REALTIME SUBSCRIPTIONS (ปรับให้ใช้ isManualRefresh)
+        // --------------------------------------------------------------
+        function setupRealtimeSubscriptions() {
+            if (depositChannel) supa.removeChannel(depositChannel);
+            if (withdrawChannel) supa.removeChannel(withdrawChannel);
+            if (ticketChannel) supa.removeChannel(ticketChannel);
+            if (kycChannel) supa.removeChannel(kycChannel);
+
+            depositChannel = supa.channel('admin-deposit-rt')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: 'type=eq.topup' }, () => { 
+                    if (!isManualRefresh) { loadPendingDeposits(); updateStats(); }
+                })
+                .subscribe();
+
+            withdrawChannel = supa.channel('admin-withdraw-rt')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: 'type=eq.withdraw' }, () => { 
+                    if (!isManualRefresh) { loadPendingWithdrawals(); updateStats(); }
+                })
+                .subscribe();
+
+            ticketChannel = supa.channel('admin-ticket-rt')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets', filter: 'status=eq.pending' }, () => { 
+                    if (!isManualRefresh) {
+                        loadPendingTickets(); 
+                        loadTradeRoomTickets(); 
+                        updateStats(); 
+                    }
+                })
+                .subscribe();
+
+            kycChannel = supa.channel('admin-kyc-rt')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'kyc_submissions', filter: 'status=eq.pending' }, () => { 
+                    if (!isManualRefresh) { loadPendingKyc(); }
+                })
+                .subscribe();
+        }
+
+        // --------------------------------------------------------------
+        // AUDIO CONTROLLER
+        // --------------------------------------------------------------
+        function initAudioController() {
+            const audio = document.getElementById('bgAudio');
+            const playBtn = document.getElementById('playPauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const fileInput = document.getElementById('audioFile');
+            const nowPlaying = document.getElementById('nowPlaying');
+            audio.src = 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3';
+            playBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play().then(() => {
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        if(nowPlaying.innerText === '🎵 ปิดเสียง') nowPlaying.innerText = '🎵 Default Sound';
+                    }).catch(e => {
+                        showToast('⚠️ กรุณากดปุ่มอีกครั้ง (Browser Block)', 'warning');
+                    });
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            stopBtn.addEventListener('click', () => {
+                audio.pause();
+                audio.currentTime = 0;
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    audio.src = url;
+                    audio.play().then(() => {
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        nowPlaying.innerText = `🎵 ${file.name.substring(0, 15)}...`;
+                    }).catch(() => {});
+                }
+            });
+        }
+
+        // --------------------------------------------------------------
+        // TAB HANDLER
+        // --------------------------------------------------------------
+        function initTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    const tabId = this.dataset.tab;
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // --------------------------------------------------------------
+        // WINDOW ONLOAD
+        // --------------------------------------------------------------
+        window.onload = function() {
+            initParticles();
+            initAdminSession();
+            initTabs();
+        };
+
+        window.addEventListener('beforeunload', () => {
+            if (depositChannel) supa.removeChannel(depositChannel);
+            if (withdrawChannel) supa.removeChannel(withdrawChannel);
+            if (ticketChannel) supa.removeChannel(ticketChannel);
+            if (kycChannel) supa.removeChannel(kycChannel);
+        });
+
+        // --------------------------------------------------------------
+        // GLOBAL FUNCTIONS
+        // --------------------------------------------------------------
+        window.refreshData = refreshData;
+        window.viewDetail = viewDetail;
+        window.showEvidence = showEvidence;
+        window.closeModal = closeModal;
+        window.openApproveModal = openApproveModal;
+        window.openRejectModal = openRejectModal;
+        window.closeConfirmModal = closeConfirmModal;
+        window.closeTicket = closeTicket;
+        window.rejectTicket = rejectTicket;
+        window.warpFromDetail = warpFromDetail;
+        window.warpToSpecificRoom = warpToSpecificRoom;
+        window.executeApproveDeposit = executeApproveDeposit;
+        window.executeApproveWithdraw = executeApproveWithdraw;
+        window.executeRejectTransaction = executeRejectTransaction;
+        window.executeRejectWithdraw = executeRejectWithdraw;
+        window.copyToClipboard = copyToClipboard;
+        window.refreshKyc = refreshKyc;
+        window.viewKycDetail = viewKycDetail;
+        window.openApproveKycModal = openApproveKycModal;
+        window.openRejectKycModal = openRejectKycModal;
+        window.executeApproveKyc = executeApproveKyc;
+        window.executeRejectKyc = executeRejectKyc;
+    </script>
+</body>
+</html>
