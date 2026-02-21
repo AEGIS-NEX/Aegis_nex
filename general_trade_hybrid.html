@@ -63,7 +63,7 @@
         body {
             background-color: var(--dark-bg);
             color: #fff;
-            height: 100vh;
+            height: 100dvh; /* ใช้ dvh เพื่อให้พอดีกับ viewport จริงของมือถือ */
             overflow: hidden;
             position: fixed;
             width: 100%;
@@ -73,7 +73,7 @@
         .trade-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100dvh; /* ใช้ dvh เช่นกัน */
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
@@ -90,7 +90,7 @@
             justify-content: space-between;
             backdrop-filter: blur(var(--glass-blur));
             z-index: 100;
-            flex-shrink: 0;
+            flex-shrink: 0; /* ห้ามหด */
             gap: 10px;
         }
         
@@ -238,7 +238,7 @@
             background: rgba(5, 11, 20, 0.8);
             border-bottom: 1px solid rgba(0, 242, 255, 0.1);
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0;
+            flex-shrink: 0; /* ห้ามหด */
         }
         
         .status-steps {
@@ -335,7 +335,7 @@
             background: rgba(5, 11, 20, 0.8);
             border-bottom: 1px solid rgba(0, 242, 255, 0.1);
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0;
+            flex-shrink: 0; /* ห้ามหด */
         }
         
         .control-btn {
@@ -423,17 +423,17 @@
         }
 
         .chat-area {
-            flex: 1;
+            flex: 1; /* กินพื้นที่ที่เหลือทั้งหมด */
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* ป้องกันล้น */
             background: rgba(5, 11, 20, 0.6);
         }
         
         .messages-container {
-            flex: 1;
+            flex: 1; /* ขยายเต็มพื้นที่ว่างใน chat-area */
             padding: 15px;
-            overflow-y: auto;
+            overflow-y: auto; /* ให้เลื่อนข้อความได้ */
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -617,7 +617,7 @@
             align-items: center;
             gap: 8px;
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0;
+            flex-shrink: 0; /* ห้ามหด */
         }
         
         .media-buttons {
@@ -2560,109 +2560,7 @@
             animation: none !important;
         }
 
-        /* ===== 🆕 DEBUG ELEMENTS (ปรับใหม่ ไม่บังเนื้อหา) ===== */
-        .debug-wrapper {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 20000;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-            max-width: 90%;
-        }
-
-        #debug-toggle-btn {
-            background: #f00;
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(255,0,0,0.5);
-            z-index: 20001;
-        }
-
-        #debug-panel {
-            background: rgba(0,0,0,0.95);
-            border: 2px solid #f0f;
-            border-radius: 10px;
-            padding: 10px;
-            width: 300px;
-            max-width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            box-shadow: 0 5px 20px rgba(255,0,255,0.5);
-        }
-
-        #debug-panel.visible {
-            display: flex;
-        }
-
-        #debug-console {
-            background: #111;
-            color: #0f0;
-            font-family: monospace;
-            font-size: 10px;
-            padding: 5px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        #debug-console .error { color: #f66; }
-        #debug-console .warn { color: #ff0; }
-        #debug-console .info { color: #0ff; }
-
-        #debug-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        #debug-buttons button {
-            background: #333;
-            color: #0f0;
-            border: 1px solid #0f0;
-            border-radius: 4px;
-            padding: 5px 8px;
-            font-size: 10px;
-            flex: 1 0 auto;
-        }
-
-        /* ===== 🚨 บังคับให้แชทแสดงใน Chrome ===== */
-        .chat-area,
-        .chat-input-area,
-        .messages-container,
-        .media-buttons,
-        .message-input-wrapper,
-        .send-btn,
-        #messagesContainer,
-        #messageInput {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            min-height: 0 !important;
-        }
-        .messages-container {
-            min-height: 150px !important;
-            overflow-y: auto !important;
-        }
-        .chat-area {
-            min-height: 200px !important;
-            flex-direction: column !important;
-        }
-        .chat-input-area {
-            flex-shrink: 0 !important;
-        }
+        /* ===== ลบ CSS Hack ที่บังคับโชว์แชทออกแล้ว ===== */
     </style>
 </head>
 <body>
@@ -3476,20 +3374,7 @@
     </div>
 </div>
 
-<!-- ===== DEBUG WRAPPER ===== -->
-<div class="debug-wrapper">
-    <button id="debug-toggle-btn" onclick="toggleDebugPanel()">🐞 Debug</button>
-    <div id="debug-panel">
-        <div id="debug-console"></div>
-        <div id="debug-buttons">
-            <button onclick="alert('openTransferModal: ' + (typeof window.openTransferModal))">Check Transfer</button>
-            <button onclick="alert('openCancelModal: ' + (typeof window.openCancelModal))">Check Cancel</button>
-            <button onclick="alert('currentUser: ' + (currentUser ? 'yes : ' + currentUser.id : 'no'))">Check User</button>
-            <button onclick="alert('tradeStatus: ' + tradeStatus)">Status</button>
-            <button onclick="location.reload()">Reload</button>
-        </div>
-    </div>
-</div>
+<!-- ===== ดีบักถูกลบออกทั้งหมด ===== -->
 
 <script>
     // ============================================
@@ -3506,64 +3391,6 @@
     const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop';
 
     console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role, 'AdminAccess:', adminAccess);
-
-    // ============================================
-    // 🐞 DEBUG CONSOLE
-    // ============================================
-    (function() {
-        const debugDiv = document.getElementById('debug-console');
-        if (!debugDiv) return;
-
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
-        const originalInfo = console.info;
-
-        function addToConsole(level, args) {
-            const msg = Array.from(args).map(arg => {
-                try {
-                    if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
-                    return String(arg);
-                } catch (e) {
-                    return '[circular]';
-                }
-            }).join(' ');
-            const line = document.createElement('div');
-            line.className = level;
-            line.textContent = `[${new Date().toLocaleTimeString()}] ${level.toUpperCase()}: ${msg}`;
-            debugDiv.appendChild(line);
-            debugDiv.scrollTop = debugDiv.scrollHeight;
-        }
-
-        console.log = function(...args) {
-            originalLog.apply(console, args);
-            addToConsole('info', args);
-        };
-        console.error = function(...args) {
-            originalError.apply(console, args);
-            addToConsole('error', args);
-        };
-        console.warn = function(...args) {
-            originalWarn.apply(console, args);
-            addToConsole('warn', args);
-        };
-        console.info = function(...args) {
-            originalInfo.apply(console, args);
-            addToConsole('info', args);
-        };
-
-        window.addEventListener('unhandledrejection', function(event) {
-            console.error('Unhandled Rejection:', event.reason);
-        });
-        window.addEventListener('error', function(event) {
-            console.error('Global error:', event.error ? event.error.message : event.message);
-        });
-
-        console.log('🐞 Debug Console started');
-        console.log('Room ID:', roomId);
-        console.log('Mode:', mode);
-        console.log('Role:', role);
-    })();
 
     // ============================================
     // 🎯 SUPABASE INITIALIZATION
@@ -5666,11 +5493,6 @@
         }
     };
 
-    window.toggleDebugPanel = function() {
-        const panel = document.getElementById('debug-panel');
-        panel.classList.toggle('visible');
-    };
-
     document.addEventListener('DOMContentLoaded', function() {
         if (mode === 'game') {
             document.title = 'AEGIS NEX: GAME & ITEM TRADE';
@@ -5706,26 +5528,21 @@
         }
     });
 
-    // ✅ บังคับให้แชทแสดงทุกครั้งหลังโหลด
+    // ✅ บังคับให้แชทแสดงทุกครั้งหลังโหลด (แต่ใช้เฉพาะกรณีฉุกเฉิน ไม่ Override Flexbox)
     window.addEventListener('load', function() {
         setTimeout(function() {
             const chat = document.querySelector('.chat-area');
             const input = document.querySelector('.chat-input-area');
             const container = document.querySelector('.messages-container');
-            if (chat) {
+            // ตรวจสอบเฉพาะว่า display ถูกต้องตาม CSS หรือไม่
+            if (chat && window.getComputedStyle(chat).display === 'none') {
                 chat.style.display = 'flex';
-                chat.style.visibility = 'visible';
-                chat.style.opacity = '1';
             }
-            if (input) {
+            if (input && window.getComputedStyle(input).display === 'none') {
                 input.style.display = 'flex';
-                input.style.visibility = 'visible';
-                input.style.opacity = '1';
             }
-            if (container) {
+            if (container && window.getComputedStyle(container).display === 'none') {
                 container.style.display = 'flex';
-                container.style.visibility = 'visible';
-                container.style.opacity = '1';
             }
         }, 500);
     });
