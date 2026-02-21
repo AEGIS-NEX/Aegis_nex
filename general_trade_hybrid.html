@@ -49,7 +49,7 @@
             --glass: rgba(5, 10, 20, 0.85);
             --admin-gold: #FFD700;
             --admin-bg: rgba(255, 215, 0, 0.1);
-            --glass-blur: 10px; /* เพิ่มตัวแปรสำหรับควบคุม blur */
+            --glass-blur: 10px;
         }
 
         * { 
@@ -70,7 +70,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* 📱 MAIN LAYOUT */
         .trade-container {
             display: flex;
             flex-direction: column;
@@ -82,7 +81,6 @@
             overflow: hidden;
         }
 
-        /* 👤 TRADE HEADER */
         .trade-header {
             padding: 12px 15px;
             background: rgba(5, 11, 20, 0.95);
@@ -235,7 +233,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* 📊 TRADE PROGRESS STATUS */
         .progress-status {
             padding: 10px 15px;
             background: rgba(5, 11, 20, 0.8);
@@ -330,7 +327,6 @@
             100% { box-shadow: 0 0 14px var(--primary), 0 0 21px rgba(0, 242, 255, 0.5), 0 0 28px rgba(0, 242, 255, 0.2); }
         }
 
-        /* 🎮 CONTROL BUTTONS */
         .control-panel {
             padding: 8px 15px;
             display: grid;
@@ -426,7 +422,6 @@
             transform: none !important;
         }
 
-        /* 💬 CHAT AREA */
         .chat-area {
             flex: 1;
             display: flex;
@@ -484,7 +479,6 @@
             margin-left: 0;
         }
         
-        /* ทำให้รูปของเราในแชทมีกรอบและแสงตามยศ */
         .message.sent .message-avatar {
             transition: all 0.3s ease;
         }
@@ -615,7 +609,6 @@
             text-align: center;
         }
 
-        /* ⌨️ CHAT INPUT AREA */
         .chat-input-area {
             padding: 10px 12px;
             background: rgba(10, 15, 25, 0.9);
@@ -701,7 +694,6 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
         }
 
-        /* 🎭 SIDEBAR */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -837,7 +829,6 @@
             box-shadow: 0 4px 10px rgba(188, 19, 254, 0.2);
         }
 
-        /* 🎪 STICKER SELECTOR */
         .sticker-selector {
             position: absolute;
             bottom: 70px;
@@ -921,7 +912,6 @@
             transform: scale(1.1);
         }
 
-        /* 🖼️ IMAGE UPLOAD MODAL */
         .image-upload-modal {
             position: fixed;
             top: 0;
@@ -1026,7 +1016,6 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* 🖼️ Image Zoom Modal (เพิ่มใหม่) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1079,7 +1068,6 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* 👤 PROFILE POPUP MODAL (ของอีกฝั่ง) */
         .profile-modal {
             position: fixed;
             top: 0;
@@ -1245,7 +1233,6 @@
             font-weight: bold;
         }
 
-        /* ⭐ RATING MODAL — ปรับข้อความใหม่ ให้เกี่ยวกับการให้คะแนนคู่ค้า / คำนวณดาวน์ */
         .rating-modal {
             position: fixed;
             top: 0;
@@ -1344,7 +1331,6 @@
             cursor: pointer;
         }
 
-        /* 🚚 SHIPPING MODAL (ใช้เฉพาะโหมดทั่วไป) */
         .shipping-modal {
             position: fixed;
             top: 0;
@@ -1460,7 +1446,6 @@
             display: none;
         }
 
-        /* ⚠️ AI ALERT POPUP */
         .ai-alert-container {
             position: fixed;
             top: 50%;
@@ -1520,7 +1505,6 @@
             box-shadow: 0 7px 14px rgba(0, 242, 255, 0.2);
         }
 
-        /* 🔗 COPY LINK MODAL */
         .copy-link-modal {
             position: fixed;
             top: 0;
@@ -1581,7 +1565,6 @@
             display: none;
         }
 
-        /* 📝 ADMIN REPORT MODAL */
         .admin-report-modal {
             position: fixed;
             top: 0;
@@ -1719,7 +1702,6 @@
             display: block;
         }
 
-        /* ===== 🎯 ปรับขนาด Tab วิธีใช้งาน ให้กะทัดรัด เท่ากับ Tab แจ้ง Admin ===== */
         #reportTab3 > div:not(.report-description) {
             padding: 12px;
             margin-bottom: 12px;
@@ -1731,7 +1713,6 @@
             font-size: 13px;
         }
 
-        /* 🔴 EMERGENCY ADMIN ALERT */
         .emergency-alert {
             position: fixed;
             top: 50%;
@@ -1800,7 +1781,6 @@
             to { top: 20%; opacity: 1; }
         }
 
-        /* 🛠️ ADMIN CONTROLS */
         .admin-controls {
             position: fixed;
             bottom: 100px;
@@ -1853,7 +1833,6 @@
             background: linear-gradient(135deg, var(--warning), #ffaa00);
         }
 
-        /* 🔥 TYPING INDICATOR */
         .typing-indicator {
             display: flex;
             align-items: center;
@@ -1904,7 +1883,6 @@
             font-style: italic;
         }
 
-        /* 🎯 RANK BADGES (ปรับ Effect ลด 30%) */
         .rank-badge {
             font-size: 9px;
             padding: 4px 8px;
@@ -1944,7 +1922,6 @@
         .rb-8 { color: #ff6d00; border: 2px solid #ff6d00; background: rgba(255,109,0,0.2); animation: fireGlow 1.5s infinite alternate; }
         .rb-9 { color: #fff; background: linear-gradient(45deg, #d50000, #ff1744); border: 2px solid #ff1744; animation: fireGlow 1s infinite alternate; }
         .rb-10 { background: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc, #ff00cc); background-size: 400% 400%; -webkit-background-clip: text; color: transparent; border: 2px solid #fff; animation: rainbowBorder 4s infinite linear; }
-        /* ปรับ .rb-ceo เพิ่ม !important เพื่อให้แน่ใจว่าแสดงผลถูกต้อง */
         .rb-ceo { 
             color: #ff0000 !important; 
             text-shadow: 0 0 10px red, 0 0 18px red !important; 
@@ -1953,20 +1930,6 @@
             animation: fireGlow 0.8s infinite alternate !important; 
         }
 
-        /* ===== 🆕 เพิ่ม CSS บังคับเอฟเฟกต์ CEO ใน myProfileModal (COMMENTED OUT TO FIX RANK COLORS) ===== */
-        /*
-        #myProfileModal .profile-avatar-large {
-            border-color: #ff0000 !important;
-            box-shadow: 0 0 30px #ff0000, 0 0 50px #ff0000 !important;
-            animation: fireGlow 1s infinite alternate !important;
-        }
-
-        #myProfileModal .profile-name {
-            color: #ff0000 !important;
-            text-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 45px #ff0000 !important;
-        }
-        */
-        
         @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
         @keyframes glowSpecial { 
             0% { box-shadow: 0 0 18px rgba(255, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.15); } 
@@ -1994,7 +1957,6 @@
             100% { transform: scale(1) translateY(0); opacity: 1; } 
         }
 
-        /* 📱 RESPONSIVE */
         @media (max-width: 768px) {
             .trade-container {
                 max-width: 100%;
@@ -2155,7 +2117,6 @@
             }
         }
 
-        /* 🛠️ UTILITY CLASSES */
         .hidden {
             display: none !important;
         }
@@ -2196,7 +2157,6 @@
         .p-3 { padding: 15px; }
         .p-4 { padding: 20px; }
 
-        /* ===== 🆕 MODAL สำหรับยืนยันส่งไอดีเกม (เฉพาะโหมดเกม) ===== */
         .game-delivery-modal {
             position: fixed;
             top: 0;
@@ -2268,7 +2228,6 @@
             cursor: pointer;
         }
 
-        /* ===== 🆕 MODAL สำหรับแจ้งผู้ซื้อเมื่อผู้ขายส่งมอบ ID/ไอเทม (เฉพาะโหมดเกม) ===== */
         .game-delivery-received-modal {
             position: fixed;
             top: 0;
@@ -2325,7 +2284,6 @@
             cursor: pointer;
         }
 
-        /* ===== 🆕 MODAL สำหรับยืนยันรับ ID/ไอเทม (เฉพาะโหมดเกม) ===== */
         .game-receive-confirm-modal {
             position: fixed;
             top: 0;
@@ -2397,7 +2355,6 @@
             cursor: pointer;
         }
 
-        /* ===== 🆕 MODAL สำหรับยืนยันรับของ (โหมดทั่วไป) ===== */
         .general-receive-confirm-modal {
             position: fixed;
             top: 0;
@@ -2478,8 +2435,6 @@
             display: inline-block;
         }
 
-        /* ===== 🎚️ GRAPHICS LEVEL STYLES (เพิ่มใหม่) ===== */
-        /* ---------- Graphics Level: Medium ---------- */
         body.graphics-medium {
             --glass-blur: 4px;
         }
@@ -2503,7 +2458,6 @@
         body.graphics-medium .admin-controls {
             backdrop-filter: blur(var(--glass-blur, 4px)) !important;
         }
-        /* ปิด animation ที่ไม่จำเป็น (ยกเว้น rank badge และ profile avatar effects) */
         body.graphics-medium .ai-face,
         body.graphics-medium .scan-line,
         body.graphics-medium .particle,
@@ -2531,7 +2485,6 @@
             transform: none !important;
             box-shadow: none !important;
         }
-        /* คง animation ของยศ */
         body.graphics-medium .rank-badge,
         body.graphics-medium .rb-special,
         body.graphics-medium .rb-ceo,
@@ -2539,7 +2492,6 @@
             animation: inherit !important;
         }
 
-        /* ---------- Graphics Level: Low ---------- */
         body.graphics-low {
             --glass-blur: 0px;
         }
@@ -2608,7 +2560,6 @@
             animation: none !important;
         }
 
-        /* ===== 🆕 DEBUG CONSOLE (เพิ่มใหม่) ===== */
         #debug-console {
             position: fixed;
             bottom: 0;
@@ -2635,6 +2586,32 @@
         }
         #debug-console .info {
             color: #0ff;
+        }
+
+        /* เพิ่มปุ่ม debug */
+        #debug-buttons {
+            position: fixed;
+            bottom: 160px;
+            left: 0;
+            right: 0;
+            background: #111;
+            color: #0f0;
+            padding: 5px;
+            font-size: 10px;
+            z-index: 100000;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            border-top: 1px solid #f0f;
+        }
+        #debug-buttons button {
+            background: #333;
+            color: #0f0;
+            border: 1px solid #0f0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            flex: 1 0 auto;
         }
     </style>
 </head>
@@ -3452,6 +3429,15 @@
 <!-- ===== 🆕 DEBUG CONSOLE ===== -->
 <div id="debug-console"></div>
 
+<!-- ===== 🆕 DEBUG BUTTONS (เพิ่มมาเช็คว่าฟังก์ชันมีอยู่) ===== -->
+<div id="debug-buttons">
+    <button onclick="alert('openTransferModal: ' + (typeof window.openTransferModal))">Check Transfer</button>
+    <button onclick="alert('openCancelModal: ' + (typeof window.openCancelModal))">Check Cancel</button>
+    <button onclick="alert('currentUser: ' + (currentUser ? 'yes : ' + currentUser.id : 'no'))">Check User</button>
+    <button onclick="alert('tradeStatus: ' + tradeStatus)">Status</button>
+    <button onclick="location.reload()">Reload</button>
+</div>
+
 <script>
     // ============================================
     // 🔥 GLOBAL VARIABLES (ประกาศก่อน debug console)
@@ -3538,7 +3524,20 @@
     // ============================================
     const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ✅ แก้ไข: เพิ่ม options เพื่อป้องกัน LockManager timeout
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true,
+            lock: false,  // ปิดการใช้ LockManager
+            flowType: 'implicit'
+        },
+        global: {
+            headers: { 'X-Client-Info': 'aegis-nex-web' }
+        }
+    });
 
     // ============================================
     // 🔥 GLOBAL VARIABLES (ต่อ)
@@ -3565,7 +3564,7 @@
     
     let feeRatesDescription = '';
     
-    // ✅ ตัวแปรสำหรับสถานะการโหลดห้อง (เพิ่มตามคำขอข้อ 1)
+    // ✅ ตัวแปรสำหรับสถานะการโหลดห้อง
     let isLoadingRoom = true;
 
     // ============================================
@@ -3676,7 +3675,7 @@
     }
 
     // ============================================
-    // 🎚️ GRAPHICS LEVEL FUNCTIONS (เพิ่มใหม่)
+    // 🎚️ GRAPHICS LEVEL FUNCTIONS
     // ============================================
     function loadGraphicsLevel() {
         const level = localStorage.getItem('graphicsLevel') || 'ultra';
@@ -3684,7 +3683,7 @@
     }
 
     // ============================================
-    // 👤 AUTH: ดึงข้อมูลผู้ใช้ปัจจุบัน (ปรับปรุงให้โหลดเร็วขึ้น) - ข้อ 2
+    // 👤 AUTH: ดึงข้อมูลผู้ใช้ปัจจุบัน
     // ============================================
     async function initAuth() {
         console.log('🚀 initAuth started');
@@ -3696,12 +3695,26 @@
         isLoadingRoom = true;
 
         try {
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            // ✅ ใช้ getSession แบบมี timeout จัดการเอง
+            const sessionPromise = supabaseClient.auth.getSession();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('getSession timeout after 8s')), 8000)
+            );
+            
+            const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise])
+                .catch(err => {
+                    console.error('Session race error:', err);
+                    throw err;
+                });
+
             if (error) throw error;
             
             if (!session) {
-                console.log('No session, redirecting to index');
-                window.location.href = 'index.html';
+                console.log('No session, but staying on page (no redirect)');
+                // ไม่ redirect แต่ให้แสดงข้อความ
+                addAiAlertMessage('⚠️ กรุณาเข้าสู่ระบบก่อนใช้งาน');
+                isLoadingRoom = false;
+                updateUIByStatus();
                 return;
             }
             
@@ -3869,7 +3882,20 @@
         } catch (err) {
             console.error('❌ Auth error:', err);
             // ไม่ redirect ทันที ให้ debug ก่อน
-            addAiAlertMessage('❌ เกิดข้อผิดพลาด: ' + err.message);
+            addAiAlertMessage('❌ เกิดข้อผิดพลาด: ' + (err.message || 'unknown error'));
+            
+            // fallback: ลองใช้ session จาก localStorage โดยตรง
+            try {
+                const storedSession = localStorage.getItem('supabase.auth.token');
+                if (storedSession) {
+                    const parsed = JSON.parse(storedSession);
+                    if (parsed.currentSession) {
+                        currentUser = { id: parsed.currentSession.user.id, profile: { username: 'cached_user' } };
+                        console.log('✅ Using cached session');
+                        addAiAlertMessage('⚠️ ใช้ข้อมูลเก่า กรุณาล็อกอินใหม่หากต้องการทำธุรกรรม');
+                    }
+                }
+            } catch (e) {}
         } finally {
             isLoadingRoom = false;
             updateUIByStatus(); // อัปเดต UI หลังจากโหลดเสร็จ
@@ -3877,9 +3903,13 @@
     }
 
     // ============================================
-    // 👤 โหลดข้อมูลคู่ค้า (ข้อ 3)
+    // 👤 โหลดข้อมูลคู่ค้า
     // ============================================
     async function loadPartnerInfo() {
+        if (!tradeData || !currentUser) {
+            document.getElementById('partnerName').innerHTML = 'รอคู่ค้า...';
+            return;
+        }
         if (tradeData.buyer_id === currentUser.id) {
             partnerId = tradeData.seller_id;
         } else if (tradeData.seller_id === currentUser.id) {
@@ -3897,12 +3927,12 @@
         } else {
             const { data: partnerData } = await supabaseClient
                 .from('users')
-                .select('username, display_name, photo_url, rank, kyc_status') // ✅ เพิ่ม display_name
+                .select('username, display_name, photo_url, rank, kyc_status')
                 .eq('id', partnerId)
                 .single();
                 
             if (partnerData) {
-                partnerName = partnerData.display_name || partnerData.username || 'คู่ค้า'; // ✅ ใช้ display_name ก่อน
+                partnerName = partnerData.display_name || partnerData.username || 'คู่ค้า';
                 partnerAvatar = partnerData.photo_url || DEFAULT_AVATAR;
                 partnerRank = partnerData.rank || 'rb-4';
             }
@@ -3918,6 +3948,7 @@
     // 📜 Load My Recent History
     // ============================================
     async function loadMyRecentHistory() {
+        if (!currentUser) return;
         try {
             const { data, error } = await supabaseClient
                 .from('trades')
@@ -3978,7 +4009,6 @@
             if (error) {
                 console.error('❌ Error loading messages:', error);
                 console.error('❌ Error details (JSON):', JSON.stringify(error, null, 2));
-                // แสดงในแชทด้วย
                 addAiAlertMessage('❌ ไม่สามารถโหลดข้อความได้: ' + (error.message || error.details || 'unknown error'));
                 return;
             }
@@ -3994,7 +4024,7 @@
     }
     
     // ============================================
-    // 🎨 แสดงข้อความ (แก้ไขให้ใช้ photo_url และ onclick ไปที่ profile ที่ถูกต้อง)
+    // 🎨 แสดงข้อความ
     // ============================================
     function renderMessages() {
         const container = document.getElementById('messagesContainer');
@@ -4014,7 +4044,6 @@
                 avatarImg.src = currentUser?.profile?.photo_url || DEFAULT_AVATAR;
                 avatarImg.onclick = openMyProfile;
                 
-                // เพิ่มเอฟเฟกต์ให้รูปตัวเองในแชท
                 const myRankInfo = getRank(currentUser.profile?.completed_deals || 0, currentUser.id);
                 const myGlow = getAvatarGlowStyle(myRankInfo, currentUser.id);
                 avatarImg.style.borderColor = myRankInfo.border;
@@ -4072,7 +4101,7 @@
     }
 
     // ============================================
-    // 🎯  QUEST INCREMENT FUNCTION (เพิ่มใหม่)
+    // 🎯  QUEST INCREMENT FUNCTION
     // ============================================
     async function incrementQuest(slug, amount = 1) {
         if (!currentUser) return;
@@ -4091,6 +4120,10 @@
         const input = document.getElementById('messageInput');
         const text = input.value.trim();
         if (!text) return;
+        if (!currentUser) {
+            alert('กรุณาเข้าสู่ระบบก่อนส่งข้อความ');
+            return;
+        }
         
         const { error } = await supabaseClient
             .from('messages')
@@ -4104,7 +4137,6 @@
         if (!error) {
             input.value = '';
             clearTyping();
-            // 🔥 เพิ่มเควสแชท
             incrementQuest('daily_chat', 1);
         } else {
             console.error('❌ Send message error:', error);
@@ -4135,6 +4167,7 @@
     // 🔄 REALTIME SUBSCRIPTIONS
     // ============================================
     function setupRealtime() {
+        if (!currentUser) return;
         supabaseClient
             .channel(`room:${roomId}`)
             .on('postgres_changes', 
@@ -4143,7 +4176,7 @@
                     const newMsg = payload.new;
                     supabaseClient
                         .from('users')
-                        .select('username, display_name, photo_url, kyc_status') // ✅ เพิ่ม display_name
+                        .select('username, display_name, photo_url, kyc_status')
                         .eq('id', newMsg.user_id)
                         .single()
                         .then(({ data }) => {
@@ -4163,7 +4196,6 @@
                     tradeStatus = tradeData.status;
                     productPrice = tradeData.product_price || 0;
                     updateUIByStatus();
-                    // ถ้าห้องนี้ถูกปิด (cancelled/received) ให้รีโหลด sidebar เพื่อลบออก
                     if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
                         loadRooms();
                     }
@@ -4181,7 +4213,6 @@
                 })
             .subscribe();
 
-        // เพิ่ม subscription สำหรับทุกห้องที่ผู้ใช้เกี่ยวข้อง เพื่อรีโหลด sidebar เมื่อมีการเปลี่ยนแปลง
         if (currentUser) {
             supabaseClient
                 .channel('user-trades-changes')
@@ -4212,7 +4243,6 @@
     // ============================================
     function startTradeTimer() {
         if (tradeTimer) clearInterval(tradeTimer);
-        // เวลาเริ่มต้นถูกตั้งไว้แล้วใน loadTradeRoom (timerMinutes, timerSeconds)
         tradeTimer = setInterval(updateTimer, 1000);
         updateTimerDisplay();
     }
@@ -4241,7 +4271,6 @@
     function handleTimeUp() {
         clearInterval(tradeTimer);
         if (tradeStatus === 'waiting_payment') {
-            // อัปเดตสถานะเป็น cancelled ก่อนออก
             supabaseClient
                 .from('trades')
                 .update({ status: 'cancelled', updated_at: new Date() })
@@ -4269,7 +4298,7 @@
     }
     
     // ============================================
-    // 🎯 ฟังก์ชันหลักสำหรับปุ่มต่างๆ
+    // 🎯 ฟังก์ชันหลักสำหรับปุ่มต่างๆ (ประกาศเป็น global)
     // ============================================
     window.openTransferModal = function() {
         document.getElementById('transferModal').style.display = 'flex';
@@ -4282,20 +4311,25 @@
         if (el) el.style.display = 'none';
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmTransfer ตามที่กำหนด ==========
-    async function confirmTransfer() {
+    // ========== แก้ไขฟังก์ชัน confirmTransfer ==========
+    window.confirmTransfer = async function() {
         const confirmBtn = document.getElementById('confirmTransferBtn');
         confirmBtn.disabled = true;
         const priceInput = document.getElementById('productPrice').value;
         const price = parseFloat(priceInput);
         if (!price || price <= 0) {
-            closeModal('transferModal'); // ปิด modal ก่อน
+            closeModal('transferModal');
             showAiAlert('❌ กรุณากรอกราคาที่ถูกต้อง', false);
             confirmBtn.disabled = false;
             return;
         }
 
-        // คำนวณค่าธรรมเนียมตาม market.html (ปรับใหม่)
+        if (!currentUser) {
+            showAiAlert('❌ กรุณาเข้าสู่ระบบก่อน', false);
+            confirmBtn.disabled = false;
+            return;
+        }
+
         let fee = 0;
         if (mode === 'game') {
             if (price <= 400) {
@@ -4303,7 +4337,7 @@
             } else {
                 fee = Math.ceil(price * 0.05);
             }
-        } else { // general
+        } else {
             if (price <= 1250) {
                 fee = 50;
             } else {
@@ -4312,20 +4346,18 @@
         }
         const total = price + fee;
 
-        // 1. ตรวจสอบยอดเงินผู้ซื้อ
         const { data: user, error: userError } = await supabaseClient
             .from('users')
             .select('balance')
             .eq('id', currentUser.id)
             .single();
         if (userError || !user || user.balance < total) {
-            closeModal('transferModal'); // ปิด modal ก่อน
+            closeModal('transferModal');
             showAiAlert('❌ ยอดเงินไม่เพียงพอ (ต้องการ ' + total.toLocaleString() + ' AGS)', false);
             confirmBtn.disabled = false;
             return;
         }
 
-        // 2. หักเงินจากผู้ซื้อ
         const newBalance = user.balance - total;
         const { error: updateError } = await supabaseClient
             .from('users')
@@ -4338,28 +4370,24 @@
             return;
         }
 
-        // 3. บันทึกธุรกรรม (transaction) โดยใช้คอลัมน์ที่มีอยู่
         const { error: txError } = await supabaseClient
             .from('transactions')
             .insert([{
                 user_id: currentUser.id,
-                amount: -total, // ติดลบเพราะเป็นการหัก
+                amount: -total,
                 type: 'trade_hold',
-                direction: 'out', // เงินออก
+                direction: 'out',
                 status: 'completed',
                 reference: roomId,
                 note: `วางเงินประกันดีล ${roomId} (สินค้า ${price} AGS + ค่าธรรมเนียม ${fee} AGS)`,
                 created_at: new Date(),
                 updated_at: new Date()
-                // คอลัมน์อื่นๆ ไม่จำเป็นต้องใส่ (recipient_id, sender_id, slip_uploaded ฯลฯ เว้นไว้)
             }]);
         if (txError) {
             console.error('Error recording transaction:', txError);
-            // แจ้ง error แต่ไม่ต้องหยุด เพราะเงินหักไปแล้ว
             showAiAlert('⚠️ บันทึกธุรกรรมไม่สำเร็จ แต่เงินถูกหักแล้ว', false);
         }
 
-        // 4. อัปเดตสถานะห้องเทรด
         productPrice = price;
         closeModal('transferModal');
         
@@ -4384,7 +4412,6 @@
         tradeStatus = 'payment_done';
         hasPaid = true;
         
-        // อัปเดตปุ่มและ UI เหมือนเดิม
         const btnTransfer = document.getElementById('btnTransfer');
         if (btnTransfer) {
             btnTransfer.classList.remove('btn-transfer');
@@ -4415,7 +4442,7 @@
         showAiAlert('✅ โอนเงินสำเร็จ! ระบบได้รับเงินแล้ว', false);
         
         setTimeout(() => { confirmBtn.disabled = false; }, 1000);
-    }
+    };
 
     window.openShippingModal = function() {
         if (mode === 'game') {
@@ -4429,7 +4456,7 @@
         document.getElementById('shippingModalElement').classList.remove('active');
     };
 
-    async function confirmShipping() {
+    window.confirmShipping = async function() {
         const confirmBtn = document.getElementById('confirmShippingBtn');
         confirmBtn.disabled = true;
         
@@ -4487,7 +4514,7 @@
         
         closeShippingModal();
         setTimeout(() => { confirmBtn.disabled = false; }, 1000);
-    }
+    };
 
     window.confirmGameDelivery = async function() {
         closeGameDeliveryModal();
@@ -4526,11 +4553,9 @@
         }
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmGeneralReceive ตามที่กำหนด ==========
     window.confirmGeneralReceive = async function() {
         closeGeneralReceiveConfirmModal();
         
-        // ดึงข้อมูลห้องเพื่อหาผู้ขายและจำนวนเงิน
         const { data: trade, error: tradeError } = await supabaseClient
             .from('trades')
             .select('seller_id, product_price, room_id')
@@ -4541,20 +4566,18 @@
             return;
         }
 
-        // โอนเงินให้ผู้ขาย (เพิ่ม balance ผู้ขาย)
         const { data: seller, error: sellerError } = await supabaseClient
             .from('users')
             .select('balance')
             .eq('id', trade.seller_id)
             .single();
         if (!sellerError && seller) {
-            const newSellerBalance = seller.balance + trade.product_price; // ผู้ขายได้เฉพาะค่าสินค้า
+            const newSellerBalance = seller.balance + trade.product_price;
             await supabaseClient
                 .from('users')
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
-            // บันทึก transaction ผู้ขาย
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
@@ -4568,7 +4591,6 @@
             }]);
         }
 
-        // อัปเดตสถานะห้องเป็น received
         await supabaseClient
             .from('trades')
             .update({ status: 'received' })
@@ -4593,18 +4615,15 @@
         
         addAiAlertMessage('✅ ผู้ซื้อรับสินค้าเรียบร้อยแล้ว! ธุรกรรมสำเร็จ');
         
-        // 🔥 เพิ่มเควสเทรด
         await incrementQuest('daily_trade', 1);
         await incrementQuest('pioneer_trade_first', 1);
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmGameReceive ตามที่กำหนด (แบบเดียวกัน) ==========
     window.confirmGameReceive = async function() {
         closeGameReceiveConfirmModal();
         
-        // ดึงข้อมูลห้องเพื่อหาผู้ขายและจำนวนเงิน
         const { data: trade, error: tradeError } = await supabaseClient
             .from('trades')
             .select('seller_id, product_price, room_id')
@@ -4615,20 +4634,18 @@
             return;
         }
 
-        // โอนเงินให้ผู้ขาย (เพิ่ม balance ผู้ขาย)
         const { data: seller, error: sellerError } = await supabaseClient
             .from('users')
             .select('balance')
             .eq('id', trade.seller_id)
             .single();
         if (!sellerError && seller) {
-            const newSellerBalance = seller.balance + trade.product_price; // ผู้ขายได้เฉพาะค่าสินค้า
+            const newSellerBalance = seller.balance + trade.product_price;
             await supabaseClient
                 .from('users')
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
-            // บันทึก transaction ผู้ขาย
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
@@ -4642,7 +4659,6 @@
             }]);
         }
 
-        // อัปเดตสถานะห้องเป็น received
         await supabaseClient
             .from('trades')
             .update({ status: 'received' })
@@ -4667,7 +4683,6 @@
         
         addAiAlertMessage('✅ ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว! ธุรกรรมสำเร็จ (โหมดเกม)');
         
-        // 🔥 เพิ่มเควสเทรด
         await incrementQuest('daily_trade', 1);
         await incrementQuest('pioneer_trade_first', 1);
         
@@ -4707,7 +4722,6 @@
         modal.style.display = 'flex';
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmCancel ตามที่กำหนด ==========
     window.confirmCancel = async function() {
         closeModal('cancelModal');
         
@@ -4716,7 +4730,6 @@
             addAiAlertMessage('❌ คุณได้ยกเลิกการซื้อขายและออกจากห้องแล้ว', false);
             setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
         } else if (tradeStatus === 'payment_done') {
-            // คืนเงินให้ผู้ซื้อ
             const { data: trade, error: tradeError } = await supabaseClient
                 .from('trades')
                 .select('buyer_id, total, room_id')
@@ -4755,7 +4768,6 @@
 
     async function completeTrade() {
         try {
-            // 1. ดึงข้อมูลห้อง (หาผู้ขายและราคาสินค้า)
             const { data: trade, error: tradeError } = await supabaseClient
                 .from('trades')
                 .select('seller_id, product_price, room_id')
@@ -4763,7 +4775,6 @@
                 .single();
             if (tradeError) throw tradeError;
 
-            // 2. ดึงข้อมูลผู้ขาย
             const { data: seller, error: sellerError } = await supabaseClient
                 .from('users')
                 .select('balance')
@@ -4773,14 +4784,12 @@
 
             const newSellerBalance = seller.balance + trade.product_price;
 
-            // 3. อัปเดต balance ผู้ขาย
             const { error: updateError } = await supabaseClient
                 .from('users')
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             if (updateError) throw updateError;
 
-            // 4. บันทึกธุรกรรม (transaction) ให้ผู้ขาย
             const { error: txError } = await supabaseClient
                 .from('transactions')
                 .insert([{
@@ -4796,14 +4805,12 @@
                 }]);
             if (txError) throw txError;
 
-            // 5. อัปเดตสถานะห้องเป็น received
             const { error: updateTradeError } = await supabaseClient
                 .from('trades')
                 .update({ status: 'received' })
                 .eq('room_id', roomId);
             if (updateTradeError) throw updateTradeError;
 
-            // 6. อัปเดต UI (เหมือนเดิม)
             tradeStatus = 'received';
             const step3 = document.getElementById('step3');
             const step4 = document.getElementById('step4');
@@ -4826,10 +4833,8 @@
             addAiAlertMessage('❌ เกิดข้อผิดพลาดในการโอนเงินอัตโนมัติ กรุณาติดต่อ Admin');
         }
     }     
-    // 🎭 UI CONTROL FUNCTIONS (ข้อ 4 - เพิ่มการตรวจสอบ isLoading)
-    // ============================================
+    
     function updateUIByStatus() {
-        // ถ้ายังโหลดไม่เสร็จ หรือไม่มีข้อมูล ให้ปิดปุ่มทั้งหมด
         if (isLoadingRoom || !tradeData) {
             document.getElementById('btnTransfer').disabled = true;
             document.getElementById('btnShip').disabled = true;
@@ -4860,13 +4865,11 @@
         const isBuyer = role === 'buyer';
         const isSeller = role === 'seller';
         
-        // รีเซ็ตปุ่มทั้งหมดให้ disabled ก่อน
         document.getElementById('btnTransfer').disabled = true;
         document.getElementById('btnShip').disabled = true;
         document.getElementById('btnReceive').disabled = true;
         document.getElementById('btnCancel').disabled = false;
         
-        // ตั้งค่าตามสถานะและบทบาท
         if (isBuyer && tradeStatus === 'waiting_payment') {
             document.getElementById('btnTransfer').disabled = false;
         }
@@ -4879,14 +4882,12 @@
             document.getElementById('btnReceive').disabled = false;
         }
         
-        // ปุ่มยกเลิก: อนุญาตเฉพาะบางสถานะ
         if (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done') {
             document.getElementById('btnCancel').disabled = false;
         } else {
             document.getElementById('btnCancel').disabled = true;
         }
         
-        // กรณีห้องถูกยกเลิกหรือเสร็จแล้ว ปิดปุ่มทั้งหมด
         if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
             document.getElementById('btnTransfer').disabled = true;
             document.getElementById('btnShip').disabled = true;
@@ -4906,7 +4907,7 @@
             } else link.style.display = 'none';
         }
         const container = document.getElementById('aiAlertContainer');
-        container.style.zIndex = '10000'; // บังคับให้อยู่ด้านหน้า
+        container.style.zIndex = '10000';
         container.style.display = 'block';
     }
 
@@ -4915,7 +4916,7 @@
     }
 
     // ============================================
-    // 📤 ฟังก์ชันส่งรายงานไปยัง Admin (เพิ่มใหม่)
+    // 📤 ฟังก์ชันส่งรายงานไปยัง Admin
     // ============================================
     async function uploadReportImage(file, folder) {
         const fileExt = file.name.split('.').pop();
@@ -5015,23 +5016,15 @@
         }
     };
 
-    // ============================================
-    // 🛠️ ADMIN CONTROLS (ฟังก์ชันพื้นฐาน)
-    // ============================================
     window.adminRefund = function(target) {
         const who = target === 'buyer' ? 'ผู้ซื้อ' : 'ผู้ขาย';
         showAiAlert(`🛠️ Admin กำลังดำเนินการคืนเงินให้${who} (ระบบยังไม่สมบูรณ์)`, false);
-        // TODO: implement real refund logic
     };
 
     window.adminForceComplete = function() {
         showAiAlert('🛠️ Admin บังคับปิดดีลเรียบร้อย', false);
-        // TODO: implement force complete
     };
 
-    // ============================================
-    // 🎪 STICKER, IMAGE UPLOAD
-    // ============================================
     window.sendSticker = function(stickerKey) {
         const stickerMap = {
             'thumbsup': 'https://cdn-icons-png.flaticon.com/256/1532/1532551.png',
@@ -5150,9 +5143,6 @@
         document.getElementById('btnUpload').disabled = true;
     }
 
-    // ============================================
-    // 🎯 ฟังก์ชันเสริมอื่นๆ
-    // ============================================
     window.updateShippingInfo = function() {
         const select = document.getElementById('shippingSelect');
         const infoDiv = document.getElementById('shippingInfo');
@@ -5195,7 +5185,6 @@
         }
     };
 
-    // แก้ไขฟังก์ชัน calculateFee ให้ตรงกับ market
     window.calculateFee = function() {
         const priceInput = document.getElementById('productPrice');
         const feeDiv = document.getElementById('feeCalculation');
@@ -5211,7 +5200,7 @@
             } else {
                 fee = Math.ceil(price * 0.05);
             }
-        } else { // general
+        } else {
             if (price <= 1250) {
                 fee = 50;
             } else {
@@ -5227,7 +5216,6 @@
         confirmBtn.disabled = false;
     };
 
-    // แก้ไข updateFeeRatesUI ให้แสดงอัตราใหม่
     function updateFeeRatesUI() {
         const feeInfoDiv = document.getElementById('feeRatesInfo');
         if (feeInfoDiv) {
@@ -5283,7 +5271,7 @@
     }
 
     function openSidebar() {
-        loadRooms(); // โหลดห้องจริง
+        loadRooms();
         document.getElementById('sidebar')?.classList.add('active');
         document.getElementById('sidebarOverlay')?.classList.add('active');
     }
@@ -5337,10 +5325,8 @@
         window.location.href = 'dashboard.html';
     }
 
-    // ============================================
-    // 📋 Load User's Rooms (sidebar) - แก้ไขตามที่ขอ: แสดงเฉพาะสถานะที่ยังดำเนินการ
-    // ============================================
     async function loadRooms() {
+        if (!currentUser) return;
         try {
             const { data, error } = await supabaseClient
                 .from('trades')
@@ -5356,7 +5342,7 @@
                     seller:users!seller_id(username, photo_url)
                 `)
                 .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
-                .in('status', ['waiting_payment', 'payment_done', 'shipped']) // ✅ แสดงเฉพาะสถานะที่ยังดำเนินการ
+                .in('status', ['waiting_payment', 'payment_done', 'shipped'])
                 .order('updated_at', { ascending: false });
             
             if (error) throw error;
@@ -5406,9 +5392,6 @@
         }
     }
 
-    // ============================================
-    // 👤 ฟังก์ชันเปิดโปรไฟล์ตัวเอง (ปรับปรุงตามที่ขอ)
-    // ============================================
     window.openMyProfile = function() {
         if (!currentUser?.profile) {
             console.warn('No profile data');
@@ -5423,13 +5406,11 @@
         const rankInfo = getRank(profile.completed_deals || 0, uid);
         console.log('🔍 rankInfo:', rankInfo);
         
-        // ชื่อ
         const nameEl = document.getElementById('myProfileName');
-        nameEl.innerHTML = (profile.display_name || profile.username || 'ผู้ใช้').toUpperCase(); // ✅ ใช้ display_name
+        nameEl.innerHTML = (profile.display_name || profile.username || 'ผู้ใช้').toUpperCase();
         nameEl.style.color = rankInfo.color;
         nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
         
-        // รูป
         const avatar = document.getElementById('myProfileAvatar');
         avatar.src = profile.photo_url || DEFAULT_AVATAR;
         const glow = getAvatarGlowStyle(rankInfo, uid);
@@ -5438,36 +5419,27 @@
         avatar.style.boxShadow = glow.boxShadow;
         avatar.style.animation = glow.animation;
         
-        // ลบติ๊กเก่า
         const oldTick = nameEl.querySelector('.fa-check-circle');
         if (oldTick) oldTick.remove();
         
-        // เพิ่มติ๊กตามสถานะ
         if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
             nameEl.innerHTML += ' <i class="fas fa-check-circle rainbow-tick" style="font-size:18px;"></i>';
         } else if (profile.kyc_status === 'verified') {
             nameEl.innerHTML += ' <i class="fas fa-check-circle" style="color:var(--primary); text-shadow:0 0 8px var(--primary); font-size:18px;"></i>';
         }
         
-        // ✅ ใช้ rankInfo.html สำหรับยศ
         document.getElementById('myProfileRankBadge').innerHTML = rankInfo.html;
         
-        // ดาว
         document.getElementById('myProfileStars').innerHTML = getStarDisplay(profile.average_rating || 5.0, uid);
         
-        // สถิติ
         document.getElementById('myStatDeals').textContent = profile.completed_deals || 0;
         document.getElementById('myStatSales').textContent = (profile.total_volume || 0).toLocaleString();
         document.getElementById('myStatSuccess').textContent = (profile.success_rate || 100) + '%';
         
-        // วันที่สมัคร
         if (profile.created_at) {
             const joinDate = new Date(profile.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
             document.getElementById('myJoinDate').textContent = joinDate;
         }
-        
-        // ✅ บังคับเอฟเฟกต์ CEO ให้จัดเต็ม (แต่ rankInfo จะจัดการเอง ปล่อยไว้)
-        // ตามที่บอกให้ลบการบังคับด้วยมือออก เราไม่ต้องใส่เพิ่ม
         
         loadMyRecentHistory();
         
@@ -5483,9 +5455,6 @@
         switchReportTab(1);
     }
 
-    // ============================================
-    // 👤 ฟังก์ชันเปิดโปรไฟล์คู่ค้า (ปรับปรุงให้ใช้ rank functions ด้วย)
-    // ============================================
     window.openPartnerProfile = async function() {
         if (!partnerId) {
             alert('ยังไม่มีคู่ค้าในห้องนี้');
@@ -5501,11 +5470,10 @@
             
             const rankInfo = getRank(data.completed_deals || 0, partnerId);
             
-            document.getElementById('profileName').innerHTML = (data.display_name || data.username || 'คู่ค้า').toUpperCase(); // ✅ ใช้ display_name
+            document.getElementById('profileName').innerHTML = (data.display_name || data.username || 'คู่ค้า').toUpperCase();
             document.getElementById('profileName').style.color = rankInfo.color;
             document.getElementById('profileName').style.textShadow = getTextShadowStyle(rankInfo, partnerId);
             
-            // ติ๊ก
             const tick = document.querySelector('#profileName .fa-check-circle');
             if (tick) tick.remove();
             if (partnerId === MY_GOD_UID || partnerId === MY_SPECIAL_UID) {
@@ -5538,9 +5506,6 @@
         }
     };
 
-    // ============================================
-    // ⭐ RATING
-    // ============================================
     let currentRating = 0;
     
     function setupRatingStars() {
@@ -5574,9 +5539,6 @@
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
     }
 
-    // ============================================
-    // 🚀 INITIALIZATION
-    // ============================================
     function setupEventListeners() {
         document.getElementById('menuToggle').addEventListener('click', openSidebar);
         document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
@@ -5607,9 +5569,6 @@
         }
     }
 
-    // ============================================
-    // 🆕 เพิ่มฟังก์ชันสำหรับการแจ้ง Admin เมื่อยกเลิกดีล
-    // ============================================
     function showEmergencyAlert() {
         const alertEl = document.getElementById('emergencyAlert');
         if (alertEl) alertEl.style.display = 'block';
@@ -5631,9 +5590,59 @@
     }
 
     function addAdminMessage(message) {
-        // ใช้ addAiAlertMessage เพื่อแสดงข้อความระบบ
         addAiAlertMessage(message);
     }
+
+    // ฟังก์ชันปิดโปรไฟล์ตัวเอง (เผื่อ undefined)
+    window.closeProfileModal = function() {
+        document.getElementById('profileModal').classList.remove('active');
+    };
+
+    window.closeMyProfileModal = function() {
+        document.getElementById('myProfileModal').classList.remove('active');
+    };
+
+    window.closeGameDeliveryModal = function() {
+        document.getElementById('gameDeliveryConfirmModal').classList.remove('active');
+    };
+
+    window.closeGameDeliveryReceivedModal = function() {
+        document.getElementById('gameDeliveryReceivedModal').classList.remove('active');
+    };
+
+    window.closeGameReceiveConfirmModal = function() {
+        document.getElementById('gameReceiveConfirmModal').classList.remove('active');
+    };
+
+    window.closeGeneralReceiveConfirmModal = function() {
+        document.getElementById('generalReceiveConfirmModal').classList.remove('active');
+    };
+
+    window.switchReportTab = function(tabNum) {
+        document.querySelectorAll('.report-tab').forEach((tab, idx) => {
+            if (idx+1 === tabNum) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+        document.querySelectorAll('.report-content').forEach((content, idx) => {
+            if (idx+1 === tabNum) content.classList.add('active');
+            else content.classList.remove('active');
+        });
+    };
+
+    window.closeAdminReportModal = function() {
+        document.getElementById('adminReportModal').classList.remove('active');
+    };
+
+    window.previewReportImage = function(input, previewId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(previewId).src = e.target.result;
+                document.getElementById(previewId).classList.add('active');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         if (mode === 'game') {
@@ -5653,7 +5662,7 @@
             }
         }
         
-        loadGraphicsLevel(); // ✅ โหลดค่าระดับกราฟิก
+        loadGraphicsLevel();
         updateFeeRatesUI();
         initAuth();
         setupEventListeners();
@@ -5669,20 +5678,6 @@
             observer.observe(transferModal, { attributes: true });
         }
     });
-    // ============================================
-// ฟังก์ชันปิดโปรไฟล์ตัวเอง (ป้องกัน ReferenceError)
-// ============================================
-function closeMyProfileModal() {
-    document.getElementById('myProfileModal').classList.remove('active');
-}
-
-// ============================================
-// ฟังก์ชันเปิด modal แจ้ง Admin
-// ============================================
-function openAdminReportModal() {
-    document.getElementById('adminReportModal').classList.add('active');
-    switchReportTab(1);
-}
 </script>
 
 </body>
