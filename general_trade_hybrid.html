@@ -2650,6 +2650,21 @@
             opacity: 1 !important;
             height: auto !important;
         }
+        /* บังคับให้แชทโผล่ ไม่ต้องพึ่งดีบัก */
+.chat-area, .chat-input-area, .messages-container, .media-buttons, .message-input-wrapper, .send-btn {
+    display: flex !important;
+    visibility: visible !important;
+    height: auto !important;
+    opacity: 1 !important;
+}
+.messages-container {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 200px !important;
+}
+.chat-area {
+    flex-direction: column !important;
+}
     </style>
 </head>
 <body>
