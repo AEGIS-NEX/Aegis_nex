@@ -959,7 +959,7 @@
                 // Step 2: Send password reset email
                 // เปลี่ยน redirectTo ให้เป็นหน้า recovery.html เอง (ไม่ต้องไปหน้า reset-password.html)
                 const { error: resetError } = await supa.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/change_password.html'
+                    redirectTo: window.location.href.replace('recovery.html', 'change_password.html')
                 });
                 
                 if (resetError) throw resetError;
