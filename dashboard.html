@@ -251,7 +251,7 @@
         
         .header-actions { 
             display: flex; 
-            gap: 10px; 
+            gap: 15px; 
             align-items: center;
         }
         
@@ -291,7 +291,7 @@
             border: 2px solid var(--dark-bg); 
         }
 
-        /* ===== เครดิตเพลง (เพิ่มใหม่) ===== */
+        /* ===== เครดิตเพลง (ปรับตำแหน่ง) ===== */
         .music-credit {
             max-width: 140px;
             overflow: hidden;
@@ -307,6 +307,7 @@
             height: 36px;
             cursor: default;
             transition: all 0.3s ease;
+            margin: 0 5px; /* ขยับให้ห่างจากปุ่ม */
         }
         .music-credit:hover {
             text-shadow: 0 0 5px var(--primary);
@@ -1840,8 +1841,9 @@
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge"></div>
                 </div>
-                <!-- แสดงเครดิตเพลง -->
+                <!-- แสดงเครดิตเพลง (ขยับให้ห่างจากปุ่ม) -->
                 <div class="music-credit" id="musicCredit" title="🎵 NoCopyrightSounds">🎵 NCS Music</div>
+                <!-- ปุ่มลำโพง (ขยับให้อยู่สุดขวา) -->
                 <div class="icon-btn" onclick="toggleAudio()">
                     <i class="fas fa-volume-mute" id="headerAudioIcon"></i>
                 </div>
@@ -3700,7 +3702,16 @@
         // ฟังก์ชัน toggleAudio เดิม ถูกแทนที่ด้วยฟังก์ชันใหม่ที่ควบคุม ncsPlayer
         function toggleAudio() {
             if (ncsPlayer.paused) {
-                ncsPlayer.play();
+                ncsPlayer.play().catch(e => {
+                    console.error('Playback failed:', e);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เล่นเพลงไม่ได้',
+                        text: 'กรุณาตรวจสอบไฟล์เพลงในโฟลเดอร์ music/',
+                        background: '#050b14',
+                        color: '#fff'
+                    });
+                });
                 document.getElementById('headerAudioIcon').className = 'fas fa-volume-up';
                 document.getElementById('audioIcon').className = 'fas fa-volume-up';
             } else {
@@ -3709,6 +3720,18 @@
                 document.getElementById('audioIcon').className = 'fas fa-volume-mute';
             }
         }
+
+        // เพิ่ม error handler สำหรับ ncsPlayer
+        ncsPlayer.addEventListener('error', function(e) {
+            console.error('Audio error:', e);
+            Swal.fire({
+                icon: 'error',
+                title: 'โหลดเพลงไม่ได้',
+                text: 'กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ music/ และมีชื่อถูกต้อง',
+                background: '#050b14',
+                color: '#fff'
+            });
+        });
 
         function cleanupSubscriptions() {
             if (userChannel) supa.removeChannel(userChannel);
