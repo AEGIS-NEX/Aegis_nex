@@ -477,7 +477,7 @@
             flex-wrap: wrap;
         }
 
-        .btn-approve, .btn-reject, .btn-view, .btn-warp {
+        .btn-approve, .btn-reject, .btn-view, .btn-warp, .btn-delete {
             padding: 8px 14px;
             border-radius: 8px;
             font-size: 13px;
@@ -515,10 +515,17 @@
             color: #d86cff;
         }
 
+        .btn-delete {
+            background: rgba(255, 51, 51, 0.1);
+            color: #ff9999;
+            border: 1px solid rgba(255, 51, 51, 0.3);
+        }
+
         .btn-approve:hover { background: var(--success); color: #000; }
         .btn-reject:hover { background: var(--danger); color: #fff; }
         .btn-view:hover { background: rgba(255,255,255,0.15); color: #fff; }
         .btn-warp:hover { background: var(--secondary); color: #fff; }
+        .btn-delete:hover { background: var(--danger); color: #fff; }
 
         /* Empty State */
         .empty-state {
@@ -835,6 +842,8 @@
             <button class="tab-btn" data-tab="tab4"><i class="fas fa-door-open"></i> ตรวจสอบห้อง</button>
             <button class="tab-btn" data-tab="tab5"><i class="fas fa-id-card"></i> KYC รออนุมัติ</button>
             <button class="tab-btn" data-tab="tab6"><i class="fas fa-terminal"></i> ตั้งค่าระบบ</button>
+            <!-- NEW: แท็บประกาศ -->
+            <button class="tab-btn" data-tab="tab7"><i class="fas fa-bullhorn"></i> ประกาศ</button>
         </div>
 
         <!-- TAB 1: แจ้งฝาก -->
@@ -920,6 +929,56 @@
                         <p style="font-size:12px; margin-top:8px; color:#8b9bb4;">Admin UID:</p>
                         <p id="footerUid" style="font-family:monospace; background:rgba(0,0,0,0.3); padding:6px 8px; border-radius:6px; font-size:11px; margin-top:4px; color:#fff; word-break: break-all;">——</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: TAB 7 ประกาศ -->
+        <div id="tab7" class="panel">
+            <div class="data-panel">
+                <div class="section-header">
+                    <div class="section-title"><i class="fas fa-bullhorn" style="color:var(--admin-gold);"></i> ส่งประกาศถึงผู้ใช้</div>
+                    <button class="refresh-btn" onclick="loadNotifications()"><i class="fas fa-sync-alt"></i> โหลดใหม่</button>
+                </div>
+
+                <!-- ฟอร์มส่งประกาศ -->
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr;">
+                        <div style="grid-column: span 2;">
+                            <label style="display: block; font-size: 12px; color: #8b9bb4; margin-bottom: 6px;">หัวข้อประกาศ</label>
+                            <input type="text" id="notiTitle" placeholder="เช่น ประกาศสำคัญจากทีมงาน" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: #fff; font-family: 'Chakra Petch', sans-serif;">
+                        </div>
+                        <div style="grid-column: span 2;">
+                            <label style="display: block; font-size: 12px; color: #8b9bb4; margin-bottom: 6px;">รายละเอียด</label>
+                            <textarea id="notiMessage" rows="4" placeholder="เนื้อหาประกาศ..." style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: #fff; font-family: 'Chakra Petch', sans-serif; resize: vertical;"></textarea>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; color: #8b9bb4; margin-bottom: 6px;">เป้าหมาย</label>
+                            <select id="notiTarget" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: #fff; font-family: 'Chakra Petch', sans-serif;">
+                                <option value="all" selected>📢 ทุกคน</option>
+                                <option value="specific">👤 เฉพาะผู้ใช้ (ระบุ UID)</option>
+                            </select>
+                        </div>
+                        <div id="specificUserField" style="display: none;">
+                            <label style="display: block; font-size: 12px; color: #8b9bb4; margin-bottom: 6px;">ระบุ User ID (UUID)</label>
+                            <input type="text" id="notiTargetUserId" placeholder="เช่น 91e374cf-1d0f-4576-bb3e-b249e58dd233" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: #fff; font-family: 'Chakra Petch', sans-serif;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 12px; color: #8b9bb4; margin-bottom: 6px;">วันหมดอายุ (ไม่บังคับ)</label>
+                            <input type="datetime-local" id="notiExpires" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: #fff; font-family: 'Chakra Petch', sans-serif; color-scheme: dark;">
+                        </div>
+                    </div>
+                    <button class="btn-approve" style="margin-top: 20px; width: 100%; justify-content: center; padding: 14px;" onclick="sendNotification()">
+                        <i class="fas fa-paper-plane"></i> ส่งประกาศ
+                    </button>
+                </div>
+
+                <!-- รายการประกาศที่ส่งไปแล้ว -->
+                <div class="section-header" style="border-bottom: none; margin-bottom: 10px;">
+                    <div class="section-title"><i class="fas fa-history"></i> ประวัติประกาศล่าสุด</div>
+                </div>
+                <div id="notificationsList" class="item-list">
+                    <!-- แสดงรายการประกาศ -->
                 </div>
             </div>
         </div>
@@ -1032,6 +1091,7 @@
 
                 await refreshData();
                 await loadPendingKyc();
+                await loadNotifications(); // NEW: โหลดประกาศ
                 setupRealtimeSubscriptions();
                 initAudioController();
             } catch (e) {
@@ -1139,6 +1199,22 @@
             } catch (e) {
                 console.error('loadPendingKyc error:', e);
                 document.getElementById('kycList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูลได้</p></div>`;
+            }
+        }
+
+        // NEW: โหลดประกาศ
+        async function loadNotifications() {
+            try {
+                const { data, error } = await supa
+                    .from('notifications')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+                if (error) throw error;
+                renderNotifications(data || []);
+            } catch (e) {
+                console.error('loadNotifications error:', e);
+                document.getElementById('notificationsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>โหลดประกาศไม่สำเร็จ</p></div>`;
             }
         }
 
@@ -1376,6 +1452,109 @@
             container.innerHTML = html;
         }
 
+        // NEW: render ประกาศ
+        function renderNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            if (!notifications.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-bullhorn" style="color:var(--admin-gold);"></i><p>ยังไม่มีประกาศ</p></div>`;
+                return;
+            }
+            let html = '';
+            notifications.forEach(n => {
+                const targetText = n.target === 'all' ? 'ทุกคน' : 'เฉพาะผู้ใช้';
+                const expires = n.expires_at ? new Date(n.expires_at).toLocaleString('th-TH') : 'ไม่หมดอายุ';
+                const date = n.created_at ? new Date(n.created_at).toLocaleString('th-TH') : '';
+                html += `<div class="item-card" style="border-left-color: var(--admin-gold);">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge" style="color:var(--admin-gold);"><i class="fas fa-bullhorn"></i> ${escapeHTML(n.title)}</span>
+                            <span class="status-badge" style="background:rgba(255,193,7,0.1);">${targetText}</span>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:8px; margin:8px 0;">
+                            ${escapeHTML(n.message)}
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hourglass-end"></i> ${expires}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-delete" onclick='deleteNotification("${n.id}")'><i class="fas fa-trash"></i> ลบ</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // --------------------------------------------------------------
+        // NOTIFICATION ACTIONS (NEW)
+        // --------------------------------------------------------------
+        // แสดง/ซ่อนช่องใส่ user id เมื่อเลือก target
+        document.getElementById('notiTarget')?.addEventListener('change', function(e) {
+            const specificField = document.getElementById('specificUserField');
+            specificField.style.display = e.target.value === 'specific' ? 'block' : 'none';
+        });
+
+        // ส่งประกาศ
+        window.sendNotification = async function() {
+            const title = document.getElementById('notiTitle').value.trim();
+            const message = document.getElementById('notiMessage').value.trim();
+            const target = document.getElementById('notiTarget').value;
+            const targetUserId = document.getElementById('notiTargetUserId').value.trim();
+            const expires = document.getElementById('notiExpires').value;
+
+            if (!title || !message) {
+                showToast('กรุณากรอกหัวข้อและรายละเอียด', 'warning');
+                return;
+            }
+            if (target === 'specific' && !targetUserId) {
+                showToast('กรุณาระบุ User ID', 'warning');
+                return;
+            }
+
+            const notiData = {
+                title,
+                message,
+                target,
+                created_by: currentUser?.id || CEO_UID,
+                is_active: true
+            };
+            if (target === 'specific') {
+                notiData.target_user_id = targetUserId;
+            }
+            if (expires) {
+                notiData.expires_at = new Date(expires).toISOString();
+            }
+
+            try {
+                const { error } = await supa.from('notifications').insert([notiData]);
+                if (error) throw error;
+                showToast('✅ ส่งประกาศสำเร็จ', 'success');
+                document.getElementById('notiTitle').value = '';
+                document.getElementById('notiMessage').value = '';
+                document.getElementById('notiTargetUserId').value = '';
+                document.getElementById('notiExpires').value = '';
+                await loadNotifications();
+            } catch (e) {
+                console.error('sendNotification error:', e);
+                showToast(`❌ ส่งไม่สำเร็จ: ${e.message}`, 'error');
+            }
+        };
+
+        // ลบประกาศ
+        window.deleteNotification = async function(id) {
+            if (!confirm('ต้องการลบประกาศนี้ใช่หรือไม่?')) return;
+            try {
+                const { error } = await supa.from('notifications').delete().eq('id', id);
+                if (error) throw error;
+                showToast('✅ ลบประกาศแล้ว', 'success');
+                await loadNotifications();
+            } catch (e) {
+                console.error('deleteNotification error:', e);
+                showToast(`❌ ลบไม่สำเร็จ: ${e.message}`, 'error');
+            }
+        };
+
         // --------------------------------------------------------------
         // KYC ACTIONS
         // --------------------------------------------------------------
@@ -1405,7 +1584,6 @@
             document.getElementById('confirmActionModal').style.display = 'flex';
         }
 
-        // 🔥 แก้ไขฟังก์ชันนี้เพื่อเรียก complete_quest เมื่ออนุมัติ KYC
         async function executeApproveKyc(kycId, userId) {
             try {
                 const { error: userError } = await supa
@@ -1420,7 +1598,6 @@
                     .eq('id', kycId);
                 if (kycError) throw kycError;
 
-                // 🔥 เพิ่มการ complete quest pioneer_kyc
                 const { error: questError } = await supa.rpc('complete_quest', {
                     p_user_id: userId,
                     p_slug: 'pioneer_kyc'
@@ -1589,7 +1766,7 @@
         }
 
         // --------------------------------------------------------------
-        // TICKET ACTIONS (FIXED: now they reload data after update)
+        // TICKET ACTIONS
         // --------------------------------------------------------------
         async function executeCloseTicket(ticketId) {
             try {
@@ -1760,7 +1937,7 @@
         }
 
         // --------------------------------------------------------------
-        // REALTIME SUBSCRIPTIONS (ปรับให้ใช้ isManualRefresh)
+        // REALTIME SUBSCRIPTIONS
         // --------------------------------------------------------------
         function setupRealtimeSubscriptions() {
             if (depositChannel) supa.removeChannel(depositChannel);
@@ -1793,6 +1970,16 @@
             kycChannel = supa.channel('admin-kyc-rt')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'kyc_submissions', filter: 'status=eq.pending' }, () => { 
                     if (!isManualRefresh) { loadPendingKyc(); }
+                })
+                .subscribe();
+
+            // NEW: subscription สำหรับ notifications (optional)
+            supa.channel('admin-notifications-rt')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, () => {
+                    // ถ้าอยู่ในแท็บประกาศ ให้โหลดใหม่
+                    if (document.getElementById('tab7').classList.contains('active')) {
+                        loadNotifications();
+                    }
                 })
                 .subscribe();
         }
@@ -1849,6 +2036,10 @@
                     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
                     const tabId = this.dataset.tab;
                     document.getElementById(tabId).classList.add('active');
+                    // ถ้าเป็นแท็บประกาศ ให้โหลดข้อมูล
+                    if (tabId === 'tab7') {
+                        loadNotifications();
+                    }
                 });
             });
         }
@@ -1894,6 +2085,7 @@
         window.openRejectKycModal = openRejectKycModal;
         window.executeApproveKyc = executeApproveKyc;
         window.executeRejectKyc = executeRejectKyc;
+        window.loadNotifications = loadNotifications; // สำหรับเรียกจากปุ่ม refresh
     </script>
 </body>
 </html>
