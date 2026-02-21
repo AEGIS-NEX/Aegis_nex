@@ -291,27 +291,38 @@
             border: 2px solid var(--dark-bg); 
         }
 
-        /* ===== เครดิตเพลง (ปรับตำแหน่ง) ===== */
+        /* ===== แถบควบคุมเพลง (ย้ายลงมาอยู่ด้านล่างโปรไฟล์) ===== */
+        .music-player-bar {
+            margin: 15px 20px 10px;
+            padding: 10px 15px;
+            background: rgba(0, 242, 255, 0.05);
+            border-radius: 30px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
         .music-credit {
-            max-width: 140px;
+            flex: 1;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             color: var(--primary);
-            font-size: 10px;
+            font-size: 11px;
             font-family: 'Orbitron';
-            padding: 0 8px;
-            border-right: 1px solid rgba(0,242,255,0.2);
-            border-left: 1px solid rgba(0,242,255,0.2);
+            padding: 0 5px;
             line-height: 36px;
             height: 36px;
             cursor: default;
             transition: all 0.3s ease;
-            margin: 0 5px; /* ขยับให้ห่างจากปุ่ม */
         }
         .music-credit:hover {
             text-shadow: 0 0 5px var(--primary);
             background: rgba(0,242,255,0.05);
+            border-radius: 18px;
         }
 
         .rank-badge { 
@@ -1394,9 +1405,12 @@
                 font-size: 11px;
             }
 
+            .music-player-bar {
+                margin: 10px 15px;
+                padding: 8px 12px;
+            }
             .music-credit {
-                max-width: 100px;
-                font-size: 9px;
+                font-size: 10px;
             }
         }
         
@@ -1456,10 +1470,12 @@
                 min-width: 60px;
             }
 
+            .music-player-bar {
+                margin: 8px 10px;
+                padding: 6px 10px;
+            }
             .music-credit {
-                max-width: 80px;
-                font-size: 8px;
-                padding: 0 4px;
+                font-size: 9px;
             }
         }
 
@@ -1841,12 +1857,15 @@
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge"></div>
                 </div>
-                <!-- แสดงเครดิตเพลง (ขยับให้ห่างจากปุ่ม) -->
-                <div class="music-credit" id="musicCredit" title="🎵 NoCopyrightSounds">🎵 NCS Music</div>
-                <!-- ปุ่มลำโพง (ขยับให้อยู่สุดขวา) -->
-                <div class="icon-btn" onclick="toggleAudio()">
-                    <i class="fas fa-volume-mute" id="headerAudioIcon"></i>
-                </div>
+                <!-- หมายเหตุ: ปุ่มเพลงและเครดิตถูกย้ายลงไปอยู่ข้างล่างแล้ว -->
+            </div>
+        </div>
+
+        <!-- Music Player Bar (ย้ายมาอยู่ใต้ header) -->
+        <div class="music-player-bar">
+            <div class="music-credit" id="musicCredit" title="🎵 NoCopyrightSounds">🎵 NCS Music</div>
+            <div class="icon-btn" onclick="toggleAudio()">
+                <i class="fas fa-volume-mute" id="headerAudioIcon"></i>
             </div>
         </div>
 
@@ -2140,6 +2159,52 @@
         let hallInterval = null;
         let blacklistChannel = null;
         let notificationChannel = null; // NEW: สำหรับฟังการแจ้งเตือน
+
+        // ========== 🔥 ส่วนควบคุมเพลง NCS (ประกาศไว้ก่อน) ==========
+        const ncsPlayer = document.getElementById('ncsPlayer');
+        let currentSongIndex = 0;
+        const playlist = [
+            { 
+                title: "Warriyo - Mortals (feat. Laura Brehm)", 
+                file: "music/mortals.mp3",
+                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] | Music provided by NoCopyrightSounds | Watch: http://ncs.io/Mortals | Stream: http://ncs.io/Mortals"
+            },
+            { 
+                title: "On & On", 
+                file: "music/on_and_on.mp3",
+                credit: "Track: On & On [NCS Release] | Music provided by NoCopyrightSounds | Watch: https://ncs.io/onandon | Stream: https://ncs.io/onandon"
+            }
+        ];
+
+        function loadSong(index) {
+            const song = playlist[index];
+            ncsPlayer.src = song.file;
+            ncsPlayer.load();
+            document.getElementById('musicCredit').innerText = `🎵 ${song.title}`;
+            document.getElementById('musicCredit').title = song.credit;
+        }
+
+        // เมื่อเพลงจบให้เล่นเพลงถัดไป
+        ncsPlayer.addEventListener('ended', function() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+            if (!ncsPlayer.paused) ncsPlayer.play();
+        });
+
+        // เพิ่ม error handler
+        ncsPlayer.addEventListener('error', function(e) {
+            console.error('Audio error:', e);
+            Swal.fire({
+                icon: 'error',
+                title: 'โหลดเพลงไม่ได้',
+                text: 'กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ music/ และมีชื่อถูกต้อง',
+                background: '#050b14',
+                color: '#fff'
+            });
+        });
+
+        // เริ่มต้นโหลดเพลงแรก (แต่ยังไม่เล่น)
+        loadSong(0);
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -3721,18 +3786,6 @@
             }
         }
 
-        // เพิ่ม error handler สำหรับ ncsPlayer
-        ncsPlayer.addEventListener('error', function(e) {
-            console.error('Audio error:', e);
-            Swal.fire({
-                icon: 'error',
-                title: 'โหลดเพลงไม่ได้',
-                text: 'กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ music/ และมีชื่อถูกต้อง',
-                background: '#050b14',
-                color: '#fff'
-            });
-        });
-
         function cleanupSubscriptions() {
             if (userChannel) supa.removeChannel(userChannel);
             if (blacklistChannel) supa.removeChannel(blacklistChannel);
@@ -3837,40 +3890,6 @@
         window.addEventListener('focus', function() {
             if (currentUserData?.id) checkQuestFromStorage();
         });
-
-        // ========== ส่วนควบคุมเพลง NCS ==========
-        const ncsPlayer = document.getElementById('ncsPlayer');
-        let currentSongIndex = 0;
-        const playlist = [
-            { 
-                title: "Warriyo - Mortals (feat. Laura Brehm)", 
-                file: "music/mortals.mp3",
-                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] | Music provided by NoCopyrightSounds | Watch: http://ncs.io/Mortals | Stream: http://ncs.io/Mortals"
-            },
-            { 
-                title: "On & On", 
-                file: "music/on_and_on.mp3",
-                credit: "Track: On & On [NCS Release] | Music provided by NoCopyrightSounds | Watch: https://ncs.io/onandon | Stream: https://ncs.io/onandon"
-            }
-        ];
-
-        function loadSong(index) {
-            const song = playlist[index];
-            ncsPlayer.src = song.file;
-            ncsPlayer.load();
-            document.getElementById('musicCredit').innerText = `🎵 ${song.title}`;
-            document.getElementById('musicCredit').title = song.credit;
-        }
-
-        // เมื่อเพลงจบให้เล่นเพลงถัดไป
-        ncsPlayer.addEventListener('ended', function() {
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            loadSong(currentSongIndex);
-            if (!ncsPlayer.paused) ncsPlayer.play(); // ถ้ากำลังเล่นอยู่ให้เล่นต่อ
-        });
-
-        // เริ่มต้นโหลดเพลงแรก (แต่ยังไม่เล่น)
-        loadSong(0);
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('scanOverlay').style.display = 'flex';
