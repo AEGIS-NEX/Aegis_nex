@@ -957,9 +957,9 @@
                 }
 
                 // Step 2: Send password reset email
-                // เปลี่ยน redirectTo ให้เป็นหน้า recovery.html เอง (ไม่ต้องไปหน้า reset-password.html)
+                // เปลี่ยน redirectTo ให้เป็น absolute URL เต็ม
                 const { error: resetError } = await supa.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/Aegis_nex/change_password.html'
+                    redirectTo: 'https://aegis-nex.github.io/Aegis_nex/change_password.html'
                 });
                 
                 if (resetError) throw resetError;
