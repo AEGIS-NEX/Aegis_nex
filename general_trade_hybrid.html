@@ -2637,34 +2637,32 @@
             flex: 1 0 auto;
         }
 
-        /* ===== CSS สำรองเพื่อบังคับแสดงแชท ===== */
+        /* ===== 🚨 บังคับให้แชทแสดงใน Chrome ===== */
+        .chat-area,
         .chat-input-area,
+        .messages-container,
         .media-buttons,
         .message-input-wrapper,
-        .message-input,
-        .send-btn {
+        .send-btn,
+        #messagesContainer,
+        #messageInput {
             display: flex !important;
-        }
-        .chat-input-area {
             visibility: visible !important;
             opacity: 1 !important;
             height: auto !important;
+            min-height: 0 !important;
         }
-        /* บังคับให้แชทโผล่ ไม่ต้องพึ่งดีบัก */
-.chat-area, .chat-input-area, .messages-container, .media-buttons, .message-input-wrapper, .send-btn {
-    display: flex !important;
-    visibility: visible !important;
-    height: auto !important;
-    opacity: 1 !important;
-}
-.messages-container {
-    flex: 1 !important;
-    overflow-y: auto !important;
-    min-height: 200px !important;
-}
-.chat-area {
-    flex-direction: column !important;
-}
+        .messages-container {
+            min-height: 150px !important;
+            overflow-y: auto !important;
+        }
+        .chat-area {
+            min-height: 200px !important;
+            flex-direction: column !important;
+        }
+        .chat-input-area {
+            flex-shrink: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -2758,7 +2756,7 @@
         </button>
     </div>
     
-    <!-- 💬 CHAT AREA (ไม่มีข้อความตัวอย่าง) -->
+    <!-- 💬 CHAT AREA -->
     <div class="chat-area">
         <div class="messages-container" id="messagesContainer">
             <!-- ข้อความทั้งหมดจะโหลดจากฐานข้อมูล -->
@@ -2886,7 +2884,7 @@
     </div>
 </div>
 
-<!-- 🖼️ Image Zoom Modal (เพิ่มใหม่) -->
+<!-- 🖼️ Image Zoom Modal -->
 <div class="modal-overlay" id="imageZoomModal" style="display: none;">
     <div class="modal-box">
         <div style="position: relative; text-align: center;">
@@ -2955,7 +2953,7 @@
     </div>
 </div>
 
-<!-- 👤 PROFILE POPUP MODAL (ของเรา) - ปรับปรุงให้โหลดประวัติจริง -->
+<!-- 👤 PROFILE POPUP MODAL (ของเรา) -->
 <div class="profile-modal" id="myProfileModal">
     <div class="profile-box" id="myProfileBox">
         <div class="profile-close" onclick="closeMyProfileModal()">
@@ -3011,7 +3009,7 @@
     </div>
 </div>
 
-<!-- ⭐ RATING MODAL — ปรับข้อความใหม่ ให้เกี่ยวกับการให้คะแนนคู่ค้า / คำนวณดาวน์ -->
+<!-- ⭐ RATING MODAL -->
 <div class="rating-modal" id="ratingModal">
     <div class="rating-box">
         <div class="rating-title">
@@ -3042,7 +3040,7 @@
     </div>
 </div>
 
-<!-- 🚚 SHIPPING MODAL (ใช้เฉพาะโหมดทั่วไป) -->
+<!-- 🚚 SHIPPING MODAL -->
 <div class="shipping-modal" id="shippingModalElement">
     <div class="shipping-box">
         <div class="shipping-title">
@@ -3234,7 +3232,7 @@
                 </button>
             </div>
         </div>
-        <!-- 🆕 TAB วิธีใช้งาน — ปรับขนาดให้กะทัดรัด เท่ากับ Tab แจ้ง Admin -->
+        <!-- TAB วิธีใช้งาน -->
         <div class="report-content" id="reportTab3">
             <div class="report-description">
                 <b>คู่มือการใช้งานห้องเทรดทั่วไป:</b>
@@ -3389,7 +3387,7 @@
     </div>
 </div>
 
-<!-- ===== 🆕 MODAL สำหรับยืนยันส่งไอดีเกม (เฉพาะโหมดเกม) ===== -->
+<!-- ===== MODAL สำหรับยืนยันส่งไอดีเกม ===== -->
 <div class="game-delivery-modal" id="gameDeliveryConfirmModal">
     <div class="game-delivery-box">
         <div class="game-delivery-icon">
@@ -3412,7 +3410,7 @@
     </div>
 </div>
 
-<!-- ===== 🆕 MODAL สำหรับแจ้งผู้ซื้อเมื่อผู้ขายส่งมอบ ID/ไอเทม (เฉพาะโหมดเกม) ===== -->
+<!-- ===== MODAL สำหรับแจ้งผู้ซื้อเมื่อผู้ขายส่งมอบ ID/ไอเทม ===== -->
 <div class="game-delivery-received-modal" id="gameDeliveryReceivedModal">
     <div class="game-delivery-received-box">
         <div class="game-delivery-received-icon">
@@ -3432,7 +3430,7 @@
     </div>
 </div>
 
-<!-- ===== 🆕 MODAL สำหรับยืนยันรับ ID/ไอเทม (เฉพาะโหมดเกม) ===== -->
+<!-- ===== MODAL สำหรับยืนยันรับ ID/ไอเทม ===== -->
 <div class="game-receive-confirm-modal" id="gameReceiveConfirmModal">
     <div class="game-receive-confirm-box">
         <div class="game-receive-confirm-icon">
@@ -3455,7 +3453,7 @@
     </div>
 </div>
 
-<!-- ===== 🆕 MODAL สำหรับยืนยันรับของ (โหมดทั่วไป) ===== -->
+<!-- ===== MODAL สำหรับยืนยันรับของ (โหมดทั่วไป) ===== -->
 <div class="general-receive-confirm-modal" id="generalReceiveConfirmModal">
     <div class="general-receive-confirm-box">
         <div class="general-receive-confirm-icon">
@@ -3478,7 +3476,7 @@
     </div>
 </div>
 
-<!-- ===== 🆕 DEBUG WRAPPER (ไม่บังเนื้อหา) ===== -->
+<!-- ===== DEBUG WRAPPER ===== -->
 <div class="debug-wrapper">
     <button id="debug-toggle-btn" onclick="toggleDebugPanel()">🐞 Debug</button>
     <div id="debug-panel">
@@ -3495,30 +3493,27 @@
 
 <script>
     // ============================================
-    // 🔥 GLOBAL VARIABLES (ประกาศก่อน debug console)
+    // 🔥 GLOBAL VARIABLES
     // ============================================
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('id') || 'TR-GEN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const mode = urlParams.get('mode') || 'general';
     const role = urlParams.get('role') || 'buyer';
-    const adminAccess = urlParams.get('adminAccess'); // สำหรับ Admin วาร์ป
+    const adminAccess = urlParams.get('adminAccess');
 
-    // 🔥 ADMIN UID ของคุณ (เปลี่ยนเป็น UID จริง)
     const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
-    // 🔥 SPECIAL UID สำหรับยศ LEGENDARY (เปลี่ยนเป็น UID จริงของคุณ)
-    const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000"; // ← ใส่ UID จริงถ้ามี
+    const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000";
     const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop';
 
     console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role, 'AdminAccess:', adminAccess);
 
     // ============================================
-    // 🐞 DEBUG CONSOLE: เก็บ log และ error ทุกอย่างไว้ใน div
+    // 🐞 DEBUG CONSOLE
     // ============================================
     (function() {
         const debugDiv = document.getElementById('debug-console');
         if (!debugDiv) return;
 
-        // เก็บต้นฉบับ console methods
         const originalLog = console.log;
         const originalError = console.error;
         const originalWarn = console.warn;
@@ -3557,17 +3552,13 @@
             addToConsole('info', args);
         };
 
-        // จับ error ที่ไม่ถูก catch (unhandled rejection)
         window.addEventListener('unhandledrejection', function(event) {
             console.error('Unhandled Rejection:', event.reason);
         });
-
-        // จับ error ทั่วไป
         window.addEventListener('error', function(event) {
             console.error('Global error:', event.error ? event.error.message : event.message);
         });
 
-        // เพิ่มข้อความเริ่มต้น
         console.log('🐞 Debug Console started');
         console.log('Room ID:', roomId);
         console.log('Mode:', mode);
@@ -3575,18 +3566,17 @@
     })();
 
     // ============================================
-    // 🎯 SUPABASE INITIALIZATION (ใช้ชื่อ supabaseClient ป้องกันชน)
+    // 🎯 SUPABASE INITIALIZATION
     // ============================================
     const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
 
-    // ✅ แก้ไข: เพิ่ม options เพื่อป้องกัน LockManager timeout
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
         auth: {
             autoRefreshToken: true,
             persistSession: true,
             detectSessionInUrl: true,
-            lock: false,  // ปิดการใช้ LockManager
+            lock: false,
             flowType: 'implicit'
         },
         global: {
@@ -3614,20 +3604,15 @@
     let isTyping = false;
     let typingTimeout = null;
     
-    // ✅ ประกาศ messages เป็น global array
     let messages = [];
-    
     let feeRatesDescription = '';
-    
-    // ✅ ตัวแปรสำหรับสถานะการโหลดห้อง
     let isLoadingRoom = true;
 
     // ============================================
-    // 🏆 RANK FUNCTIONS (เหมือนใน Dashboard/Profile)
+    // 🏆 RANK FUNCTIONS
     // ============================================
     function getRank(deals, uid) {
         console.log('📌 getRank called with uid:', uid, 'MY_GOD_UID:', MY_GOD_UID);
-        // แก้ไขเงื่อนไขให้ใช้ String().trim() ป้องกันปัญหาชนิดข้อมูล
         if (String(uid).trim() === String(MY_GOD_UID).trim()) { 
             console.log('✅ CEO detected');
             return { 
@@ -3742,7 +3727,6 @@
     // ============================================
     async function initAuth() {
         console.log('🚀 initAuth started');
-        // Disable all buttons immediately
         document.getElementById('btnTransfer').disabled = true;
         document.getElementById('btnShip').disabled = true;
         document.getElementById('btnReceive').disabled = true;
@@ -3750,7 +3734,6 @@
         isLoadingRoom = true;
 
         try {
-            // ✅ ใช้ getSession แบบมี timeout จัดการเอง
             const sessionPromise = supabaseClient.auth.getSession();
             const timeoutPromise = new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('getSession timeout after 8s')), 8000)
@@ -3766,7 +3749,6 @@
             
             if (!session) {
                 console.log('No session, but staying on page (no redirect)');
-                // ไม่ redirect แต่ให้แสดงข้อความ
                 addAiAlertMessage('⚠️ กรุณาเข้าสู่ระบบก่อนใช้งาน');
                 isLoadingRoom = false;
                 updateUIByStatus();
@@ -3776,14 +3758,12 @@
             currentUser = session.user;
             console.log('✅ Auth user:', currentUser);
 
-            // ตรวจสอบ Admin วาร์ป
             if (role === 'admin' && adminAccess === MY_GOD_UID && currentUser.id === MY_GOD_UID) {
                 isAdminPresent = true;
                 document.getElementById('adminControls').classList.add('active');
                 console.log('👑 Admin mode activated');
             }
             
-            // โหลดข้อมูลผู้ใช้และห้องเทรดพร้อมกัน (Parallel)
             console.log('Fetching user and trade data...');
             const [userResult, tradeResult] = await Promise.all([
                 supabaseClient
@@ -3798,7 +3778,6 @@
                     .maybeSingle()
             ]);
             
-            // จัดการ userData
             if (userResult.data) {
                 if (!userResult.data.photo_url) {
                     userResult.data.photo_url = DEFAULT_AVATAR;
@@ -3807,11 +3786,10 @@
                 console.log('✅ user profile loaded:', userResult.data);
             } else {
                 console.warn('⚠️ No profile found, creating one...', userResult.error);
-                // สร้างโปรไฟล์ใหม่ (เพิ่ม display_name)
                 const newProfile = {
                     id: currentUser.id,
                     username: currentUser.email?.split('@')[0] || 'User',
-                    display_name: currentUser.email?.split('@')[0] || 'User', // ✅ เพิ่ม display_name
+                    display_name: currentUser.email?.split('@')[0] || 'User',
                     email: currentUser.email,
                     balance: 0,
                     completed_deals: 0,
@@ -3848,10 +3826,8 @@
                 }
             }
             
-            // จัดการ tradeData
             if (!tradeResult.data) {
                 console.log('Trade not found, creating new trade...');
-                // สร้างห้องใหม่
                 const newTrade = {
                     room_id: roomId,
                     buyer_id: role === 'buyer' ? currentUser.id : null,
@@ -3893,11 +3869,9 @@
                 }
             }
             
-            // ตั้งค่าตัวแปรจาก tradeData
             tradeStatus = tradeData.status;
             productPrice = tradeData.product_price || 0;
 
-            // คำนวณเวลาที่เหลือจากฐานข้อมูล
             if (tradeData.timer_started_at && tradeData.timer_minutes) {
                 const startedAt = new Date(tradeData.timer_started_at).getTime();
                 const now = new Date().getTime();
@@ -3921,25 +3895,20 @@
 
             updateTimerDisplay();
             
-            // โหลดข้อมูลคู่ค้า
             console.log('Loading partner info...');
             await loadPartnerInfo();
             
-            // โหลดข้อความเก่า
             console.log('Loading messages...');
             await loadMessages();
             
-            // เริ่ม timer และ realtime
             console.log('Starting timer and realtime...');
             startTradeTimer();
             setupRealtime();
             
         } catch (err) {
             console.error('❌ Auth error:', err);
-            // ไม่ redirect ทันที ให้ debug ก่อน
             addAiAlertMessage('❌ เกิดข้อผิดพลาด: ' + (err.message || 'unknown error'));
             
-            // fallback: ลองใช้ session จาก localStorage โดยตรง
             try {
                 const storedSession = localStorage.getItem('supabase.auth.token');
                 if (storedSession) {
@@ -3953,7 +3922,7 @@
             } catch (e) {}
         } finally {
             isLoadingRoom = false;
-            updateUIByStatus(); // อัปเดต UI หลังจากโหลดเสร็จ
+            updateUIByStatus();
         }
     }
 
@@ -4353,7 +4322,7 @@
     }
     
     // ============================================
-    // 🎯 ฟังก์ชันหลักสำหรับปุ่มต่างๆ (ประกาศเป็น global)
+    // 🎯 ฟังก์ชันหลักสำหรับปุ่มต่างๆ
     // ============================================
     window.openTransferModal = function() {
         document.getElementById('transferModal').style.display = 'flex';
@@ -4366,7 +4335,6 @@
         if (el) el.style.display = 'none';
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmTransfer (เปลี่ยน type transaction) ==========
     window.confirmTransfer = async function() {
         const confirmBtn = document.getElementById('confirmTransferBtn');
         confirmBtn.disabled = true;
@@ -4425,7 +4393,6 @@
             return;
         }
 
-        // ✅ เปลี่ยน type จาก 'trade_hold' เป็น 'hold' (สมมติว่า constraint ใช้ค่านี้)
         const { error: txError } = await supabaseClient
             .from('transactions')
             .insert([{
@@ -4609,7 +4576,6 @@
         }
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmGeneralReceive (เปลี่ยน type transaction) ==========
     window.confirmGeneralReceive = async function() {
         closeGeneralReceiveConfirmModal();
         
@@ -4635,7 +4601,6 @@
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
-            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
@@ -4679,7 +4644,6 @@
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmGameReceive (เปลี่ยน type transaction) ==========
     window.confirmGameReceive = async function() {
         closeGameReceiveConfirmModal();
         
@@ -4705,7 +4669,6 @@
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
             
-            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             await supabaseClient.from('transactions').insert([{
                 user_id: trade.seller_id,
                 amount: trade.product_price,
@@ -4782,7 +4745,6 @@
         modal.style.display = 'flex';
     };
 
-    // ========== แก้ไขฟังก์ชัน confirmCancel (เปลี่ยน type transaction) ==========
     window.confirmCancel = async function() {
         closeModal('cancelModal');
         
@@ -4808,7 +4770,6 @@
                         .from('users')
                         .update({ balance: newBalance, updated_at: new Date() })
                         .eq('id', trade.buyer_id);
-                    // ✅ เปลี่ยน type จาก 'trade_refund' เป็น 'refund'
                     await supabaseClient.from('transactions').insert([{
                         user_id: trade.buyer_id,
                         amount: trade.total,
@@ -4852,7 +4813,6 @@
                 .eq('id', trade.seller_id);
             if (updateError) throw updateError;
 
-            // ✅ เปลี่ยน type จาก 'trade_release' เป็น 'release'
             const { error: txError } = await supabaseClient
                 .from('transactions')
                 .insert([{
@@ -5656,7 +5616,6 @@
         addAiAlertMessage(message);
     }
 
-    // ฟังก์ชันปิดโปรไฟล์ตัวเอง (เผื่อ undefined)
     window.closeProfileModal = function() {
         document.getElementById('profileModal').classList.remove('active');
     };
@@ -5707,7 +5666,6 @@
         }
     };
 
-    // ฟังก์ชัน toggle debug panel
     window.toggleDebugPanel = function() {
         const panel = document.getElementById('debug-panel');
         panel.classList.toggle('visible');
@@ -5746,6 +5704,30 @@
             });
             observer.observe(transferModal, { attributes: true });
         }
+    });
+
+    // ✅ บังคับให้แชทแสดงทุกครั้งหลังโหลด
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const chat = document.querySelector('.chat-area');
+            const input = document.querySelector('.chat-input-area');
+            const container = document.querySelector('.messages-container');
+            if (chat) {
+                chat.style.display = 'flex';
+                chat.style.visibility = 'visible';
+                chat.style.opacity = '1';
+            }
+            if (input) {
+                input.style.display = 'flex';
+                input.style.visibility = 'visible';
+                input.style.opacity = '1';
+            }
+            if (container) {
+                container.style.display = 'flex';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
+        }, 500);
     });
 </script>
 
