@@ -2098,6 +2098,7 @@
         let heartbeatInterval = null;
         let hallInterval = null;
         let blacklistChannel = null;
+        let notificationChannel = null; // NEW: สำหรับฟังการแจ้งเตือน
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -2210,7 +2211,7 @@
             return { percent, next, current: d };
         }
 
-        // 🔥 ONLINE STATUS (heartbeat) - ปรับปรุงให้ error แสดงใน console
+        // 🔥 ONLINE STATUS (heartbeat)
         async function updateLastSeen() {
             if (!currentUserData?.id) return;
             try {
@@ -2219,10 +2220,10 @@
                     .update({ last_seen: new Date().toISOString() })
                     .eq('id', currentUserData.id);
                 if (error) {
-                    console.error('Heartbeat update error:', error.message); // แก้ไขให้แสดง message
+                    console.error('Heartbeat update error:', error);
                 }
             } catch (e) {
-                console.error('Heartbeat exception:', e.message); // แก้ไขให้แสดง message
+                console.error('Heartbeat exception:', e);
             }
         }
 
@@ -2232,13 +2233,12 @@
             heartbeatInterval = setInterval(updateLastSeen, 30000); // ทุก 30 วินาที
         }
 
-        // FIX: ขยายเกณฑ์เป็น 5 นาที เพื่อความเสถียร
         function isOnline(lastSeen) {
             if (!lastSeen) return false;
             const now = new Date();
             const seen = new Date(lastSeen);
             const diff = (now - seen) / 1000 / 60; // minutes
-            return diff < 5; // 5 นาที
+            return diff < 5;
         }
 
         // 🔥 FETCH USER STATS (deals, cancelled, rating)
@@ -2248,7 +2248,7 @@
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'completed');
+                    .eq('status', 'received'); // ✅ เปลี่ยนจาก completed เป็น received
                 
                 const { count: cancelled, error: err2 } = await supa
                     .from('trades')
@@ -2486,7 +2486,7 @@
                 // อัปเดตปุ่ม
                 btn.innerHTML = '<i class="fas fa-check"></i> รับแล้ว';
                 btn.classList.add('disabled');
-                btn.disabled = false; // ปล่อยให้กดได้อีกหลังจากครบ 24 ชม. (เราตรวจสอบจาก DB)
+                btn.disabled = false;
 
                 // เริ่มนับถอยหลัง
                 updateCheckinButtonCooldown();
@@ -2728,6 +2728,61 @@
             openInbox();                       // เปิด Inbox (ภายใน openInbox จะปิด questModal อีกครั้ง แต่ไม่มีผลเพราะปิดไปแล้ว)
         }
 
+        // NEW: อัปเดตตัวเลขที่ปุ่มกระดิ่ง
+        async function updateNotificationBadge() {
+            if (!currentUserData?.id) return;
+            try {
+                const { count, error } = await supa
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('target', 'all')
+                    .eq('is_active', true);
+                
+                const badge = document.querySelector('.noti-badge');
+                if (!error && count > 0) {
+                    badge.innerText = count > 9 ? '9+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('updateNotificationBadge error:', e);
+            }
+        }
+
+        // NEW: ตั้งค่า Realtime สำหรับฟังการแจ้งเตือน
+        function setupNotificationsRealtime() {
+            if (notificationChannel) supa.removeChannel(notificationChannel);
+            
+            notificationChannel = supa.channel('notifications-realtime')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    console.log('📢 มีประกาศใหม่!');
+                    updateNotificationBadge();
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    updateNotificationBadge();
+                })
+                .on('postgres_changes', {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    updateNotificationBadge();
+                })
+                .subscribe();
+        }
+
         // 🔥 OPEN PROFILE POPUP (แก้ให้เปิดทันที)
         async function openProfilePopup() {
             if (!currentUserData?.id) return;
@@ -2959,7 +3014,6 @@
                         });
                         return;
                     } else {
-                        // ลบ key เช็คอินทิ้งสำหรับผู้ใช้ใหม่
                         localStorage.removeItem('last_checkin_timestamp');
                         currentUserData = newProfile;
                         updateDashboardUI(currentUserData, user.id);
@@ -2967,8 +3021,10 @@
                         startHeartbeat();
                         window.completeQuest('pioneer_reg');
                         checkQuestFromStorage();
-                        // เริ่มต้นตรวจสอบ cooldown ปุ่มเช็คอิน
                         updateCheckinButtonCooldown();
+                        // NEW: ตั้งค่า notification badge
+                        updateNotificationBadge();
+                        setupNotificationsRealtime();
                     }
                     return;
                 }
@@ -2980,6 +3036,9 @@
                     startHeartbeat();
                     checkQuestFromStorage();
                     updateCheckinButtonCooldown();
+                    // NEW: ตั้งค่า notification badge
+                    updateNotificationBadge();
+                    setupNotificationsRealtime();
                 }
 
                 async function checkActiveRooms() {
@@ -3003,7 +3062,6 @@
                 
                 setupBlacklistRealtime();
 
-                // FIX: เพิ่ม event beforeunload เพื่ออัปเดต last_seen ก่อนปิดหน้า
                 window.addEventListener('beforeunload', function() {
                     updateLastSeen();
                 });
@@ -3040,7 +3098,6 @@
         function updateDashboardUI(data, uid) {
             const rankInfo = getRank(data.completed_deals || 0, uid);
             const nameEl = document.getElementById('userName');
-            // ใช้ display_name ก่อน ถ้าไม่มีใช้ username หรือ 'USER'
             const displayName = data.display_name || data.username || 'USER';
             let nameHtml = displayName.toUpperCase();
             let tickHtml = '';
@@ -3169,7 +3226,7 @@
                     mockUsers.push({
                         id: `mock-${i}`,
                         username: `Trader_${i}`,
-                        display_name: `Trader_${i}`, // เพิ่ม display_name ใน mock
+                        display_name: `Trader_${i}`,
                         photo_url: `https://i.pravatar.cc/150?img=${i}`,
                         completed_deals: Math.floor(Math.random() * 500) + 10,
                         average_rating: Math.random() * 5,
@@ -3602,6 +3659,7 @@
         function cleanupSubscriptions() {
             if (userChannel) supa.removeChannel(userChannel);
             if (blacklistChannel) supa.removeChannel(blacklistChannel);
+            if (notificationChannel) supa.removeChannel(notificationChannel); // NEW
             if (authSubscription && typeof authSubscription.unsubscribe === 'function') {
                 authSubscription.unsubscribe();
             }
@@ -3620,32 +3678,11 @@
             if (modal) modal.style.display = 'none'; 
         }
         
+        // MODIFIED: เปิดหน้าประกาศ (คุณต้องสร้าง notifications.html)
         function openInbox() { 
-            closeModal('questModal');          // ปิด modal quest ก่อน (เผื่อกรณีเรียกตรง)
-            window.incrementQuest('daily_read', 1); // เปลี่ยนจาก completeQuest เป็น incrementQuest
-            openContent('NOTIFICATIONS', 'fas fa-bell', 'var(--warning)', `
-                <div class="inbox-item inbox-admin">
-                    <div style="color:var(--danger); font-weight:bold; font-size:13px;">
-                        <i class="fas fa-bullhorn"></i> ADMIN ANNOUNCEMENT
-                    </div>
-                    <div style="color:#ccc; margin-top:6px; font-size:12px;">ประกาศ: ห้ามซื้อขายยาเสพติด ยาบ้า อาวุธปืน หรือสิ่งผิดกฎหมายทุกชนิด หากตรวจพบ แบนถาวรและส่งเรื่องดำเนินคดีทันที!</div>
-                    <div class="inbox-time">ล่าสุด</div>
-                </div>
-                <div class="inbox-item inbox-ai">
-                    <div style="color:var(--primary); font-weight:bold; font-size:13px;">
-                        <i class="fas fa-robot"></i> AEGIS AI
-                    </div>
-                    <div style="color:#ccc; margin-top:6px; font-size:12px;">ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะเซิร์ฟเวอร์: Stable</div>
-                    <div class="inbox-time">เมื่อสักครู่</div>
-                </div>
-                <div class="inbox-item" style="border-left:4px solid var(--success);">
-                    <div style="color:var(--success); font-weight:bold; font-size:13px;">
-                        <i class="fas fa-chart-line"></i> SYSTEM UPDATE
-                    </div>
-                    <div style="color:#ccc; margin-top:6px; font-size:12px;">อัปเดตระบบความปลอดภัยใหม่: 2FA และ Biometric Login พร้อมใช้งานแล้ว</div>
-                    <div class="inbox-time">1 ชั่วโมงที่แล้ว</div>
-                </div>
-            `); 
+            closeModal('questModal');
+            window.incrementQuest('daily_read', 1);
+            window.location.href = 'notifications.html'; // เปลี่ยนไปหน้าแสดงประกาศ
         }
         
         function openManual() { 
