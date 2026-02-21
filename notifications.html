@@ -64,7 +64,7 @@
             background: var(--dark-bg);
             min-height: 100vh;
             position: relative;
-            padding: 20px 20px 80px;
+            padding: 20px;
             margin: 0 auto;
             z-index: 1;
             border-left: 1px solid rgba(0, 242, 255, 0.1);
@@ -220,58 +220,14 @@
             100% { transform: rotate(360deg); }
         }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 600px;
-            height: 70px;
-            background: rgba(10, 15, 25, 0.95);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid var(--primary);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-            padding: 0 10px;
-        }
-
-        .nav-link {
-            color: #64748b;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            transition: 0.3s;
-            padding: 8px 12px;
-            border-radius: 12px;
-            min-width: 60px;
-        }
-
-        .nav-link i {
-            font-size: 20px;
-        }
-
-        .nav-link.active {
-            color: var(--primary);
-            text-shadow: 0 0 8px var(--primary);
-            transform: translateY(-5px);
-            background: rgba(0,242,255,0.1);
-            border: 1px solid rgba(0,242,255,0.3);
-        }
-
         @media (max-width: 480px) {
-            .app-container { padding: 15px 15px 70px; }
+            .app-container { padding: 15px; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- header -->
+        <!-- header มีแค่ปุ่มกลับและหัวข้อ -->
         <div class="page-header">
             <div class="back-btn" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i>
@@ -279,7 +235,7 @@
             <h1>
                 <i class="fas fa-bullhorn"></i> ประกาศทั้งหมด
             </h1>
-            <div style="width:36px;"></div> <!-- dummy -->
+            <div style="width:36px;"></div> <!-- dummy เพื่อให้ header สมดุล -->
         </div>
 
         <!-- notification list -->
@@ -288,30 +244,6 @@
                 <div class="spinner"></div>
             </div>
         </div>
-
-        <!-- bottom nav (เหมือน dashboard เล็กน้อย) -->
-        <nav class="bottom-nav">
-            <a href="dashboard.html" class="nav-link">
-                <i class="fas fa-home"></i>
-                <span>หน้าหลัก</span>
-            </a>
-            <a href="#" class="nav-link" onclick="marketComingSoon(event)">
-                <i class="fas fa-store"></i>
-                <span>ตลาด</span>
-            </a>
-            <a href="topup.html" class="nav-link">
-                <i class="fas fa-bolt"></i>
-                <span>เติมเงิน</span>
-            </a>
-            <a href="withdraw.html" class="nav-link">
-                <i class="fas fa-wallet"></i>
-                <span>ถอนเงิน</span>
-            </a>
-            <a href="profile.html" class="nav-link">
-                <i class="fas fa-user"></i>
-                <span>โปรไฟล์</span>
-            </a>
-        </nav>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -343,16 +275,13 @@
             container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
 
             try {
-                // ดึงประกาศที่ target = 'all' และ is_active = true (หรืออาจรวมของตัวเองด้วย แต่เราทำแค่ all)
+                // ดึงประกาศที่ target = 'all' และ is_active = true
                 let query = supa
                     .from('notifications')
                     .select('*')
                     .eq('target', 'all')
                     .eq('is_active', true)
                     .order('created_at', { ascending: false });
-
-                // ถ้ามี expires_at ควรกรองเอาที่ยังไม่หมดอายุ? (optional)
-                // .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
 
                 const { data, error } = await query;
 
@@ -439,11 +368,6 @@
         // กลับไป dashboard
         function goBack() {
             window.location.href = 'dashboard.html';
-        }
-
-        function marketComingSoon(event) {
-            event.preventDefault();
-            alert('🚧 เร็วๆ นี้');
         }
 
         // เริ่มต้น
