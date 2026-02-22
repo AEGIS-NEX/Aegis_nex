@@ -2256,7 +2256,7 @@
                     // ตรวจสอบว่านี่เป็นการอัปโหลดรูปครั้งแรกหรือไม่ (รูปเดิมเป็นค่าเริ่มต้น)
                     const defaultImage = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
                     if (!oldPhotoUrl || oldPhotoUrl === defaultImage) {
-                        await supa.rpc('complete_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup' });
+                        await supa.rpc('increment_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup', p_increment: 1 });
                     }
                     
                     showAlert('อัปเดตรูปโปรไฟล์สำเร็จ!', 'success');
@@ -2332,9 +2332,9 @@
                 // บันทึก cache และ localStorage
                 updateProfileUI(currentUserData, currentUserData.uid);
                 
-                // ถ้าเป็นการเปลี่ยนชื่อครั้งแรก ให้ complete quest
+                // ถ้าเป็นการเปลี่ยนชื่อครั้งแรก ให้ increment quest
                 if (nameChangeCount === 1) { // เพราะเพิ่มแล้ว
-                    await supa.rpc('complete_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup' });
+                    await supa.rpc('increment_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup', p_increment: 1 });
                 }
                 
                 closeNameModal();
