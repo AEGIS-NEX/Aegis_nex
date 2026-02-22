@@ -2023,6 +2023,9 @@
         let blacklistChannel = null;
         let notificationChannel = null;
         let lastNotiCheck = localStorage.getItem('lastNotiCheck') || 0; // เวลาที่อ่านครั้งล่าสุด (timestamp)
+        
+        // *** เพิ่มตัวแปรสำหรับ Quest Realtime ***
+        let questChannel = null;
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -2416,6 +2419,23 @@
                 .subscribe();
         }
 
+        // *** ฟังก์ชันใหม่: สมัครสมาชิก Realtime สำหรับตาราง user_quests ***
+        function setupQuestRealtime(userId) {
+            if (questChannel) supa.removeChannel(questChannel);
+            questChannel = supa.channel('quest-updates')
+                .on('postgres_changes', {
+                    event: '*',               // ฟัง INSERT, UPDATE, DELETE
+                    schema: 'public',
+                    table: 'user_quests',
+                    filter: `user_id=eq.${userId}`
+                }, (payload) => {
+                    console.log('📋 Quest data changed, reloading quests...', payload);
+                    loadQuests();              // โหลดข้อมูลเควสใหม่
+                    // (การอัปเดต balance_ag จะถูกจัดการโดย users channel)
+                })
+                .subscribe();
+        }
+
         async function handleAuthChange(user) {
             if (user) {
                 if (user.id === MY_GOD_UID) { 
@@ -2463,6 +2483,7 @@
                         currentUserData = newProfile;
                         await updateDashboardUIWithRealDeals(currentUserData, user.id);
                         setupUserRealtime(user.id);
+                        setupQuestRealtime(user.id);   // *** เรียกใช้ตรงนี้ ***
                         startHeartbeat();
                         updateNotificationBadge();
                         setupNotificationsRealtime();
@@ -2474,6 +2495,7 @@
                     currentUserData = profile;
                     await updateDashboardUIWithRealDeals(currentUserData, user.id);
                     setupUserRealtime(user.id);
+                    setupQuestRealtime(user.id);       // *** เรียกใช้ตรงนี้ ***
                     startHeartbeat();
                     updateNotificationBadge();
                     setupNotificationsRealtime();
@@ -2845,6 +2867,7 @@
             if (userChannel) supa.removeChannel(userChannel);
             if (blacklistChannel) supa.removeChannel(blacklistChannel);
             if (notificationChannel) supa.removeChannel(notificationChannel);
+            if (questChannel) supa.removeChannel(questChannel);   // *** เพิ่ม cleanup ***
             if (authSubscription && typeof authSubscription.unsubscribe === 'function') {
                 authSubscription.unsubscribe();
             }
