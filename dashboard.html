@@ -2653,112 +2653,164 @@
 
         // ========== ฟังก์ชัน loadQuests สำหรับ Modal (ปรับปรุงตามที่กำหนด) ==========
         async function loadQuests() {
-            if (!currentUserData?.id) {
-                setTimeout(() => loadQuests(), 1000);
-                return;
-            }
-            const listEl = document.getElementById('questList');
-            listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin" style="color:var(--primary);"></i> กำลังโหลดภารกิจ...</div>';
+    console.log('===== loadQuests() เริ่มทำงาน =====');
+    if (!currentUserData?.id) {
+        console.warn('loadQuests: ยังไม่มี user id, จะลองอีกครั้งใน 1 วินาที');
+        setTimeout(() => loadQuests(), 1000);
+        return;
+    }
+    const listEl = document.getElementById('questList');
+    listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin" style="color:var(--primary);"></i> กำลังโหลดภารกิจ...</div>';
 
-            try {
-                const { data: quests, error } = await supa
-                    .from('quests')
-                    .select('*')
-                    .order('id');
-                if (error) throw error;
-                questsData = quests;
-
-                const { data: userQuests, error: uqError } = await supa
-                    .from('user_quests')
-                    .select('*')
-                    .eq('user_id', currentUserData.id);
-
-                if (uqError) throw uqError;
-
-                userQuestsMap = {};
-                userQuests.forEach(uq => {
-                    userQuestsMap[uq.quest_id] = uq;
-                });
-
-                const filtered = quests.filter(q => q.quest_type === currentQuestTab);
-
-                let html = '';
-                filtered.forEach(quest => {
-                    const uq = userQuestsMap[quest.id];
-                    const status = uq?.status || 'pending';
-                    const progress = uq?.progress || 0;
-                    const required = quest.required_count || 1;
-
-                    let buttonHtml = '';
-                    if (status === 'claimed') {
-                        buttonHtml = `<button class="quest-btn claimed" disabled>✅ สำเร็จ</button>`;
-                    } else if (status === 'completed') {
-                        buttonHtml = `<button onclick="claimQuest('${quest.id}', this)" class="quest-btn success">🎁 รับรางวัล (${quest.reward_amount} AG)</button>`;
-                    } else { // pending หรือ in_progress
-                        if (quest.target_url && quest.target_url.trim() !== '') {
-                            // มี target_url -> ปุ่ม "ไปต่อ" (ลิงก์)
-                            buttonHtml = `<a href="${quest.target_url}" target="_blank" class="quest-btn warning" onclick="setTimeout(() => { window.incrementQuest('${quest.slug}', 1); }, 500);">📍 ไปต่อ</a>`;
-                        } else if (quest.slug === 'daily_read') {
-                            // เควสอ่านประกาศ
-                            buttonHtml = `<button onclick="openInboxAndIncrement()" class="quest-btn warning">📰 อ่านประกาศ</button>`;
-                        } else {
-                            // เควสอื่น ๆ ที่ต้องสะสม (daily_trade, daily_chat, daily_topup) 
-                            // ไม่ต้องมีปุ่มอะไร อาจแสดงแค่ progress bar อย่างเดียว หรือปุ่ม "⏳ ระหว่างทำ" disabled
-                            if (status === 'in_progress') {
-                                buttonHtml = `<button class="quest-btn warning" disabled>⏳ ระหว่างทำ</button>`;
-                            } else {
-                                // pending สำหรับเควสที่ไม่มี target_url และไม่ใช่ daily_read
-                                // ให้เป็นปุ่ม "⏳ ระหว่างทำ" disabled เช่นกัน (เริ่มอัตโนมัติเมื่อมีการกระทำ)
-                                buttonHtml = `<button class="quest-btn warning" disabled>⏳ ระหว่างทำ</button>`;
-                            }
-                        }
-                    }
-
-                    let progressHtml = '';
-                    if (required > 1 && status !== 'claimed' && status !== 'completed') {
-                        const percent = Math.min(100, (progress / required) * 100);
-                        progressHtml = `
-                            <div style="margin-top:4px; background:rgba(255,255,255,0.1); height:3px; border-radius:2px;">
-                                <div style="width:${percent}%; height:100%; background:var(--primary); border-radius:2px;"></div>
-                            </div>
-                            <div style="font-size:8px; color:#aaa;">${progress}/${required}</div>
-                        `;
-                    }
-
-                    html += `
-                        <div class="quest-item" data-quest-id="${quest.id}">
-                            <div class="quest-info">
-                                <div class="quest-name">${quest.name}</div>
-                                <div class="quest-desc">${quest.description || ''}</div>
-                                <div class="quest-reward"><i class="fas fa-coins"></i> ${quest.reward_amount} AG</div>
-                                ${progressHtml}
-                            </div>
-                            <div class="quest-actions">
-                                ${buttonHtml}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                if (html === '') html = '<div style="grid-column:1/-1; text-align:center; color:#aaa; padding:20px;">ไม่มีภารกิจในหมวดนี้</div>';
-                listEl.innerHTML = html;
-
-                let totalClaimed = 0;
-                for (const uq of userQuests) {
-                    if (uq.status === 'claimed') {
-                        const q = quests.find(qq => qq.id === uq.quest_id);
-                        if (q) totalClaimed += q.reward_amount;
-                    }
-                }
-                document.getElementById('questBalance').innerText = totalClaimed + ' AG';
-
-            } catch (err) {
-                console.error('loadQuests error:', err);
-                listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger); padding:20px;">โหลดภารกิจล้มเหลว</div>';
-            }
+    try {
+        // 1. ดึงเควสทั้งหมด
+        console.log('กำลังดึงข้อมูลจากตาราง quests...');
+        const { data: quests, error: questsError } = await supa
+            .from('quests')
+            .select('*')
+            .order('id');
+        
+        if (questsError) {
+            console.error('เกิดข้อผิดพลาดในการดึง quests:', questsError);
+            throw questsError;
+        }
+        console.log('ดึง quests สำเร็จ, จำนวน:', quests?.length || 0);
+        if (quests && quests.length > 0) {
+            console.log('ตัวอย่างข้อมูล quest แรก:', quests[0]);
+        } else {
+            console.warn('ตาราง quests ว่างหรือไม่มีข้อมูล');
         }
 
-        function switchQuestTab(tab) {
+        // 2. ดึง user_quests สำหรับ user ปัจจุบัน
+        console.log('กำลังดึง user_quests สำหรับ user_id:', currentUserData.id);
+        const { data: userQuests, error: uqError } = await supa
+            .from('user_quests')
+            .select('*')
+            .eq('user_id', currentUserData.id);
+
+        if (uqError) {
+            console.error('เกิดข้อผิดพลาดในการดึง user_quests:', uqError);
+            throw uqError;
+        }
+        console.log('ดึง user_quests สำเร็จ, จำนวน:', userQuests?.length || 0);
+        if (userQuests && userQuests.length > 0) {
+            console.log('ตัวอย่าง user_quests แรก:', userQuests[0]);
+        }
+
+        // 3. สร้าง userQuestsMap
+        const userQuestsMap = {};
+        if (userQuests && userQuests.length > 0) {
+            userQuests.forEach(uq => {
+                userQuestsMap[uq.quest_id] = uq;
+            });
+        }
+        console.log('userQuestsMap สร้างเสร็จ, keys:', Object.keys(userQuestsMap));
+
+        // 4. กรองตาม quest_type (จัดการ case และ trim)
+        const filtered = quests ? quests.filter(q => {
+            if (!q.quest_type) {
+                console.log('quest', q.id, 'ไม่มี quest_type จะถือว่าเป็น daily');
+                return currentQuestTab === 'daily';
+            }
+            const qType = q.quest_type.trim().toLowerCase();
+            const tab = currentQuestTab.trim().toLowerCase();
+            const match = qType === tab;
+            console.log(`quest ${q.id} (${q.name}) quest_type="${q.quest_type}" -> filter: ${match ? 'ผ่าน' : 'ไม่ผ่าน'}`);
+            return match;
+        }) : [];
+
+        console.log('หลังจากกรองตามประเภท ได้จำนวน:', filtered.length);
+        if (filtered.length === 0) {
+            const availableTypes = quests ? [...new Set(quests.map(q => q.quest_type).filter(t => t))] : [];
+            console.warn('ไม่พบภารกิจประเภท', currentQuestTab, 'ประเภทที่มีในระบบ:', availableTypes);
+            listEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ffaa00; padding:20px;">
+                ⚠️ ไม่พบภารกิจประเภท "${currentQuestTab}"<br>
+                <small>ประเภทที่มีในระบบ: ${availableTypes.join(', ') || 'ไม่มีข้อมูล'}</small><br>
+                <small>จำนวนเควสทั้งหมด: ${quests?.length || 0}</small>
+                <br><br>
+                <button onclick="switchQuestTab('daily')" class="quest-btn primary">ลองใหม่ (daily)</button>
+                <button onclick="switchQuestTab('achievement')" class="quest-btn primary">ลองใหม่ (achievement)</button>
+            </div>`;
+            return;
+        }
+
+        // 5. สร้าง HTML สำหรับแต่ละเควส
+        let html = '';
+        filtered.forEach(quest => {
+            const uq = userQuestsMap[quest.id];
+            const status = uq?.status || 'pending';
+            const progress = uq?.progress || 0;
+            const required = quest.required_count || 1;
+
+            console.log(`กำลังสร้างปุ่มสำหรับ quest ${quest.id} (${quest.name}) สถานะ=${status}, progress=${progress}/${required}`);
+
+            let buttonHtml = '';
+            if (status === 'claimed') {
+                buttonHtml = `<button class="quest-btn claimed" disabled>✅ สำเร็จ</button>`;
+            } else if (status === 'completed') {
+                buttonHtml = `<button onclick="claimQuest('${quest.id}', this)" class="quest-btn success">🎁 รับรางวัล (${quest.reward_amount} AG)</button>`;
+            } else {
+                if (quest.target_url && quest.target_url.trim() !== '') {
+                    buttonHtml = `<a href="${quest.target_url}" target="_blank" class="quest-btn warning" onclick="setTimeout(() => { window.incrementQuest('${quest.slug}', 1); }, 500);">📍 ไปต่อ</a>`;
+                } else if (quest.slug === 'daily_read') {
+                    buttonHtml = `<button onclick="openInboxAndIncrement()" class="quest-btn warning">📰 อ่านประกาศ</button>`;
+                } else {
+                    if (status === 'in_progress') {
+                        buttonHtml = `<button class="quest-btn warning" disabled>⏳ ระหว่างทำ</button>`;
+                    } else {
+                        buttonHtml = `<button onclick="startQuest('${quest.id}', this)" class="quest-btn primary">เริ่มภารกิจ</button>`;
+                    }
+                }
+            }
+
+            let progressHtml = '';
+            if (required > 1 && status !== 'claimed' && status !== 'completed') {
+                const percent = Math.min(100, (progress / required) * 100);
+                progressHtml = `
+                    <div style="margin-top:4px; background:rgba(255,255,255,0.1); height:3px; border-radius:2px;">
+                        <div style="width:${percent}%; height:100%; background:var(--primary); border-radius:2px;"></div>
+                    </div>
+                    <div style="font-size:8px; color:#aaa;">${progress}/${required}</div>
+                `;
+            }
+
+            html += `
+                <div class="quest-item" data-quest-id="${quest.id}">
+                    <div class="quest-info">
+                        <div class="quest-name">${quest.name}</div>
+                        <div class="quest-desc">${quest.description || ''}</div>
+                        <div class="quest-reward"><i class="fas fa-coins"></i> ${quest.reward_amount} AG</div>
+                        ${progressHtml}
+                    </div>
+                    <div class="quest-actions">
+                        ${buttonHtml}
+                    </div>
+                </div>
+            `;
+        });
+
+        listEl.innerHTML = html;
+        console.log('แสดงผลเควสสำเร็จ');
+
+        // 6. คำนวณ AG ที่รับไปแล้ว
+        let totalClaimed = 0;
+        if (userQuests) {
+            for (const uq of userQuests) {
+                if (uq.status === 'claimed') {
+                    const q = quests.find(qq => qq.id === uq.quest_id);
+                    if (q) totalClaimed += q.reward_amount;
+                }
+            }
+        }
+        document.getElementById('questBalance').innerText = totalClaimed + ' AG';
+        console.log('ยอด AG ที่รับไปแล้ว:', totalClaimed);
+
+    } catch (err) {
+        console.error('loadQuests error:', err);
+        listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger); padding:20px;">โหลดภารกิจล้มเหลว: ' + err.message + '</div>';
+    }
+
+}        function switchQuestTab(tab) {
             currentQuestTab = tab;
             document.getElementById('tabDaily').classList.toggle('active', tab === 'daily');
             document.getElementById('tabAchievement').classList.toggle('active', tab === 'achievement');
@@ -2797,7 +2849,7 @@
                 } else if (quest.slug === 'daily_read') {
                     btnElement.outerHTML = `<button onclick="openInbox()" class="quest-btn warning">📰 อ่านประกาศ</button>`;
                 } else {
-                    btnElement.outerHTML = `<button class="quest-btn warning" disabled>📍 ระหว่างทำ</button>`;
+                    btnElement.outerHTML = `<button class="quest-btn warning" disabled>⏳ ระหว่างทำ</button>`;
                 }
 
                 Swal.fire({
@@ -3593,9 +3645,11 @@
         let dragThreshold = 5;
         let startX, startY, initialX, initialY;
         
+        // แก้ไข openQuestModal ให้รีเซ็ตแท็บเป็น daily ก่อนโหลดทุกครั้ง
         function openQuestModal() { 
+            switchQuestTab('daily'); // บังคับให้เป็น daily ทุกครั้งที่เปิด
             document.getElementById('questModal').style.display = 'flex';
-            loadQuests();
+            // loadQuests() จะถูกเรียกใน switchQuestTab อยู่แล้ว
         }
 
         fab.addEventListener('touchstart', (e) => {
