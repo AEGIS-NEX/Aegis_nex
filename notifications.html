@@ -11,10 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ===== IMPORT FONTS (เพิ่ม Mitr) ===== */
-        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Orbitron:wght@700&display=swap');
-
-        /* ===== GLOBAL STYLE (เหมือน dashboard) ===== */
+        /* (คง CSS เดิมไว้เหมือนเดิม) */
         :root {
             --primary: #00f2ff;
             --secondary: #bc13fe;
@@ -75,7 +72,6 @@
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
         }
 
-        /* header */
         .page-header {
             display: flex;
             align-items: center;
@@ -118,14 +114,12 @@
             box-shadow: 0 0 10px rgba(0,242,255,0.3);
         }
 
-        /* notification list */
         .notifications-list {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        /* ===== ปรับแต่งการ์ดประกาศตามที่ต้องการ ===== */
         .notification-card {
             border-left: 5px solid var(--primary);
             background: rgba(20, 30, 50, 0.8);
@@ -234,7 +228,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- header มีแค่ปุ่มกลับและหัวข้อ -->
         <div class="page-header">
             <div class="back-btn" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i>
@@ -242,10 +235,9 @@
             <h1>
                 <i class="fas fa-bullhorn"></i> ประกาศทั้งหมด
             </h1>
-            <div style="width:36px;"></div> <!-- dummy เพื่อให้ header สมดุล -->
+            <div style="width:36px;"></div>
         </div>
 
-        <!-- notification list -->
         <div id="notificationsContainer" class="notifications-list">
             <div class="loading-spinner">
                 <div class="spinner"></div>
@@ -255,42 +247,53 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 🔥 AEGIS CONFIG (ต้องตรงกับ project ของคุณ)
+        // 🔥 AEGIS CONFIG
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ตัวแปร global
         let currentUser = null;
         let notificationChannel = null;
 
-        // ตรวจสอบ session
         async function checkSession() {
-            const { data: { session }, error } = await supa.auth.getSession();
-            if (error || !session) {
-                window.location.href = 'index.html';
-                return;
+            try {
+                const { data: { session }, error } = await supa.auth.getSession();
+                if (error || !session) {
+                    console.warn('No session, redirecting to index.html');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                currentUser = session.user;
+                loadNotifications();
+                setupRealtime();
+            } catch (e) {
+                console.error('checkSession error:', e);
+                showError('ไม่สามารถตรวจสอบ session ได้');
             }
-            currentUser = session.user;
-            loadNotifications();
-            setupRealtime();
         }
 
-        // โหลดประกาศ
+        function showError(msg) {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>
+                    <p>${msg}</p>
+                    <button onclick="location.reload()" style="margin-top:10px; background:var(--primary); border:none; padding:8px 16px; border-radius:8px; color:#000; font-weight:bold;">ลองใหม่</button>
+                </div>
+            `;
+        }
+
         async function loadNotifications() {
             const container = document.getElementById('notificationsContainer');
             container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
 
             try {
-                // ดึงประกาศที่ target = 'all' และ is_active = true
-                let query = supa
+                const { data, error } = await supa
                     .from('notifications')
                     .select('*')
                     .eq('target', 'all')
                     .eq('is_active', true)
                     .order('created_at', { ascending: false });
-
-                const { data, error } = await query;
 
                 if (error) throw error;
 
@@ -334,7 +337,7 @@
                 });
                 container.innerHTML = html;
 
-                // 🌟 จินนี่: ยิงเควสอ่านประกาศ (daily_read_noti)
+                // ยิงเควสอ่านประกาศ (daily_read_noti)
                 if (currentUser?.id) {
                     try {
                         await supa.rpc('process_quest_action', { 
@@ -349,16 +352,10 @@
 
             } catch (err) {
                 console.error('loadNotifications error:', err);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>
-                        <p>ไม่สามารถโหลดประกาศได้</p>
-                    </div>
-                `;
+                showError('ไม่สามารถโหลดประกาศได้ (กรุณาตรวจสอบการเชื่อมต่อ)');
             }
         }
 
-        // ป้องกัน XSS
         function escapeHTML(text) {
             if (!text) return '';
             return String(text).replace(/[&<>"]/g, function(c) {
@@ -370,7 +367,6 @@
             });
         }
 
-        // ตั้งค่า Realtime subscription เพื่ออัปเดตทันทีเมื่อมีประกาศใหม่
         function setupRealtime() {
             if (notificationChannel) supa.removeChannel(notificationChannel);
             notificationChannel = supa.channel('notifications-public')
@@ -386,17 +382,14 @@
                 .subscribe();
         }
 
-        // กลับไป dashboard
         function goBack() {
             window.location.href = 'dashboard.html';
         }
 
-        // เริ่มต้น
         document.addEventListener('DOMContentLoaded', () => {
             checkSession();
         });
 
-        // ล้าง subscription เมื่อออก
         window.addEventListener('beforeunload', () => {
             if (notificationChannel) supa.removeChannel(notificationChannel);
         });
