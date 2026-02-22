@@ -291,40 +291,6 @@
             border: 2px solid var(--dark-bg); 
         }
 
-        /* ===== แถบควบคุมเพลง (ย้ายลงมาอยู่ด้านล่างโปรไฟล์) ===== */
-        .music-player-bar {
-            margin: 15px 20px 10px;
-            padding: 10px 15px;
-            background: rgba(0, 242, 255, 0.05);
-            border-radius: 30px;
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        
-        .music-credit {
-            flex: 1;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            color: var(--primary);
-            font-size: 11px;
-            font-family: 'Orbitron';
-            padding: 0 5px;
-            line-height: 36px;
-            height: 36px;
-            cursor: default;
-            transition: all 0.3s ease;
-        }
-        .music-credit:hover {
-            text-shadow: 0 0 5px var(--primary);
-            background: rgba(0,242,255,0.05);
-            border-radius: 18px;
-        }
-
         .rank-badge { 
             font-size: 9px; 
             padding: 5px 10px; 
@@ -716,45 +682,60 @@
             backdrop-filter: blur(5px);
         }
 
-        .ai-section { 
-            margin: 15px 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            background: rgba(0, 242, 255, 0.05); 
-            padding: 15px; 
-            border-radius: 15px; 
-            border-left: 4px solid var(--primary); 
-            transition: all 0.3s ease; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
-            border: 1px solid rgba(0, 242, 255, 0.2);
+        /* ===== AI Section ถูกเปลี่ยนเป็น Quest Button ===== */
+        .quest-button {
+            margin: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(188,19,254,0.15));
+            padding: 15px;
+            border-radius: 15px;
+            border-left: 4px solid var(--warning);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,215,0,0.3);
             backdrop-filter: blur(10px);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
         
-        .ai-face { 
-            width: 45px; 
+        .quest-button:hover {
+            transform: translateY(-2px);
+            border-color: var(--warning);
+            box-shadow: 0 8px 20px rgba(255,215,0,0.2);
+        }
+        
+        .quest-button:active {
+            transform: scale(0.98);
+        }
+        
+        .quest-icon {
+            width: 45px;
             height: 45px;
-            animation: float 4s infinite ease-in-out; 
-            filter: drop-shadow(0 0 5px var(--primary));
+            animation: float 4s infinite ease-in-out;
+            filter: drop-shadow(0 0 5px var(--warning));
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--warning), #ffaa00);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            color: white;
+            color: #000;
+            font-weight: bold;
         }
         
-        .ai-msg { 
-            font-size: 11px; 
-            color: #cbd5e1; 
-            line-height: 1.5; 
-            transition: 0.3s; 
+        .quest-text {
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.5;
             flex: 1;
         }
         
-        .ai-msg b {
-            color: var(--primary);
+        .quest-text b {
+            color: var(--warning);
             font-family: 'Orbitron';
             font-size: 12px;
         }
@@ -763,70 +744,6 @@
             0% { transform: translateY(0px); } 
             50% { transform: translateY(-5px); } 
             100% { transform: translateY(0px); } 
-        }
-
-        /* ===== Daily Check-in Button ===== */
-        .daily-checkin {
-            margin: 15px 20px;
-            padding: 12px;
-            background: rgba(0,242,255,0.05);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 4px solid var(--primary);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0,242,255,0.2);
-        }
-        
-        .checkin-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .checkin-info i {
-            font-size: 22px;
-            color: var(--primary);
-        }
-        
-        .checkin-text {
-            font-size: 13px;
-            font-weight: bold;
-            font-family: 'Orbitron';
-            color: #fff;
-        }
-        
-        .checkin-sub {
-            font-size: 10px;
-            color: #aaa;
-            margin-top: 2px;
-        }
-        
-        .checkin-btn {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, var(--primary), #00b8cc);
-            border: none;
-            border-radius: 20px;
-            color: #000;
-            font-family: 'Chakra Petch';
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0,242,255,0.3);
-        }
-        
-        .checkin-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,242,255,0.4);
-        }
-        
-        .checkin-btn.disabled {
-            background: rgba(255,255,255,0.1);
-            color: #666;
-            pointer-events: none;
-            box-shadow: none;
         }
 
         .menu-grid { 
@@ -924,55 +841,9 @@
             border: 1px solid rgba(0, 242, 255, 0.3);
         }
 
-        /* ===== Genie FAB (ปรับตามที่ต้องการ: ย้ายมาด้านบน และเพิ่มข้อความ "เควส") ===== */
+        /* ===== Genie FAB ถูกซ่อนไว้ ===== */
         .genie-fab {
-            position: fixed; 
-            top: 20px;                /* เปลี่ยนจาก bottom: 90px; เป็น top: 20px; */
-            right: 20px; 
-            width: 55px; 
-            height: 55px; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%; 
-            border: 2px solid rgba(255,255,255,0.3); 
-            cursor: pointer; 
-            z-index: 2000; 
-            display: flex; 
-            flex-direction: column;    /* เพิ่มเพื่อให้ข้อความเป็นแนวตั้ง */
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary); 
-            backdrop-filter: blur(5px); 
-            touch-action: none;
-            transition: none;
-            transform: translateZ(0);
-            will-change: left, top;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;           /* ลดขนาดฟอนต์หลักลงเพื่อให้พอดีกับสองบรรทัด */
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-            letter-spacing: 1px;
-            line-height: 1;
-            user-select: none;
-        }
-        
-        .genie-fab::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            z-index: -1;
-            filter: blur(8px);
-            opacity: 0.7;
-            animation: pulseGlow 2s infinite alternate;
-        }
-        
-        .genie-fab:active {
-            transform: scale(0.95);
+            display: none;
         }
 
         .modal-overlay { 
@@ -1037,6 +908,11 @@
             border-radius: 50%;
             background: rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .close-modal:hover {
+            color: var(--primary);
+            border-color: var(--primary);
         }
         
         .modal-header { 
@@ -1394,24 +1270,6 @@
                 height: 50px;
                 font-size: 22px;
             }
-            
-            .daily-checkin {
-                margin: 10px 15px;
-                padding: 10px;
-            }
-            
-            .checkin-btn {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-
-            .music-player-bar {
-                margin: 10px 15px;
-                padding: 8px 12px;
-            }
-            .music-credit {
-                font-size: 10px;
-            }
         }
         
         @media (max-width: 480px) {
@@ -1468,14 +1326,6 @@
                 font-size: 7px;
                 padding: 3px 6px;
                 min-width: 60px;
-            }
-
-            .music-player-bar {
-                margin: 8px 10px;
-                padding: 6px 10px;
-            }
-            .music-credit {
-                font-size: 9px;
             }
         }
 
@@ -1646,166 +1496,49 @@
             box-shadow: none !important;
         }
 
-        .quest-modal {
-            background: rgba(10, 15, 30, 0.85) !important;
-            backdrop-filter: blur(15px) !important;
-            border: 2px solid var(--primary) !important;
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.3) !important;
-        }
-        .quest-header {
+        /* สไตล์สำหรับเควสใหม่ (ตัวหนังสือเล็ก) */
+        .quest-mini-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(0,242,255,0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .quest-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-        .quest-tab {
-            font-family: 'Orbitron';
-            font-size: 16px;
-            color: #aaa;
-            cursor: pointer;
-            padding: 5px 15px;
-            border-radius: 20px;
-            transition: 0.3s;
-            letter-spacing: 1px;
-        }
-        .quest-tab.active {
-            color: var(--primary);
-            background: rgba(0,242,255,0.1);
-            text-shadow: 0 0 10px var(--primary);
-        }
-        .quest-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            max-height: 55vh;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        .quest-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 12px;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .quest-item:hover {
-            border-color: var(--primary);
-            background: rgba(0,242,255,0.05);
-        }
-        .quest-info {
-            flex: 1;
-        }
-        .quest-name {
+        .quest-mini-title {
             font-family: 'Orbitron';
             font-size: 12px;
             color: #fff;
-            margin-bottom: 2px;
         }
-        .quest-desc {
-            font-size: 9px;
-            color: #aaa;
-        }
-        .quest-reward {
+        .quest-mini-reward {
             font-size: 10px;
             color: var(--warning);
-            font-weight: bold;
-            margin-top: 4px;
         }
-        .quest-reward i {
-            margin-right: 4px;
-        }
-        .quest-btn {
-            padding: 6px 10px;
+        .quest-mini-btn {
+            background: rgba(0,242,255,0.1);
+            border: 1px solid var(--primary);
             border-radius: 20px;
+            padding: 4px 10px;
             font-size: 10px;
-            font-weight: bold;
-            font-family: 'Orbitron';
+            color: var(--primary);
             cursor: pointer;
-            border: none;
-            transition: 0.3s;
-            min-width: 70px;
-            text-align: center;
-            margin-top: 8px;
+            transition: 0.2s;
         }
-        .quest-btn.primary {
+        .quest-mini-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+        .quest-mini-checkin {
             background: linear-gradient(135deg, var(--primary), #00b8cc);
+            border: none;
             color: #000;
-            box-shadow: 0 0 10px var(--primary);
+            font-weight: bold;
         }
-        .quest-btn.warning {
-            background: linear-gradient(135deg, var(--warning), #ffaa00);
-            color: #000;
-            box-shadow: 0 0 10px var(--warning);
-        }
-        .quest-btn.success {
-            background: linear-gradient(135deg, var(--success), #00cc66);
-            color: #000;
-            box-shadow: 0 0 10px var(--success);
-        }
-        .quest-btn.claimed {
-            background: rgba(255,255,255,0.1);
-            color: #666;
-            cursor: not-allowed;
-            border: 1px solid #444;
-        }
-        .quest-btn.available {
-            background: linear-gradient(135deg, var(--warning), #ffaa00);
-            color: #000;
-            box-shadow: 0 0 15px var(--warning);
-        }
-        .quest-btn.in-progress {
-            background: linear-gradient(135deg, var(--primary), #0066cc);
-            color: white;
-            box-shadow: 0 0 15px var(--primary);
-        }
-        .quest-btn.completed {
-            background: linear-gradient(135deg, var(--success), #00cc66);
-            color: #000;
-            box-shadow: 0 0 15px var(--success);
-        }
-        
-        .mock-actions {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        .mock-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,215,0,0.3);
-            color: var(--warning);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Chakra Petch';
-        }
-        .mock-btn:hover {
-            background: rgba(255,215,0,0.1);
-            border-color: var(--warning);
-        }
-        .balance-top-right {
-            font-family: 'Orbitron';
-            font-size: 16px;
-            color: var(--warning);
-            text-shadow: 0 0 10px var(--warning);
-            background: rgba(0,0,0,0.3);
-            padding: 4px 12px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,215,0,0.3);
+        .small-text {
+            font-size: 10px;
+            color: #aaa;
         }
     </style>
 </head>
@@ -1828,8 +1561,6 @@
         </div>
         <audio id="tickerSound" loop><source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" type="audio/mpeg"></audio>
         <audio id="adminAlertSound"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
-        <!-- เพิ่ม element เสียงสำหรับเพลง NCS -->
-        <audio id="ncsPlayer" preload="metadata"></audio>
         
         <!-- Dashboard Header -->
         <div class="dash-header">
@@ -1857,19 +1588,10 @@
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge"></div>
                 </div>
-                <!-- หมายเหตุ: ปุ่มเพลงและเครดิตถูกย้ายลงไปอยู่ข้างล่างแล้ว -->
             </div>
         </div>
 
-        <!-- Music Player Bar (ย้ายมาอยู่ใต้ header) -->
-        <div class="music-player-bar">
-            <div class="music-credit" id="musicCredit" title="🎵 NoCopyrightSounds">🎵 NCS Music</div>
-            <div class="icon-btn" onclick="toggleAudio()">
-                <i class="fas fa-volume-mute" id="headerAudioIcon"></i>
-            </div>
-        </div>
-
-        <!-- Wallet Hub แสดงสองสกุลเงิน AGS และ AG (เพิ่มข้อความอัตราแลกเปลี่ยน) -->
+        <!-- Wallet Hub แสดงสองสกุลเงิน AGS และ AG -->
         <div class="wallet-hub">
             <div class="balance-label">TOTAL ASSETS</div>
             <div class="dual-balance">
@@ -1898,26 +1620,16 @@
             </div>
         </div>
 
-        <!-- AI Section + Daily Check-in (เพิ่มปุ่มเช็คอิน) -->
-        <div class="ai-section" style="margin-bottom:5px;">
-            <div class="ai-face">
-                <i class="fas fa-robot"></i>
+        <!-- ปุ่มเควสใหม่ (แทน AI Section) -->
+        <div class="quest-button" onclick="openQuestModalNew()">
+            <div class="quest-icon">
+                <i class="fas fa-tasks"></i>
             </div>
-            <div class="ai-msg" id="aiMsg"><b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง | กำลังประมวลผลธุรกรรม..."</div>
-        </div>
-
-        <!-- Daily Check-in Button -->
-        <div class="daily-checkin" id="dailyCheckinContainer">
-            <div class="checkin-info">
-                <i class="fas fa-calendar-check"></i>
-                <div>
-                    <div class="checkin-text">เช็คอินรายวัน</div>
-                    <div class="checkin-sub">รับ 20 AG ทุกวัน</div>
-                </div>
+            <div class="quest-text">
+                <b>📋 เควสรายวัน</b><br>
+                คลิกเพื่อดูภารกิจและรับเหรียญ AG
             </div>
-            <button class="checkin-btn" id="checkinBtn" onclick="dailyCheckIn()">รับรางวัล</button>
         </div>
-        
 
         <!-- Menu Grid -->
         <div class="menu-grid">
@@ -1963,13 +1675,13 @@
             </div>
         </div>
         
-        <!-- Genie FAB (Quest Hub) - เปลี่ยนเป็นตัวอักษร AG พร้อมสไตล์ใหม่ และเพิ่มข้อความ "เควส" -->
-        <div class="genie-fab" id="genieFab">
+        <!-- Genie FAB ถูกซ่อนไว้ (display:none) -->
+        <div class="genie-fab" id="genieFab" onclick="openQuestModalNew()" style="display:none;">
             <span style="font-size:16px; line-height:1;">AG</span>
             <span style="font-size:8px; line-height:1.2; margin-top:2px;">เควส</span>
         </div>
 
-        <!-- Bottom Navigation (เพิ่มปุ่ม ตลาด ระหว่าง หน้าหลัก กับ เติมเงิน) -->
+        <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <a href="#" class="nav-link active">
                 <i class="fas fa-home"></i>
@@ -2061,7 +1773,7 @@
         </div>
     </div>
 
-    <!-- Profile Modal (ปรับปรุงใหม่) -->
+    <!-- Profile Modal -->
     <div class="modal-overlay" id="pfModal">
         <div class="modal-box" id="pfBox">
             <i class="fas fa-times close-modal" onclick="closeModal('pfModal')"></i>
@@ -2095,7 +1807,7 @@
         </div>
     </div>
 
-    <!-- Video Modal (ยังคงไว้ แต่จะเปิดจาก Quest Modal แทน) -->
+    <!-- Video Modal -->
     <div class="modal-overlay" id="videoModal">
         <div class="modal-box">
             <div class="modal-title"><i class="fas fa-video"></i> AEGIS GUIDANCE</div>
@@ -2107,21 +1819,29 @@
         </div>
     </div>
 
-    <!-- QUEST MODAL (ปรับเป็น 2 คอลัมน์) -->
-    <div class="modal-overlay" id="questModal">
-        <div class="modal-box quest-modal" style="max-width: 550px;">
-            <div class="quest-header">
-                <h3 style="font-family:'Orbitron'; color:var(--primary); margin:0;">✨ QUEST HUB</h3>
-                <div class="balance-top-right" id="questBalance">0 AG</div>
-                <i class="fas fa-times close-modal" onclick="closeModal('questModal')" style="position:static; margin-left:10px;"></i>
+    <!-- QUEST MODAL ใหม่ (แบบเรียบง่าย) -->
+    <div class="modal-overlay" id="questModalNew">
+        <div class="modal-box" style="max-width: 450px;">
+            <i class="fas fa-times close-modal" onclick="closeModal('questModalNew')"></i>
+            <div class="modal-header">
+                <i class="fas fa-tasks" style="color:var(--warning)"></i>
+                <h3 style="color:var(--warning); font-size:18px;">✨ ศูนย์ภารกิจ (Quest Center)</h3>
             </div>
-            <div class="quest-tabs">
-                <div class="quest-tab active" onclick="switchQuestTab('daily')" id="tabDaily">⏳ ภารกิจรายวัน</div>
-                <div class="quest-tab" onclick="switchQuestTab('achievement')" id="tabAchievement">🏆 ภารกิจบุกเบิก</div>
-            </div>
-            <div id="questList" class="quest-list">
-                <!-- Quests will be loaded here -->
-                <div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin" style="color:var(--primary);"></i> กำลังโหลดภารกิจ...</div>
+            <div class="modal-body">
+                <div style="background:rgba(255,215,0,0.1); border:1px solid var(--warning); padding:10px; border-radius:10px; text-align:center; margin-bottom:15px;">
+                    <span style="font-size:12px; color:#ccc;">เหรียญ AG ปัจจุบันของคุณ</span><br>
+                    <strong style="font-size:24px; color:var(--warning); font-family:'Orbitron';"><span id="questModalAgBalance">0</span> AG</strong>
+                </div>
+
+                <h4 style="color:var(--primary); font-size:14px; margin-bottom:10px; border-bottom:1px solid rgba(0,242,255,0.3); padding-bottom:5px;">📅 ภารกิจรายวัน (Daily Quests)</h4>
+                <div id="dailyQuestsContainer">
+                    <div style="text-align:center; color:#888; font-size:12px;"><i class="fas fa-spinner fa-spin"></i> กำลังโหลดภารกิจ...</div>
+                </div>
+
+                <h4 style="color:var(--secondary); font-size:14px; margin-top:20px; margin-bottom:10px; border-bottom:1px solid rgba(188,19,254,0.3); padding-bottom:5px;">🏆 ภารกิจผู้บุกเบิก (One-time Quests)</h4>
+                <div id="pioneerQuestsContainer"></div>
+                
+                <div class="small-text" style="text-align:center; margin-top:15px; color:#888;">* รีเซ็ตภารกิจรายวันทุก 00:00 น.</div>
             </div>
         </div>
     </div>
@@ -2137,6 +1857,136 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- ========== ระบบ Mini Jukebox ========== -->
+    <style>
+        /* UI แคปซูลเพลงลอยมุมซ้ายล่าง (หลบ Bottom Nav) */
+        .mini-juke-container {
+            position: fixed;
+            bottom: 90px; /* ลอยอยู่เหนือเมนูด้านล่าง */
+            left: 15px;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            background: rgba(10, 15, 25, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 5px;
+            width: 50px; /* ขนาดตอนหด */
+            height: 50px;
+            overflow: hidden;
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+        }
+
+        /* เอาเมาส์ไปชี้ หรือกดให้มันขยายออก */
+        .mini-juke-container:hover, .mini-juke-container.active {
+            width: 280px; /* ขนาดตอนขยาย */
+            background: rgba(10, 15, 25, 0.95);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        /* ไอคอนแผ่นเสียง */
+        .juke-disk {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #000;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        /* อนิเมชั่นแผ่นเสียงหมุนตอนเพลงเล่น */
+        .juke-disk.spinning {
+            animation: spinDisk 4s linear infinite;
+        }
+        @keyframes spinDisk { 100% { transform: rotate(360deg); } }
+
+        /* ส่วนควบคุมและชื่อเพลง (ซ่อนไว้ตอนหด) */
+        .juke-controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 12px;
+            min-width: 180px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .mini-juke-container:hover .juke-controls, .mini-juke-container.active .juke-controls {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .juke-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        /* 📜 ตัววิ่งเครดิต ป้องกันโดนฟ้อง */
+        .juke-credit {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            color: #aaa;
+            width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .juke-credit span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        .juke-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .juke-btn {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+    </style>
+
+    <div class="mini-juke-container" id="miniJukebox" onclick="this.classList.toggle('active')">
+        <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+            <i class="fas fa-play" id="jukeIcon"></i>
+        </div>
+        <div class="juke-controls">
+            <div class="juke-title" id="jukeTitle">NCS Music</div>
+            <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+            <div class="juke-btns">
+                <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+            </div>
+        </div>
+    </div>
+
+    <audio id="globalAudioPlayer" preload="auto"></audio>
+
     <script>
         // 🔥 AEGIS CONFIG - ใช้ Supabase Project ของคุณโดยตรง
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
@@ -2150,62 +2000,13 @@
 
         // ตัวแปร global
         let currentUserData = {};
-        let currentQuestTab = 'daily';
-        let questsData = [];
-        let userQuestsMap = {};
         let authSubscription = null;
         let pendingLink;
         let userChannel = null;
         let heartbeatInterval = null;
         let hallInterval = null;
         let blacklistChannel = null;
-        let notificationChannel = null; // NEW: สำหรับฟังการแจ้งเตือน
-
-        // ========== 🔥 ส่วนควบคุมเพลง NCS (ประกาศไว้ก่อน) ==========
-        const ncsPlayer = document.getElementById('ncsPlayer');
-        let currentSongIndex = 0;
-        const playlist = [
-            { 
-                title: "Warriyo - Mortals (feat. Laura Brehm)", 
-                file: "./music/mortals.mp3",   // แก้เป็น path สัมพัทธ์ที่ถูกต้อง
-                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] | Music provided by NoCopyrightSounds | Watch: http://ncs.io/Mortals | Stream: http://ncs.io/Mortals"
-            },
-            { 
-                title: "On & On", 
-                file: "./music/on_and_on.mp3", // แก้เป็น path สัมพัทธ์ที่ถูกต้อง
-                credit: "Track: On & On [NCS Release] | Music provided by NoCopyrightSounds | Watch: https://ncs.io/onandon | Stream: https://ncs.io/onandon"
-            }
-        ];
-
-        function loadSong(index) {
-            const song = playlist[index];
-            ncsPlayer.src = song.file;
-            ncsPlayer.load();
-            document.getElementById('musicCredit').innerText = `🎵 ${song.title}`;
-            document.getElementById('musicCredit').title = song.credit;
-        }
-
-        // เมื่อเพลงจบให้เล่นเพลงถัดไป
-        ncsPlayer.addEventListener('ended', function() {
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            loadSong(currentSongIndex);
-            if (!ncsPlayer.paused) ncsPlayer.play();
-        });
-
-        // เพิ่ม error handler
-        ncsPlayer.addEventListener('error', function(e) {
-            console.error('Audio error:', e);
-            Swal.fire({
-                icon: 'error',
-                title: 'โหลดเพลงไม่ได้',
-                text: 'กรุณาตรวจสอบว่าไฟล์อยู่ในโฟลเดอร์ music/ และมีชื่อถูกต้อง',
-                background: '#050b14',
-                color: '#fff'
-            });
-        });
-
-        // เริ่มต้นโหลดเพลงแรก (แต่ยังไม่เล่น)
-        loadSong(0);
+        let notificationChannel = null;
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -2318,7 +2119,7 @@
             return { percent, next, current: d };
         }
 
-        // 🔥 ONLINE STATUS (heartbeat)
+        // 🔥 ONLINE STATUS (heartbeat) - ปรับปรุงให้แสดง error ชัดเจน
         async function updateLastSeen() {
             if (!currentUserData?.id) return;
             try {
@@ -2326,11 +2127,17 @@
                     .from('users')
                     .update({ last_seen: new Date().toISOString() })
                     .eq('id', currentUserData.id);
+                
                 if (error) {
-                    console.error('Heartbeat update error:', error);
+                    console.error('Heartbeat update failed:', error.message, error.details, error.hint);
+                    if (error.code === '42501') {
+                        console.warn('⚠️ RLS Policy may be blocking update. Please check Supabase policies for table "users".');
+                    }
+                } else {
+                    // console.log('Heartbeat updated successfully'); // ปิด log ถ้าไม่ต้องการ
                 }
             } catch (e) {
-                console.error('Heartbeat exception:', e);
+                console.error('Heartbeat exception:', e.message);
             }
         }
 
@@ -2348,6 +2155,28 @@
             return diff < 5;
         }
 
+        // เพิ่มฟังก์ชันตรวจสอบการเชื่อมต่อ Supabase
+        async function checkSupabaseConnection() {
+            try {
+                const { error } = await supa.from('users').select('id').limit(1);
+                if (error) {
+                    console.error('Supabase connection test failed:', error);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'การเชื่อมต่อฐานข้อมูลมีปัญหา',
+                        text: 'กรุณารอสักครู่แล้วลองใหม่ หรือติดต่อผู้ดูแลระบบ',
+                        background: '#050b14',
+                        color: '#fff',
+                        confirmButtonColor: '#00f2ff'
+                    });
+                } else {
+                    console.log('Supabase connection OK');
+                }
+            } catch (e) {
+                console.error('Connection test exception:', e);
+            }
+        }
+
         // 🔥 FETCH USER STATS (deals, cancelled, rating)
         async function fetchUserStats(userId) {
             try {
@@ -2355,7 +2184,7 @@
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'received'); // ✅ เปลี่ยนจาก completed เป็น received
+                    .eq('status', 'received');
                 
                 const { count: cancelled, error: err2 } = await supa
                     .from('trades')
@@ -2394,322 +2223,23 @@
             return stars;
         }
 
-        // ========== ระบบเควส Global Functions ==========
-        window.completeQuest = async (slug) => {
-            if (!currentUserData?.id) {
-                console.error('completeQuest: No user ID');
-                return;
-            }
-            console.log('Calling completeQuest with slug:', slug, 'user:', currentUserData.id);
-            try {
-                const { error } = await supa.rpc('complete_quest', {
-                    p_user_id: currentUserData.id,
-                    p_slug: slug
-                });
-                if (error) {
-                    console.error('completeQuest RPC error:', error);
-                    throw error;
-                }
-                console.log('completeQuest success for slug:', slug);
-                if (document.getElementById('questModal').style.display === 'flex') {
-                    loadQuests();
-                }
-                Swal.fire({
-                    icon: 'success',
-                    title: 'ภารกิจสำเร็จ!',
-                    text: `คุณทำภารกิจ ${slug} สำเร็จแล้ว กดรับรางวัลใน Quest Hub`,
-                    background: '#050b14',
-                    color: '#fff',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            } catch (err) {
-                console.error('completeQuest error:', err);
-            }
-        };
-
-        window.incrementQuest = async (slug, amount = 1) => {
-            if (!currentUserData?.id) return;
-            try {
-                const { error } = await supa.rpc('increment_quest', {
-                    p_user_id: currentUserData.id,
-                    p_slug: slug,
-                    p_increment: amount
-                });
-                if (error) throw error;
-                if (document.getElementById('questModal').style.display === 'flex') {
-                    loadQuests();
-                }
-            } catch (err) {
-                console.error('incrementQuest error:', err);
-            }
-        };
-
-        // *** แก้ไขฟังก์ชัน claimQuest ให้ robust และแก้ไขเควสที่ค้าง ***
-        window.claimQuest = async (questId, btnElement) => {
-            if (!currentUserData?.id) return;
-            const oldText = btnElement.innerText;
-            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btnElement.disabled = true;
-
-            try {
-                // ใช้ RPC ที่สร้างใหม่ ป้องกันบั๊กกดเบิ้ล 100%
-                const { data: success, error } = await supa.rpc('claim_quest_reward', {
-                    p_user_id: currentUserData.id,
-                    p_quest_id: questId
-                });
-
-                if (error || !success) throw new Error('ไม่สามารถรับรางวัลได้ หรือรับไปแล้ว');
-
-                // ดึงยอด AG ล่าสุดมาอัปเดต UI ทันที
-                const { data: user } = await supa.from('users').select('balance_ag').eq('id', currentUserData.id).single();
-                if (user) document.getElementById('userBalanceAG').innerText = user.balance_ag.toLocaleString();
-
-                btnElement.outerHTML = `<button class="quest-btn claimed" disabled>✅ รับแล้ว</button>`;
-                
-                // อัปเดตตัวเลขรวมด้านบน
-                loadQuests();
-
-            } catch (err) {
-                console.error(err);
-                btnElement.innerHTML = oldText;
-                btnElement.disabled = false;
-                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, background: '#050b14', color: '#fff' });
-            }
-        };
-
-        // ========== DAILY CHECK-IN ใหม่: ใช้เฉพาะระบบเควส ไม่มีการตรวจสอบ last_checkin ==========
-        window.dailyCheckIn = async () => {
-            const btn = document.getElementById('checkinBtn');
-            const originalText = btn.innerText;
-
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            try {
-                if (!currentUserData?.id) throw new Error('กรุณาเข้าสู่ระบบ');
-
-                // Increment daily_login quest โดยตรง
-                const { error } = await supa.rpc('increment_quest', {
-                    p_user_id: currentUserData.id,
-                    p_slug: 'daily_login',
-                    p_increment: 1
-                });
-
-                if (error) {
-                    // ถ้า error เพราะทำไปแล้ว ให้แสดงข้อความแจ้งเตือน
-                    if (error.message.includes('already claimed') || error.message.includes('duplicate')) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'เช็คอินวันนี้ไปแล้ว',
-                            text: 'คุณสามารถเช็คอินได้อีกครั้งในวันพรุ่งนี้',
-                            background: '#050b14',
-                            color: '#fff'
-                        });
-                        btn.innerHTML = 'รับแล้ว';
-                        btn.classList.add('disabled');
-                    } else {
-                        throw error;
-                    }
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'เช็คอินสำเร็จ!',
-                        text: 'ได้รับรางวัล 20 AG แล้ว (กดรับรางวัลใน Quest Hub)',
-                        background: '#050b14',
-                        color: '#fff',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    btn.innerHTML = '<i class="fas fa-check"></i> รับแล้ว';
-                    btn.classList.add('disabled');
-                }
-
-                // โหลดเควสใหม่เพื่ออัปเดตสถานะใน modal
-                loadQuests();
-
-            } catch (err) {
-                console.error('dailyCheckIn error:', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: err.message,
-                    background: '#050b14',
-                    color: '#fff'
-                });
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        };
-
-        // ========== ฟังก์ชัน loadQuests สำหรับ Modal ==========
-        async function loadQuests() {
-            if (!currentUserData?.id) return;
-            const listEl = document.getElementById('questList');
-            listEl.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> กำลังโหลด...</div>';
-
-            try {
-                const { data: quests } = await supa.from('quests').select('*').order('id');
-                const { data: userQuests } = await supa.from('user_quests').select('*').eq('user_id', currentUserData.id);
-
-                const uqMap = {};
-                if (userQuests) userQuests.forEach(uq => uqMap[uq.quest_id] = uq);
-
-                const filtered = quests.filter(q => q.quest_type === currentQuestTab);
-                if (filtered.length === 0) return listEl.innerHTML = '<div style="text-align:center; color:#888;">ไม่มีภารกิจ</div>';
-
-                let html = '';
-                let totalClaimed = 0;
-                const today = new Date().toISOString().split('T')[0];
-
-                filtered.forEach(q => {
-                    const uq = uqMap[q.id];
-                    
-                    // เช็คว่าถ้าเป็น daily และเลยวันมาแล้ว ให้สถานะเป็น pending รอทำใหม่
-                    let status = uq?.status || 'pending';
-                    let progress = uq?.progress || 0;
-                    if (q.quest_type === 'daily' && uq?.last_progress_date && uq.last_progress_date !== today) {
-                        status = 'pending';
-                        progress = 0;
-                    }
-
-                    let btnHtml = '';
-                    
-                    if (status === 'claimed') {
-                        btnHtml = `<button class="quest-btn claimed" disabled>✅ รับแล้ว</button>`;
-                        totalClaimed += q.reward_amount;
-                    } else if (status === 'completed') {
-                        btnHtml = `<button class="quest-btn success" onclick="claimQuest('${q.id}', this)">🎁 รับรางวัล (${q.reward_amount} AG)</button>`;
-                    } else {
-                        if (q.target_url) {
-                            // สำหรับเควสเฟสบุ๊ค พอกดปุ๊บ เด้งไปลิงก์ แล้วสั่ง increment ทันที
-                            btnHtml = `<a href="${q.target_url}" target="_blank" class="quest-btn warning" onclick="setTimeout(() => { window.incrementQuest('${q.slug}', 1); }, 1500);" style="text-decoration:none; display:inline-block;">📍 ดำเนินการ</a>`;
-                        } else if (q.slug === 'daily_read') {
-                            btnHtml = `<button class="quest-btn warning" onclick="openInboxAndIncrement()">📰 อ่านประกาศ</button>`;
-                        } else {
-                            btnHtml = `<button class="quest-btn primary" disabled>⏳ ทำภารกิจ</button>`;
-                        }
-                    }
-
-                    html += `
-                        <div class="quest-item">
-                            <div class="quest-info">
-                                <div class="quest-name">${q.name}</div>
-                                <div class="quest-desc">${q.description}</div>
-                                <div class="quest-reward"><i class="fas fa-coins"></i> ${q.reward_amount} AG</div>
-                            </div>
-                            <div class="quest-actions">${btnHtml}</div>
-                        </div>
-                    `;
-                });
-
-                listEl.innerHTML = html;
-                document.getElementById('questBalance').innerText = totalClaimed + ' AG';
-
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        function switchQuestTab(tab) {
-            currentQuestTab = tab;
-            document.getElementById('tabDaily').classList.toggle('active', tab === 'daily');
-            document.getElementById('tabAchievement').classList.toggle('active', tab === 'achievement');
-            loadQuests();
-        }
-
-        // ========== ฟังก์ชันตรวจสอบ localStorage สำหรับ quest จากหน้าเติมเงิน ==========
-        function checkQuestFromStorage() {
-            if (!currentUserData?.id) return;
-            const topupFlag = localStorage.getItem('quest_topup');
-            if (topupFlag === 'true') {
-                localStorage.removeItem('quest_topup');
-                window.incrementQuest('daily_topup', 1);
-            }
-        }
-
-        // ========== ฟังก์ชันเปิด Inbox และ increment quest daily_read ==========
-        function openInboxAndIncrement() {
-            closeModal('questModal');          // ปิด modal quest ก่อน
-            window.incrementQuest('daily_read', 1); // เพิ่ม progress ทันที
-            openInbox();                       // เปิด Inbox
-        }
-
-        // NEW: อัปเดตตัวเลขที่ปุ่มกระดิ่ง
-        async function updateNotificationBadge() {
-            if (!currentUserData?.id) return;
-            try {
-                const { count, error } = await supa
-                    .from('notifications')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('target', 'all')
-                    .eq('is_active', true);
-                
-                const badge = document.querySelector('.noti-badge');
-                if (!error && count > 0) {
-                    badge.innerText = count > 9 ? '9+' : count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            } catch (e) {
-                console.error('updateNotificationBadge error:', e);
-            }
-        }
-
-        // NEW: ตั้งค่า Realtime สำหรับฟังการแจ้งเตือน
-        function setupNotificationsRealtime() {
-            if (notificationChannel) supa.removeChannel(notificationChannel);
-            
-            notificationChannel = supa.channel('notifications-realtime')
-                .on('postgres_changes', {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: 'target=eq.all'
-                }, () => {
-                    console.log('📢 มีประกาศใหม่!');
-                    updateNotificationBadge();
-                })
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: 'target=eq.all'
-                }, () => {
-                    updateNotificationBadge();
-                })
-                .on('postgres_changes', {
-                    event: 'DELETE',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: 'target=eq.all'
-                }, () => {
-                    updateNotificationBadge();
-                })
-                .subscribe();
-        }
-
-        // 🔥 OPEN PROFILE POPUP (แก้ให้เปิดทันที)
+        // 🔥 OPEN PROFILE POPUP
         async function openProfilePopup() {
             if (!currentUserData?.id) return;
-            // เปิด modal ทันทีด้วยข้อมูลที่มีใน currentUserData
             viewProfile(
                 currentUserData.display_name || currentUserData.username || 'USER',
                 currentUserData.photo_url,
-                currentUserData.completed_deals || 0,   // จำนวนดีลจาก cache
+                currentUserData.completed_deals || 0,
                 currentUserData.id,
                 currentUserData.kyc_status || 'unverified',
-                0,   // cancelled เบื้องต้น (จะอัปเดตทีหลัง)
-                100, // score เบื้องต้น (จะอัปเดตทีหลัง)
+                0, 100,
                 currentUserData.average_rating || 5.0
             );
         }
 
-        // 🔥 VIEW PROFILE (ปรับให้แสดงผลทันที แล้วค่อยโหลดข้อมูลจริงทีหลัง)
+        // 🔥 VIEW PROFILE
         window.viewProfile = async function(name, img, initialDeals, uid, kyc, initialCancelled = 0, initialScore = 100, rating = 5.0) {
             try {
-                // --- แสดง modal ทันทีด้วยข้อมูลที่ส่งมา ---
                 const rankInfo = getRank(initialDeals, uid);
                 const box = document.getElementById('pfBox');
                 box.style.borderColor = rankInfo.border;
@@ -2720,7 +2250,6 @@
                     pfImgEl.style.backgroundImage = `url('${img}')`;
                 } else {
                     pfImgEl.style.backgroundImage = 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
-                    pfImgEl.style.backgroundColor = '#111';
                 }
 
                 const avatarGlow = getAvatarGlowStyle(rankInfo, uid);
@@ -2742,14 +2271,12 @@
                 pName.style.textShadow = getTextShadowStyle(rankInfo, uid);
 
                 document.getElementById('pfBadge').innerHTML = rankInfo.html;
-
                 document.getElementById('pfDealsSuccess').innerText = initialDeals;
                 document.getElementById('pfDealsCancel').innerText = initialCancelled;
                 document.getElementById('pfScore').innerText = initialScore + '%';
                 document.getElementById('pfStarCount').innerText = Math.round(rating);
                 document.getElementById('pfStars').innerHTML = getStarRating(rating, uid);
 
-                // ออนไลน์ status (ใช้ค่าเก่า)
                 const { data: userWithSeen } = await supa
                     .from('users')
                     .select('last_seen')
@@ -2762,81 +2289,44 @@
 
                 document.getElementById('pfModal').style.display = 'flex';
 
-                // --- จากนั้นค่อยดึงข้อมูลล่าสุดในพื้นหลัง (สำหรับ uid นี้) ---
+                // Background update
                 (async () => {
                     try {
-                        // ดึง user ล่าสุด (เผื่อมีการเปลี่ยนแปลง)
-                        const { data: user, error: userError } = await supa
+                        const { data: user } = await supa
                             .from('users')
                             .select('*')
                             .eq('id', uid)
                             .single();
-                        
-                        if (!userError && user) {
-                            name = user.display_name || user.username || name;
-                            img = user.photo_url || img;
-                            kyc = user.kyc_status || kyc;
-                            rating = user.average_rating || rating;
+                        if (user) {
+                            const stats = await fetchUserStats(uid);
+                            const newRankInfo = getRank(stats.completed, uid);
+                            box.style.borderColor = newRankInfo.border;
+                            box.style.boxShadow = `0 0 25px ${newRankInfo.color}30`;
+                            const newAvatarGlow = getAvatarGlowStyle(newRankInfo, uid);
+                            pfImgEl.style.borderColor = newRankInfo.border;
+                            pfImgEl.style.boxShadow = newAvatarGlow.boxShadow;
+                            pfImgEl.style.animation = newAvatarGlow.animation;
+                            let newTick = '';
+                            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
+                                newTick = ` <i class="fas fa-check-circle rainbow-tick" style="font-size:20px;"></i>`;
+                            } else if (user.kyc_status === 'verified' || user.kyc_verified === true) {
+                                newTick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:20px;"></i>`;
+                            }
+                            pName.innerHTML = (user.display_name || user.username || name).toUpperCase() + newTick;
+                            pName.style.color = newRankInfo.color;
+                            pName.style.textShadow = getTextShadowStyle(newRankInfo, uid);
+                            document.getElementById('pfBadge').innerHTML = newRankInfo.html;
+                            document.getElementById('pfDealsSuccess').innerText = stats.completed;
+                            document.getElementById('pfDealsCancel').innerText = stats.cancelled;
+                            document.getElementById('pfScore').innerText = stats.score + '%';
                         }
-
-                        // ดึง stats ล่าสุด
-                        const stats = await fetchUserStats(uid);
-                        const completed = stats.completed;
-                        const cancelledStats = stats.cancelled;
-                        const scoreStats = stats.score;
-
-                        // อัปเดต DOM ด้วยข้อมูลใหม่
-                        const newRankInfo = getRank(completed, uid);
-                        // อัปเดต border, box shadow
-                        box.style.borderColor = newRankInfo.border;
-                        box.style.boxShadow = `0 0 25px ${newRankInfo.color}30`;
-                        
-                        // อัปเดต avatar glow
-                        const newAvatarGlow = getAvatarGlowStyle(newRankInfo, uid);
-                        pfImgEl.style.borderColor = newRankInfo.border;
-                        pfImgEl.style.boxShadow = newAvatarGlow.boxShadow;
-                        pfImgEl.style.animation = newAvatarGlow.animation;
-
-                        // อัปเดต tick (กรณี kyc เปลี่ยน)
-                        let newTick = '';
-                        if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                            newTick = ` <i class="fas fa-check-circle rainbow-tick" style="font-size:20px;"></i>`;
-                        } else if (kyc === 'verified' || kyc === true) {
-                            newTick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:20px;"></i>`;
-                        }
-                        pName.innerHTML = name.toUpperCase() + newTick;
-                        pName.style.color = newRankInfo.color;
-                        pName.style.textShadow = getTextShadowStyle(newRankInfo, uid);
-
-                        document.getElementById('pfBadge').innerHTML = newRankInfo.html;
-
-                        document.getElementById('pfDealsSuccess').innerText = completed;
-                        document.getElementById('pfDealsCancel').innerText = cancelledStats;
-                        document.getElementById('pfScore').innerText = scoreStats + '%';
-                        document.getElementById('pfStarCount').innerText = Math.round(rating);
-                        document.getElementById('pfStars').innerHTML = getStarRating(rating, uid);
-
-                        // อัปเดต online status อีกครั้ง
-                        const { data: userWithSeen2 } = await supa
-                            .from('users')
-                            .select('last_seen')
-                            .eq('id', uid)
-                            .single();
-                        const online2 = userWithSeen2 && isOnline(userWithSeen2.last_seen);
-                        dot.style.background = online2 ? 'var(--success)' : '#666';
-                        dot.style.boxShadow = online2 ? '0 0 5px var(--success)' : 'none';
-
-                    } catch (e) {
-                        console.error('Background profile update error:', e);
-                    }
+                    } catch (e) {}
                 })();
 
             } catch (error) {
-                console.error('viewProfile error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'ไม่สามารถโหลดข้อมูลโปรไฟล์',
-                    text: 'กรุณาลองใหม่อีกครั้ง',
                     background: '#050b14',
                     color: '#fff'
                 });
@@ -2859,12 +2349,11 @@
             }
         }
 
-        // ========== อัปเดต UI แดชบอร์ด โดยใช้จำนวนดีลจริง ==========
+        // ========== อัปเดต UI แดชบอร์ด ==========
         async function updateDashboardUIWithRealDeals(data, uid) {
             const realDeals = await fetchUserCompletedDeals(uid);
             const rankInfo = getRank(realDeals, uid);
             
-            // ชื่อ
             const nameEl = document.getElementById('userName');
             const displayName = data.display_name || data.username || 'USER';
             let nameHtml = displayName.toUpperCase();
@@ -2881,7 +2370,6 @@
             nameEl.style.color = rankInfo.color;
             nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
             
-            // อวาตาร์
             const avatarFrame = document.getElementById('headerAvatarFrame');
             const glowStyle = getAvatarGlowStyle(rankInfo, uid);
             avatarFrame.style.borderColor = rankInfo.border;
@@ -2890,18 +2378,12 @@
             avatarFrame.style.animation = glowStyle.animation;
             
             document.getElementById('userRank').innerHTML = rankInfo.html;
-            
             document.getElementById('userBalance').innerHTML = (data.balance || 0).toLocaleString();
             document.getElementById('userBalanceAG').innerHTML = (data.balance_ag || 0).toLocaleString();
             
             const userImg = document.getElementById('userImg');
-            if(data.photo_url) {
-                userImg.src = data.photo_url;
-            } else {
-                userImg.src = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
-            }
+            userImg.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
 
-            // XP
             const xp = getExpData(realDeals);
             document.getElementById('xpBarFill').style.width = xp.percent + "%";
             document.getElementById('xpBarFill').style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
@@ -2909,8 +2391,6 @@
             document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
             
             document.getElementById('onlineDot').style.background = 'var(--success)';
-            document.getElementById('onlineDot').style.boxShadow = '0 0 5px var(--success)';
-            
             document.getElementById('scanOverlay').style.display = 'none';
         }
 
@@ -2921,6 +2401,7 @@
                 if (error) throw error;
                 
                 handleAuthChange(session?.user || null);
+                await checkSupabaseConnection(); // ตรวจสอบการเชื่อมต่อ
 
                 authSubscription = supa.auth.onAuthStateChange((event, session) => {
                     handleAuthChange(session?.user || null);
@@ -2992,15 +2473,10 @@
                         });
                         return;
                     } else {
-                        localStorage.removeItem('last_checkin_timestamp');
                         currentUserData = newProfile;
                         await updateDashboardUIWithRealDeals(currentUserData, user.id);
                         setupUserRealtime(user.id);
                         startHeartbeat();
-                        window.completeQuest('pioneer_reg');
-                        checkQuestFromStorage();
-                        // ลบการเรียก updateCheckinButtonCooldown() ออก
-                        // NEW: ตั้งค่า notification badge
                         updateNotificationBadge();
                         setupNotificationsRealtime();
                     }
@@ -3012,9 +2488,6 @@
                     await updateDashboardUIWithRealDeals(currentUserData, user.id);
                     setupUserRealtime(user.id);
                     startHeartbeat();
-                    checkQuestFromStorage();
-                    // ลบการเรียก updateCheckinButtonCooldown() ออก
-                    // NEW: ตั้งค่า notification badge
                     updateNotificationBadge();
                     setupNotificationsRealtime();
                 }
@@ -3036,7 +2509,6 @@
                 await updateBackRoomButton();
                 
                 checkSystemStatus();
-                initAI();
                 
                 setupBlacklistRealtime();
 
@@ -3052,28 +2524,7 @@
             }
         }
 
-        function initAI() {
-            const aiMsg = document.getElementById('aiMsg');
-            const aiSection = document.getElementById('aiSection');
-            const aiMessages = [
-                "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง | กำลังประมวลผลธุรกรรม...",
-                "ระบบตรวจจับความเสี่ยง: ปกติ | การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
-                "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable | ความเร็วเชื่อมต่อ: Optimal",
-                "กำลังตรวจสอบธุรกรรมล่าสุด... | ไม่พบกิจกรรมต้องสงสัย | ระบบทำงานปกติ 100%",
-                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน | การสำรองข้อมูล: อัตโนมัติ"
-            ];
-            const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-            if (aiMsg) aiMsg.innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
-            if (aiSection) {
-                const aiFace = aiSection.querySelector('.ai-face');
-                if (aiFace) {
-                    aiFace.innerHTML = '<i class="fas fa-robot"></i>';
-                    aiFace.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
-                }
-            }
-        }
-
-        // 🔥 HALL OF FAME (ปรับให้ใช้จำนวนดีลจริง)
+        // 🔥 HALL OF FAME
         async function loadHallOfFame() {
             try {
                 const { data: users, error } = await supa
@@ -3087,7 +2538,6 @@
                     return;
                 }
 
-                // ดึงจำนวนดีลจริงสำหรับผู้ใช้ทุกคน (แบบ async พร้อมกัน)
                 const userDealsPromises = users.map(async (user) => {
                     const deals = await fetchUserCompletedDeals(user.id);
                     return { ...user, realDeals: deals };
@@ -3120,7 +2570,6 @@
                     }
                     
                     const specialIcon = isSpecial ? ' 👑' : '';
-                    
                     const avatarGlow = getAvatarGlowStyle(rankInfo, user.id);
                     
                     let rankDisplay = '';
@@ -3156,81 +2605,8 @@
                 }
                 document.getElementById('hallList').innerHTML = html;
             } catch (err) {
-                console.error('loadHallOfFame error, fallback to mock:', err);
-                const mockUsers = [];
-                for (let i = 1; i <= 20; i++) {
-                    mockUsers.push({
-                        id: `mock-${i}`,
-                        username: `Trader_${i}`,
-                        display_name: `Trader_${i}`,
-                        photo_url: `https://i.pravatar.cc/150?img=${i}`,
-                        completed_deals: Math.floor(Math.random() * 500) + 10,
-                        average_rating: Math.random() * 5,
-                        kyc_status: Math.random() > 0.5 ? 'verified' : 'unverified',
-                        last_seen: new Date(Date.now() - Math.random() * 3 * 60 * 1000).toISOString()
-                    });
-                }
-                mockUsers.unshift({
-                    id: MY_SPECIAL_UID,
-                    username: 'AEGIS_CEO',
-                    display_name: 'AEGIS_CEO',
-                    photo_url: 'https://i.pravatar.cc/150?img=1',
-                    completed_deals: 999,
-                    average_rating: 5.0,
-                    kyc_status: 'verified',
-                    last_seen: new Date().toISOString()
-                });
-                mockUsers.sort((a,b) => {
-                    if (a.id === MY_SPECIAL_UID) return -1;
-                    if (b.id === MY_SPECIAL_UID) return 1;
-                    return b.completed_deals - a.completed_deals;
-                });
-                
-                let html = '';
-                let rank = 1;
-                for (let user of mockUsers.slice(0,50)) {
-                    const isSpecial = (user.id === MY_SPECIAL_UID);
-                    const rankInfo = getRank(user.completed_deals, user.id);
-                    const online = isOnline(user.last_seen);
-                    
-                    let verifiedTick = '';
-                    if (user.id === MY_SPECIAL_UID) {
-                        verifiedTick = ` <i class="fas fa-check-circle rainbow-tick" style="font-size:12px;"></i>`;
-                    } else if (user.kyc_status === 'verified') {
-                        verifiedTick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:12px;"></i>`;
-                    }
-                    
-                    const specialIcon = isSpecial ? ' 👑' : '';
-                    const avatarGlow = getAvatarGlowStyle(rankInfo, user.id);
-                    
-                    let rankDisplay = '';
-                    if (isSpecial) {
-                        rankDisplay = '<div style="font-size:20px; width:30px; text-align:center;">👑</div>';
-                    } else {
-                        if (rank === 1) rankDisplay = '<div style="font-size:20px; width:30px; text-align:center;">🥇</div>';
-                        else if (rank === 2) rankDisplay = '<div style="font-size:18px; width:30px; text-align:center;">🥈</div>';
-                        else if (rank === 3) rankDisplay = '<div style="font-size:18px; width:30px; text-align:center;">🥉</div>';
-                        else rankDisplay = `<div style="font-size:14px; font-weight:bold; color:#888; width:30px; text-align:center;">#${rank}</div>`;
-                        rank++;
-                    }
-                    
-                    const displayName = user.display_name || user.username;
-                    
-                    html += `<div class="user-list-item" onclick="viewProfile('${displayName.replace(/'/g, "\\'")}', '${user.photo_url}', ${user.completed_deals}, '${user.id}', '${user.kyc_status}', 0, 0, ${user.average_rating})">
-                                ${rankDisplay}
-                                <div style="position:relative;">
-                                    <img src="${user.photo_url}" class="list-avatar" style="border-color:${rankInfo.border}; box-shadow:${avatarGlow.boxShadow};">
-                                    <div style="position:absolute; bottom:0; right:0; width:10px; height:10px; background:${online ? 'var(--success)' : '#666'}; border-radius:50%; border:2px solid var(--dark-bg);"></div>
-                                </div>
-                                <div class="list-info">
-                                    <div class="list-name" style="color:${rankInfo.color};">${displayName}${verifiedTick}${specialIcon}</div>
-                                    <div style="font-size:9px; color:#888;">ดีล ${user.completed_deals}</div>
-                                    <div class="list-stars" style="margin-top:4px; font-size:12px;">${getStarRating(user.average_rating, user.id)}</div>
-                                </div>
-                                <div style="flex-shrink:0;">${rankInfo.html}</div>
-                            </div>`;
-                }
-                document.getElementById('hallList').innerHTML = html;
+                console.error('loadHallOfFame error, using mock:', err);
+                document.getElementById('hallList').innerHTML = '<div style="text-align:center; padding:20px; color:#aaa;">ไม่สามารถโหลดข้อมูลได้</div>';
             }
         }
 
@@ -3241,14 +2617,15 @@
             hallInterval = setInterval(loadHallOfFame, 10000);
         }
 
-        const originalCloseModal = closeModal;
-        window.closeModal = function(id) {
+        // ฟังก์ชัน closeModal (ประกาศเป็น function declaration เพื่อให้ hoist)
+        function closeModal(id) {
             if (id === 'hallModal' && hallInterval) {
                 clearInterval(hallInterval);
                 hallInterval = null;
             }
-            originalCloseModal(id);
-        };
+            const modal = document.getElementById(id);
+            if (modal) modal.style.display = 'none';
+        }
 
         async function loadBlacklist() {
             try {
@@ -3280,26 +2657,8 @@
                 container.innerHTML = html;
             } catch (err) {
                 console.error('loadBlacklist error, using mock:', err);
-                const mockBlacklist = [
-                    { username: 'Scam_King007', reason: 'โกงบัตรเติมเงิน 45,000 AGS', created_at: new Date().toISOString() },
-                    { username: 'Ghost_Seller', reason: 'บิดของ ไม่ส่ง + ปลอมสลิป', created_at: new Date().toISOString() },
-                    { username: 'Dark_Side99', reason: 'ขายไอดีทับซ้อน 12 รายการ', created_at: new Date().toISOString() },
-                    { username: 'Fake_Slip_Pro', reason: 'ปลอมสลิปโอน 27 ครั้ง', created_at: new Date().toISOString() },
-                    { username: 'Drug_Lord_X', reason: 'พยายามขายยาบ้า', created_at: new Date().toISOString() }
-                ];
                 const container = document.getElementById('mBody');
-                let html = '<p style="text-align:center; color:#ff8a80; margin-bottom:15px; font-size:13px;">รายชื่อบุคคลอันตราย (โกง/ผิดกฎ) - ข้อมูลจำลอง</p>';
-                mockBlacklist.forEach(item => {
-                    html += `
-                        <div class="bl-item">
-                            <div>🚫 <b>${item.username}</b> <span style="font-size:10px; color:#ff8a80;">${item.reason || ''}</span></div>
-                            <div style="font-size:10px; color:#aaa;">แบนเมื่อ: ${new Date(item.created_at).toLocaleDateString('th-TH')}</div>
-                        </div>
-                    `;
-                });
-                html += '<p style="font-size:10px; color:#666; text-align:center; margin-top:15px;">⚠️ ไม่สามารถเชื่อมต่อฐานข้อมูล แสดงข้อมูลตัวอย่าง</p>';
-                html += '<button class="action-btn" style="background:rgba(255,0,85,0.1); border:1px solid var(--danger); color:var(--danger); margin-top:12px; font-size:13px;" onclick="openReportModal()"><i class="fas fa-exclamation-circle"></i> แจ้งเบาะแสคนโกง</button>';
-                container.innerHTML = html;
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:#aaa;">ไม่สามารถโหลดข้อมูลได้</div>';
             }
         }
 
@@ -3388,112 +2747,6 @@
             });
         }
 
-        const fab = document.getElementById('genieFab');
-        let isDragging = false;
-        let clickStarted = false;
-        let dragThreshold = 5;
-        let startX, startY, initialX, initialY;
-        
-        // แก้ไข openQuestModal ให้รีเซ็ตแท็บเป็น daily ก่อนโหลดทุกครั้ง
-        function openQuestModal() { 
-            switchQuestTab('daily'); // บังคับให้เป็น daily ทุกครั้งที่เปิด
-            document.getElementById('questModal').style.display = 'flex';
-            // loadQuests() จะถูกเรียกใน switchQuestTab อยู่แล้ว
-        }
-
-        fab.addEventListener('touchstart', (e) => {
-            isDragging = false;
-            clickStarted = true;
-            const touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
-            initialX = fab.offsetLeft;
-            initialY = fab.offsetTop;
-            fab.style.transition = 'none';
-            e.preventDefault();
-        });
-        
-        fab.addEventListener('touchmove', (e) => {
-            if (!clickStarted) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const deltaX = Math.abs(touch.clientX - startX);
-            const deltaY = Math.abs(touch.clientY - startY);
-            if (deltaX > dragThreshold || deltaY > dragThreshold) {
-                isDragging = true;
-            }
-            if (isDragging) {
-                fab.style.left = `${initialX + (touch.clientX - startX)}px`;
-                fab.style.top = `${initialY + (touch.clientY - startY)}px`;
-                fab.style.bottom = 'auto';
-                fab.style.right = 'auto';
-            }
-        });
-        
-        fab.addEventListener('touchend', (e) => {
-            if (!clickStarted) return;
-            e.preventDefault();
-            if (!isDragging) openQuestModal();
-            clickStarted = false;
-            isDragging = false;
-            fab.style.transition = 'none';
-            saveFabPosition();
-        });
-        
-        fab.addEventListener('mousedown', (e) => {
-            isDragging = false;
-            clickStarted = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            initialX = fab.offsetLeft;
-            initialY = fab.offsetTop;
-            fab.style.transition = 'none';
-            e.preventDefault();
-        });
-        
-        document.addEventListener('mousemove', (e) => {
-            if (!clickStarted) return;
-            const deltaX = Math.abs(e.clientX - startX);
-            const deltaY = Math.abs(e.clientY - startY);
-            if (deltaX > dragThreshold || deltaY > dragThreshold) {
-                isDragging = true;
-            }
-            if (isDragging) {
-                fab.style.left = `${initialX + (e.clientX - startX)}px`;
-                fab.style.top = `${initialY + (e.clientY - startY)}px`;
-                fab.style.bottom = 'auto';
-                fab.style.right = 'auto';
-            }
-        });
-        
-        document.addEventListener('mouseup', (e) => {
-            if (!clickStarted) return;
-            if (!isDragging) openQuestModal();
-            clickStarted = false;
-            isDragging = false;
-            fab.style.transition = 'none';
-            saveFabPosition();
-        });
-        
-        function saveFabPosition() {
-            const left = fab.style.left;
-            const top = fab.style.top;
-            if (left && top) localStorage.setItem('fabPosition', JSON.stringify({ left, top }));
-        }
-        
-        function loadFabPosition() {
-            const saved = localStorage.getItem('fabPosition');
-            if (saved) {
-                try {
-                    const pos = JSON.parse(saved);
-                    fab.style.left = pos.left;
-                    fab.style.top = pos.top;
-                    fab.style.bottom = 'auto';
-                    fab.style.right = 'auto';
-                } catch (e) {}
-            }
-        }
-
         function confirmEntry(type) { 
             if (type === 'game') pendingLink = 'general_trade_hybrid.html?mode=game';
             else pendingLink = 'general_trade_hybrid.html?mode=general';
@@ -3549,7 +2802,6 @@
         function checkSystemStatus() {
             const ticker = document.getElementById('topTicker');
             const tickerText = document.getElementById('tickerText');
-            const aiMsg = document.getElementById('aiMsg');
             const hour = new Date().getHours();
             
             if (hour >= 3 && hour < 10) {
@@ -3557,42 +2809,39 @@
                 ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
                 tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) ระบบห้องเทรดทำงานปกติ แต่การเติม/ถอนอาจล่าช้ากว่าปกติเล็กน้อย';
                 tickerText.style.color = 'var(--warning)';
-                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
             } else {
                 ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
                 ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
                 tickerText.innerHTML = '✅ [System] ยินดีต้อนรับสู่ AEGIS NEX V.3.0 (Ultimate Edition) | ⚠️ [Admin] ห้ามซื้อขายของผิดกฎหมายทุกชนิด ตรวจพบแบนทันที! | 🚀 [Update] ระบบปลอดภัยอัปเกรดใหม่ 100%';
                 tickerText.style.color = 'var(--primary)';
-                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง"`;
             }
         }
 
-        // ฟังก์ชัน toggleAudio เดิม ถูกแทนที่ด้วยฟังก์ชันใหม่ที่ควบคุม ncsPlayer
+        // ฟังก์ชัน toggleAudio สำหรับ ticker
         function toggleAudio() {
-            if (ncsPlayer.paused) {
-                ncsPlayer.play().catch(e => {
-                    console.error('Playback failed:', e);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'เล่นเพลงไม่ได้',
-                        text: 'กรุณาตรวจสอบไฟล์เพลงในโฟลเดอร์ music/',
-                        background: '#050b14',
-                        color: '#fff'
-                    });
-                });
-                document.getElementById('headerAudioIcon').className = 'fas fa-volume-up';
+            const tickerSound = document.getElementById('tickerSound');
+            if (tickerSound.paused) {
+                tickerSound.play();
                 document.getElementById('audioIcon').className = 'fas fa-volume-up';
             } else {
-                ncsPlayer.pause();
-                document.getElementById('headerAudioIcon').className = 'fas fa-volume-mute';
+                tickerSound.pause();
                 document.getElementById('audioIcon').className = 'fas fa-volume-mute';
             }
         }
 
+        // ฟังก์ชันเปิดเควส modal ใหม่ (แก้ไขให้แสดง Modal ก่อน แล้วค่อยโหลดข้อมูล)
+        window.openQuestModalNew = function() {
+            document.getElementById('questModalNew').style.display = 'flex';
+            // เรียก loadQuests() แบบ async โดยไม่ต้องรอ (ป้องกัน error ขัดขวางการแสดง Modal)
+            setTimeout(() => {
+                loadQuests().catch(e => console.error('loadQuests error:', e));
+            }, 100);
+        };
+
         function cleanupSubscriptions() {
             if (userChannel) supa.removeChannel(userChannel);
             if (blacklistChannel) supa.removeChannel(blacklistChannel);
-            if (notificationChannel) supa.removeChannel(notificationChannel); // NEW
+            if (notificationChannel) supa.removeChannel(notificationChannel);
             if (authSubscription && typeof authSubscription.unsubscribe === 'function') {
                 authSubscription.unsubscribe();
             }
@@ -3606,16 +2855,9 @@
             document.getElementById('contentModal').style.display = 'flex'; 
         }
         
-        function closeModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) modal.style.display = 'none'; 
-        }
-        
-        // MODIFIED: เปิดหน้าประกาศ (คุณต้องสร้าง notifications.html)
         function openInbox() { 
-            closeModal('questModal');
-            window.incrementQuest('daily_read', 1);
-            window.location.href = 'notifications.html'; // เปลี่ยนไปหน้าแสดงประกาศ
+            // ✅ แก้ไขชื่อไฟล์ให้ตรงกับ notification.html
+            window.location.href = 'notification.html';
         }
         
         function openManual() { 
@@ -3686,13 +2928,59 @@
             `); 
         }
 
-        // เพิ่ม event เพื่อตรวจจับการกลับมาจากหน้าเติมเงิน
-        window.addEventListener('pageshow', function() {
-            if (currentUserData?.id) checkQuestFromStorage();
-        });
-        window.addEventListener('focus', function() {
-            if (currentUserData?.id) checkQuestFromStorage();
-        });
+        // NEW: อัปเดตตัวเลขที่ปุ่มกระดิ่ง
+        async function updateNotificationBadge() {
+            if (!currentUserData?.id) return;
+            try {
+                const { count, error } = await supa
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('target', 'all')
+                    .eq('is_active', true);
+                
+                const badge = document.querySelector('.noti-badge');
+                if (!error && count > 0) {
+                    badge.innerText = count > 9 ? '9+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('updateNotificationBadge error:', e);
+            }
+        }
+
+        function setupNotificationsRealtime() {
+            if (notificationChannel) supa.removeChannel(notificationChannel);
+            
+            notificationChannel = supa.channel('notifications-realtime')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    console.log('📢 มีประกาศใหม่!');
+                    updateNotificationBadge();
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    updateNotificationBadge();
+                })
+                .on('postgres_changes', {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    updateNotificationBadge();
+                })
+                .subscribe();
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('scanOverlay').style.display = 'flex';
@@ -3707,11 +2995,216 @@
             });
             window.addEventListener('beforeunload', cleanupSubscriptions);
             window.addEventListener('pagehide', cleanupSubscriptions);
-            loadFabPosition();
             document.querySelectorAll('.menu-card, .q-btn, .action-btn').forEach(el => {
                 el.style.touchAction = 'manipulation';
             });
         });
+
+        // 🎵 ระบบ Mini Jukebox
+        const globalPlaylist = [
+            { 
+                title: "Cartoon - On & On", 
+                file: "./music/on_and_on.mp3", 
+                credit: "Track: Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds. Watch: http://ncs.io/onandon"
+            },
+            { 
+                title: "Warriyo - Mortals", 
+                file: "./music/mortals.mp3", 
+                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds. Watch: http://ncs.io/Mortals"
+            }
+        ];
+
+        const audioPlayer = document.getElementById('globalAudioPlayer');
+        const jukeIcon = document.getElementById('jukeIcon');
+        const jukePlayPause = document.getElementById('jukePlayPause');
+        const jukeDisk = document.getElementById('jukeToggleBtn');
+        const jukeTitle = document.getElementById('jukeTitle');
+        const jukeCredit = document.getElementById('jukeCredit');
+
+        let currentSongIdx = parseInt(localStorage.getItem('aegis_music_idx')) || 0;
+        let savedTime = parseFloat(localStorage.getItem('aegis_music_time')) || 0;
+        let isMusicPlaying = localStorage.getItem('aegis_music_playing') === 'true';
+
+        function loadGlobalSong(index, setTime = 0) {
+            if (index >= globalPlaylist.length) index = 0;
+            if (index < 0) index = globalPlaylist.length - 1;
+            
+            currentSongIdx = index;
+            audioPlayer.src = globalPlaylist[currentSongIdx].file;
+            audioPlayer.currentTime = setTime;
+            
+            jukeTitle.innerText = globalPlaylist[currentSongIdx].title;
+            jukeCredit.innerText = globalPlaylist[currentSongIdx].credit;
+            localStorage.setItem('aegis_music_idx', currentSongIdx);
+        }
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                jukeIcon.className = 'fas fa-music';
+                jukePlayPause.className = 'fas fa-pause juke-btn';
+                jukeDisk.classList.add('spinning');
+            } else {
+                jukeIcon.className = 'fas fa-play';
+                jukePlayPause.className = 'fas fa-play juke-btn';
+                jukeDisk.classList.remove('spinning');
+            }
+        }
+
+        window.toggleGlobalMusic = function(event) {
+            event.stopPropagation();
+            if (audioPlayer.paused) {
+                audioPlayer.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI();
+                    localStorage.setItem('aegis_music_playing', 'true');
+                }).catch(e => console.log('Autoplay blocked by browser'));
+            } else {
+                audioPlayer.pause();
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            }
+        };
+
+        window.nextSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx + 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        window.prevSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx - 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        audioPlayer.addEventListener('ended', () => {
+            window.nextSong(new Event('ended'));
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if(!audioPlayer.paused) {
+                localStorage.setItem('aegis_music_time', audioPlayer.currentTime);
+            }
+        });
+
+        loadGlobalSong(currentSongIdx, savedTime);
+        updateMusicUI();
+
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(e => {
+                console.log('Browser blocked auto-resume, user needs to interact first.');
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            });
+        }
+
+        // ==========================================
+        // 🌟 AEGIS NEX QUEST SYSTEM V3.0 (BY JEANNY)
+        // ==========================================
+
+        const FB_LINK = "https://www.facebook.com/share/17EYiESGzn/";
+
+        // โหลดรายชื่อเควสทั้งหมด
+        async function loadQuests() {
+            if (!currentUserData?.id) return;
+            
+            document.getElementById('questModalAgBalance').innerText = (currentUserData.balance_ag || 0).toLocaleString();
+
+            try {
+                // 1. ดึง Master Quests ทั้งหมด
+                const { data: quests, error: qErr } = await supa.from('quests').select('*').eq('is_active', true).order('reward_ag', {ascending: true});
+                
+                // 2. ดึง Progress ของ User 
+                const today = new Date().toISOString().split('T')[0];
+                const { data: userQuests, error: uqErr } = await supa.from('user_quests')
+                    .select('*')
+                    .eq('user_id', currentUserData.id)
+                    .or(`quest_date.eq.${today},quest_date.is.null`);
+
+                let dailyHtml = '';
+                let pioneerHtml = '';
+
+                quests.forEach(q => {
+                    // หา progress
+                    const progressRecord = userQuests?.find(uq => uq.quest_id === q.id);
+                    const currentVal = progressRecord ? progressRecord.progress : 0;
+                    const isCompleted = progressRecord ? progressRecord.is_claimed : false;
+                    
+                    let btnHtml = '';
+                    
+                    if (isCompleted) {
+                        btnHtml = `<button class="quest-mini-btn" style="background:rgba(0,255,136,0.1); border-color:var(--success); color:var(--success); cursor:default;"><i class="fas fa-check"></i> สำเร็จ</button>`;
+                    } else {
+                        // จัดการปุ่มตามประเภทเควส
+                        if (q.slug === 'daily_login') {
+                            btnHtml = `<button class="quest-mini-btn quest-mini-checkin" onclick="triggerQuest('${q.slug}')">เช็คอิน</button>`;
+                        } else if (q.slug === 'daily_like_fb' || q.slug === 'daily_share_fb') {
+                            btnHtml = `<button class="quest-mini-btn" onclick="triggerSocialQuest('${q.slug}', '${FB_LINK}')"><i class="fab fa-facebook"></i> ไปที่เพจ</button>`;
+                        } else if (q.slug === 'pioneer_kyc') {
+                            btnHtml = `<button class="quest-mini-btn" onclick="location.href='kyc.html'"><i class="fas fa-id-card"></i> ไป KYC</button>`;
+                        } else if (q.slug === 'pioneer_setup') {
+                            btnHtml = `<button class="quest-mini-btn" onclick="location.href='profile.html'"><i class="fas fa-user-edit"></i> ไปโปรไฟล์</button>`;
+                        } else {
+                            // เควสที่ต้องทำในระบบ (เทรด, เติม, ถอน)
+                            btnHtml = `<div style="font-size:10px; color:#888; text-align:right;">${currentVal}/${q.target_amount}</div>`;
+                        }
+                    }
+
+                    const itemHtml = `
+                        <div class="quest-mini-item" style="${isCompleted ? 'opacity:0.6; filter:grayscale(1);' : ''}">
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <i class="${q.icon}" style="font-size:18px; color:${q.is_daily ? 'var(--primary)' : 'var(--secondary)'};"></i>
+                                <div>
+                                    <div class="quest-mini-title">${q.title}</div>
+                                    <div class="quest-mini-reward">+${q.reward_ag} AG</div>
+                                </div>
+                            </div>
+                            <div>${btnHtml}</div>
+                        </div>
+                    `;
+
+                    if (q.is_daily) dailyHtml += itemHtml;
+                    else pioneerHtml += itemHtml;
+                });
+
+                document.getElementById('dailyQuestsContainer').innerHTML = dailyHtml || '<div class="small-text">ไม่มีเควสรายวัน</div>';
+                document.getElementById('pioneerQuestsContainer').innerHTML = pioneerHtml || '<div class="small-text">ไม่มีเควสผู้บุกเบิก</div>';
+
+            } catch (e) {
+                console.error('Load quest error:', e);
+            }
+        }
+
+        // ยิงเพื่ออัปเดตเควส
+        async function triggerQuest(slug) {
+            Swal.fire({ title: 'กำลังประมวลผล...', background: '#050b14', color: '#fff', didOpen: () => Swal.showLoading() });
+            try {
+                const { data, error } = await supa.rpc('process_quest_action', { p_user_id: currentUserData.id, p_slug: slug });
+                if (error) throw error;
+                
+                if (data.status === 'completed') {
+                    currentUserData.balance_ag = data.new_balance;
+                    document.getElementById('userBalanceAG').innerText = data.new_balance.toLocaleString();
+                    Swal.fire({ icon: 'success', title: 'เควสสำเร็จ!', text: `ได้รับ +${data.reward} AG`, background: '#050b14', color: '#fff' });
+                } else {
+                    Swal.fire({ icon: 'info', title: 'อัปเดตแล้ว', text: `ความคืบหน้า: ${data.current}/${data.target}`, background: '#050b14', color: '#fff', timer:1500 });
+                }
+                loadQuests(); // โหลดหน้าจอใหม่
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Error', text: e.message, background: '#050b14', color: '#fff' });
+            }
+        }
+
+        // เควส Social (เปิดแท็บใหม่ แล้วให้รางวัล)
+        function triggerSocialQuest(slug, link) {
+            window.open(link, '_blank'); // เปิดเฟสบุ๊ค
+            setTimeout(() => {
+                // หน่วงเวลา 2 วินาทีเพื่อให้รางวัล (ตามสไตล์ระบบเว็บทั่วไป)
+                triggerQuest(slug);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
