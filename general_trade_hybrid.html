@@ -4465,8 +4465,8 @@
         
         addAiAlertMessage('✅ ผู้ซื้อรับสินค้าเรียบร้อยแล้ว! ธุรกรรมสำเร็จ');
         
-        await incrementQuest('daily_trade', 1);
-        await incrementQuest('pioneer_trade_first', 1);
+        // อัปเดตเควสเทรดสำเร็จ (ใช้ RPC โดยตรง)
+        await supabaseClient.rpc('increment_quest', { p_user_id: currentUser.id, p_slug: 'daily_trade', p_increment: 1 });
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
@@ -4533,8 +4533,8 @@
         
         addAiAlertMessage('✅ ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว! ธุรกรรมสำเร็จ (โหมดเกม)');
         
-        await incrementQuest('daily_trade', 1);
-        await incrementQuest('pioneer_trade_first', 1);
+        // อัปเดตเควสเทรดสำเร็จ (ใช้ RPC โดยตรง)
+        await supabaseClient.rpc('increment_quest', { p_user_id: currentUser.id, p_slug: 'daily_trade', p_increment: 1 });
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
