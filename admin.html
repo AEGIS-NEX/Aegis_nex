@@ -13,6 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 สำหรับใช้ใน executeAddNotification -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         /* ===== GLOBAL CYBER CEO STYLE (REFINED) ===== */
@@ -765,6 +768,24 @@
         ::-webkit-scrollbar-track { background: #07090f; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,193,7,0.3); }
+
+        /* ===== ADDED CSS (ข้อ 2) ===== */
+        /* ฟอนต์ Mitr อ่านง่ายสำหรับแอดมิน */
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&display=swap');
+
+        .admin-card {
+            background: rgba(10, 20, 40, 0.9);
+            border: 1px solid var(--primary);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+        input, textarea {
+            font-family: 'Mitr', sans-serif;
+            background: rgba(0,0,0,0.3) !important;
+            color: #fff !important;
+            border: 1px solid rgba(0, 242, 255, 0.3) !important;
+        }
     </style>
 </head>
 <body>
@@ -969,7 +990,11 @@
                         </div>
                     </div>
                     <button class="btn-approve" style="margin-top: 20px; width: 100%; justify-content: center; padding: 14px;" onclick="sendNotification()">
-                        <i class="fas fa-paper-plane"></i> ส่งประกาศ
+                        <i class="fas fa-paper-plane"></i> ส่งประกาศ (ระบบเดิม)
+                    </button>
+                    <!-- ปุ่มใหม่สำหรับ executeAddNotification ตามข้อ 3 -->
+                    <button class="btn-approve" style="margin-top: 10px; width: 100%; justify-content: center; padding: 14px;" onclick="executeAddNotification()">
+                        <i class="fas fa-paper-plane"></i> ส่งประกาศ (แบบใหม่)
                     </button>
                 </div>
 
@@ -1495,7 +1520,7 @@
             specificField.style.display = e.target.value === 'specific' ? 'block' : 'none';
         });
 
-        // ส่งประกาศ
+        // ส่งประกาศ (ระบบเดิม)
         window.sendNotification = async function() {
             const title = document.getElementById('notiTitle').value.trim();
             const message = document.getElementById('notiMessage').value.trim();
@@ -1538,6 +1563,32 @@
             } catch (e) {
                 console.error('sendNotification error:', e);
                 showToast(`❌ ส่งไม่สำเร็จ: ${e.message}`, 'error');
+            }
+        };
+
+        // ฟังก์ชันส่งประกาศแบบใหม่ (ตามข้อ 3) ใช้ Swal.fire
+        window.executeAddNotification = async function() {
+            const title = document.getElementById('notiTitle').value;
+            const msg = document.getElementById('notiMessage').value; // รับค่าจาก textarea
+
+            if(!title || !msg) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอกหัวข้อและเนื้อหา', 'warning');
+
+            const { error } = await supa.from('notifications').insert([{
+                title: title,
+                message: msg,      // ตรงกับ SQL
+                type: 'info',      // หรือรับค่าจาก select
+                target: 'all',     // ส่งให้ทุกคน
+                is_active: true    // เปิดใช้งานทันที
+            }]);
+
+            if (error) {
+                Swal.fire('Error!', error.message, 'error');
+            } else {
+                Swal.fire('สำเร็จ!', 'ประกาศข่าวสารเรียบร้อย', 'success');
+                document.getElementById('notiTitle').value = '';
+                document.getElementById('notiMessage').value = '';
+                // โหลดประกาศล่าสุด
+                await loadNotifications();
             }
         };
 
@@ -1598,11 +1649,13 @@
                     .eq('id', kycId);
                 if (kycError) throw kycError;
 
-                const { error: questError } = await supa.rpc('complete_quest', {
+                // 🔥 แก้ไขตามที่ต้องการ: ใช้ increment_quest แทน complete_quest
+                const { error: questError } = await supa.rpc('increment_quest', {
                     p_user_id: userId,
-                    p_slug: 'pioneer_kyc'
+                    p_slug: 'pioneer_kyc',
+                    p_increment: 1
                 });
-                if (questError) console.error('complete quest error:', questError);
+                if (questError) console.error('increment quest error:', questError);
 
                 showToast('✅ อนุมัติ KYC สำเร็จ', 'success');
                 await loadPendingKyc();
@@ -2086,6 +2139,7 @@
         window.executeApproveKyc = executeApproveKyc;
         window.executeRejectKyc = executeRejectKyc;
         window.loadNotifications = loadNotifications; // สำหรับเรียกจากปุ่ม refresh
+        // ฟังก์ชัน executeAddNotification ถูกประกาศไว้ด้านบนแล้ว
     </script>
 </body>
 </html>
