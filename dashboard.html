@@ -284,11 +284,19 @@
             position: absolute; 
             top: -2px; 
             right: -2px; 
-            width: 10px; 
-            height: 10px; 
+            width: 12px; 
+            height: 12px; 
             background: var(--danger); 
             border-radius: 50%; 
-            border: 2px solid var(--dark-bg); 
+            border: 2px solid var(--dark-bg);
+            animation: blink 1.5s infinite;
+            display: none; /* ซ่อนไว้ก่อน ถ้ามีประกาศจะแสดง */
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
 
         .rank-badge { 
@@ -682,60 +690,45 @@
             backdrop-filter: blur(5px);
         }
 
-        /* ===== AI Section ถูกเปลี่ยนเป็น Quest Button ===== */
-        .quest-button {
-            margin: 15px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(188,19,254,0.15));
-            padding: 15px;
-            border-radius: 15px;
-            border-left: 4px solid var(--warning);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255,215,0,0.3);
+        .ai-section { 
+            margin: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: rgba(0, 242, 255, 0.05); 
+            padding: 15px; 
+            border-radius: 15px; 
+            border-left: 4px solid var(--primary); 
+            transition: all 0.3s ease; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(0, 242, 255, 0.2);
             backdrop-filter: blur(10px);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
         }
         
-        .quest-button:hover {
-            transform: translateY(-2px);
-            border-color: var(--warning);
-            box-shadow: 0 8px 20px rgba(255,215,0,0.2);
-        }
-        
-        .quest-button:active {
-            transform: scale(0.98);
-        }
-        
-        .quest-icon {
-            width: 45px;
+        .ai-face { 
+            width: 45px; 
             height: 45px;
-            animation: float 4s infinite ease-in-out;
-            filter: drop-shadow(0 0 5px var(--warning));
+            animation: float 4s infinite ease-in-out; 
+            filter: drop-shadow(0 0 5px var(--primary));
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--warning), #ffaa00);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            color: #000;
-            font-weight: bold;
+            color: white;
         }
         
-        .quest-text {
-            font-size: 11px;
-            color: #cbd5e1;
-            line-height: 1.5;
+        .ai-msg { 
+            font-size: 11px; 
+            color: #cbd5e1; 
+            line-height: 1.5; 
+            transition: 0.3s; 
             flex: 1;
         }
         
-        .quest-text b {
-            color: var(--warning);
+        .ai-msg b {
+            color: var(--primary);
             font-family: 'Orbitron';
             font-size: 12px;
         }
@@ -841,9 +834,38 @@
             border: 1px solid rgba(0, 242, 255, 0.3);
         }
 
-        /* ===== Genie FAB ถูกซ่อนไว้ ===== */
+        /* ===== Genie FAB ใหม่ (สำหรับเปิดเควส) ===== */
         .genie-fab {
-            display: none;
+            position: fixed; 
+            top: 20px;
+            right: 20px; 
+            width: 55px; 
+            height: 55px; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,0.3); 
+            cursor: pointer; 
+            z-index: 2000; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary); 
+            backdrop-filter: blur(5px); 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            letter-spacing: 1px;
+            line-height: 1;
+            user-select: none;
+            transition: transform 0.2s;
+            touch-action: none; /* ป้องกันการเลื่อนหน้าเว็บขณะลาก */
+        }
+        
+        .genie-fab:active {
+            transform: scale(0.95);
         }
 
         .modal-overlay { 
@@ -1586,10 +1608,133 @@
                 </div>
                 <div class="icon-btn" onclick="openInbox()">
                     <i class="fas fa-bell"></i>
-                    <div class="noti-badge"></div>
+                    <div class="noti-badge" id="notificationDot"></div>
                 </div>
             </div>
         </div>
+
+        <!-- ███████████████████████████████████████████████████████ -->
+        <!-- 🎵 Mini Jukebox (ย้ายมาวางตรงนี้ หลัง XP bar ก่อน Wallet) -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <style>
+            /* Mini Jukebox แบบ Capsule วางใน flow ของหน้า */
+            .mini-juke-container {
+                width: calc(100% - 40px);
+                max-width: 560px;
+                margin: 10px auto 10px auto; /* ระยะห่างจาก XP bar และ Wallet Hub */
+                background: rgba(10, 15, 25, 0.85);
+                border: 1px solid rgba(0, 242, 255, 0.3);
+                border-radius: 50px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(10px);
+                padding: 8px 15px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                transition: background 0.3s;
+            }
+
+            .mini-juke-container:hover {
+                background: rgba(10, 15, 25, 0.95);
+                border-color: var(--primary);
+                box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            }
+
+            .juke-disk {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                cursor: pointer;
+                color: #000;
+                font-size: 16px;
+                box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+                transition: transform 0.2s;
+            }
+
+            .juke-disk.spinning {
+                animation: spinDisk 4s linear infinite;
+            }
+
+            @keyframes spinDisk {
+                100% { transform: rotate(360deg); }
+            }
+
+            .juke-controls {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0; /* ป้องกันล้น */
+            }
+
+            .juke-title {
+                font-family: 'Orbitron', sans-serif;
+                font-size: 11px;
+                color: var(--primary);
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-bottom: 2px;
+            }
+
+            .juke-credit {
+                font-family: 'Chakra Petch', sans-serif;
+                font-size: 9px;
+                color: #aaa;
+                white-space: nowrap;
+                overflow: hidden;
+                position: relative;
+                height: 14px;
+            }
+
+            .juke-credit span {
+                display: inline-block;
+                padding-left: 100%;
+                animation: marquee 15s linear infinite;
+            }
+
+            @keyframes marquee {
+                0% { transform: translate(0, 0); }
+                100% { transform: translate(-100%, 0); }
+            }
+
+            .juke-btns {
+                display: flex;
+                gap: 15px;
+                margin-top: 4px;
+                align-items: center;
+            }
+
+            .juke-btn {
+                color: #fff;
+                font-size: 14px;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+            .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+        </style>
+
+        <div class="mini-juke-container" id="miniJukebox">
+            <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+                <i class="fas fa-play" id="jukeIcon"></i>
+            </div>
+            <div class="juke-controls">
+                <div class="juke-title" id="jukeTitle">NCS Music</div>
+                <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+                <div class="juke-btns">
+                    <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                    <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                    <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+                </div>
+            </div>
+        </div>
+        <audio id="globalAudioPlayer" preload="auto"></audio>
+        <!-- ███████████████████████████████████████████████████████ -->
 
         <!-- Wallet Hub แสดงสองสกุลเงิน AGS และ AG -->
         <div class="wallet-hub">
@@ -1620,13 +1765,13 @@
             </div>
         </div>
 
-        <!-- ปุ่มเควสใหม่ (แทน AI Section) -->
-        <div class="quest-button" onclick="openQuestModalNew()">
-            <div class="quest-icon">
+        <!-- AI Section (เปลี่ยนเป็นปุ่มเควส) -->
+        <div class="quest-button" onclick="openQuestModalNew()" style="margin:15px 20px; display:flex; align-items:center; gap:15px; background:linear-gradient(135deg, rgba(0,242,255,0.15), rgba(188,19,254,0.15)); padding:15px; border-radius:15px; border-left:4px solid var(--warning); border:1px solid rgba(255,215,0,0.3); backdrop-filter:blur(10px); cursor:pointer;">
+            <div style="width:45px; height:45px; animation:float 4s infinite ease-in-out; filter:drop-shadow(0 0 5px var(--warning)); border-radius:50%; background:linear-gradient(135deg, var(--warning), #ffaa00); display:flex; align-items:center; justify-content:center; font-size:20px; color:#000; font-weight:bold;">
                 <i class="fas fa-tasks"></i>
             </div>
-            <div class="quest-text">
-                <b>📋 เควสรายวัน</b><br>
+            <div style="font-size:11px; color:#cbd5e1; line-height:1.5; flex:1;">
+                <b style="color:var(--warning); font-family:'Orbitron'; font-size:12px;">📋 เควสรายวัน</b><br>
                 คลิกเพื่อดูภารกิจและรับเหรียญ AG
             </div>
         </div>
@@ -1675,7 +1820,7 @@
             </div>
         </div>
         
-        <!-- Genie FAB ถูกซ่อนไว้ (display:none) -->
+        <!-- Genie FAB (ถูกซ่อนไว้) -->
         <div class="genie-fab" id="genieFab" onclick="openQuestModalNew()" style="display:none;">
             <span style="font-size:16px; line-height:1;">AG</span>
             <span style="font-size:8px; line-height:1.2; margin-top:2px;">เควส</span>
@@ -1857,136 +2002,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- ========== ระบบ Mini Jukebox ========== -->
-    <style>
-        /* UI แคปซูลเพลงลอยมุมซ้ายล่าง (หลบ Bottom Nav) */
-        .mini-juke-container {
-            position: fixed;
-            bottom: 90px; /* ลอยอยู่เหนือเมนูด้านล่าง */
-            left: 15px;
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            background: rgba(10, 15, 25, 0.85);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 5px;
-            width: 50px; /* ขนาดตอนหด */
-            height: 50px;
-            overflow: hidden;
-            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
-        }
-
-        /* เอาเมาส์ไปชี้ หรือกดให้มันขยายออก */
-        .mini-juke-container:hover, .mini-juke-container.active {
-            width: 280px; /* ขนาดตอนขยาย */
-            background: rgba(10, 15, 25, 0.95);
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
-        }
-
-        /* ไอคอนแผ่นเสียง */
-        .juke-disk {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            cursor: pointer;
-            color: #000;
-            font-size: 16px;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-        }
-
-        /* อนิเมชั่นแผ่นเสียงหมุนตอนเพลงเล่น */
-        .juke-disk.spinning {
-            animation: spinDisk 4s linear infinite;
-        }
-        @keyframes spinDisk { 100% { transform: rotate(360deg); } }
-
-        /* ส่วนควบคุมและชื่อเพลง (ซ่อนไว้ตอนหด) */
-        .juke-controls {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-left: 12px;
-            min-width: 180px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .mini-juke-container:hover .juke-controls, .mini-juke-container.active .juke-controls {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .juke-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px;
-            color: var(--primary);
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 2px;
-        }
-
-        /* 📜 ตัววิ่งเครดิต ป้องกันโดนฟ้อง */
-        .juke-credit {
-            font-family: 'Chakra Petch', sans-serif;
-            font-size: 9px;
-            color: #aaa;
-            width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .juke-credit span {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 15s linear infinite;
-        }
-        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
-
-        .juke-btns {
-            display: flex;
-            gap: 15px;
-            margin-top: 4px;
-            align-items: center;
-        }
-
-        .juke-btn {
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
-    </style>
-
-    <div class="mini-juke-container" id="miniJukebox" onclick="this.classList.toggle('active')">
-        <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
-            <i class="fas fa-play" id="jukeIcon"></i>
-        </div>
-        <div class="juke-controls">
-            <div class="juke-title" id="jukeTitle">NCS Music</div>
-            <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
-            <div class="juke-btns">
-                <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
-                <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
-                <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
-            </div>
-        </div>
-    </div>
-
-    <audio id="globalAudioPlayer" preload="auto"></audio>
-
     <script>
         // 🔥 AEGIS CONFIG - ใช้ Supabase Project ของคุณโดยตรง
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
@@ -2007,6 +2022,7 @@
         let hallInterval = null;
         let blacklistChannel = null;
         let notificationChannel = null;
+        let lastNotiCheck = localStorage.getItem('lastNotiCheck') || 0; // เวลาที่อ่านครั้งล่าสุด (timestamp)
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -2119,7 +2135,7 @@
             return { percent, next, current: d };
         }
 
-        // 🔥 ONLINE STATUS (heartbeat) - ปรับปรุงให้แสดง error ชัดเจน
+        // 🔥 ONLINE STATUS (heartbeat)
         async function updateLastSeen() {
             if (!currentUserData?.id) return;
             try {
@@ -2127,17 +2143,11 @@
                     .from('users')
                     .update({ last_seen: new Date().toISOString() })
                     .eq('id', currentUserData.id);
-                
                 if (error) {
-                    console.error('Heartbeat update failed:', error.message, error.details, error.hint);
-                    if (error.code === '42501') {
-                        console.warn('⚠️ RLS Policy may be blocking update. Please check Supabase policies for table "users".');
-                    }
-                } else {
-                    // console.log('Heartbeat updated successfully'); // ปิด log ถ้าไม่ต้องการ
+                    console.error('Heartbeat update error:', error);
                 }
             } catch (e) {
-                console.error('Heartbeat exception:', e.message);
+                console.error('Heartbeat exception:', e);
             }
         }
 
@@ -2153,28 +2163,6 @@
             const seen = new Date(lastSeen);
             const diff = (now - seen) / 1000 / 60; // minutes
             return diff < 5;
-        }
-
-        // เพิ่มฟังก์ชันตรวจสอบการเชื่อมต่อ Supabase
-        async function checkSupabaseConnection() {
-            try {
-                const { error } = await supa.from('users').select('id').limit(1);
-                if (error) {
-                    console.error('Supabase connection test failed:', error);
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'การเชื่อมต่อฐานข้อมูลมีปัญหา',
-                        text: 'กรุณารอสักครู่แล้วลองใหม่ หรือติดต่อผู้ดูแลระบบ',
-                        background: '#050b14',
-                        color: '#fff',
-                        confirmButtonColor: '#00f2ff'
-                    });
-                } else {
-                    console.log('Supabase connection OK');
-                }
-            } catch (e) {
-                console.error('Connection test exception:', e);
-            }
         }
 
         // 🔥 FETCH USER STATS (deals, cancelled, rating)
@@ -2401,7 +2389,6 @@
                 if (error) throw error;
                 
                 handleAuthChange(session?.user || null);
-                await checkSupabaseConnection(); // ตรวจสอบการเชื่อมต่อ
 
                 authSubscription = supa.auth.onAuthStateChange((event, session) => {
                     handleAuthChange(session?.user || null);
@@ -2509,6 +2496,7 @@
                 await updateBackRoomButton();
                 
                 checkSystemStatus();
+                initAI();
                 
                 setupBlacklistRealtime();
 
@@ -2522,6 +2510,19 @@
             } else { 
                 window.location.href = 'index.html'; 
             }
+        }
+
+        function initAI() {
+            const aiMsg = document.getElementById('aiMsg');
+            const aiMessages = [
+                "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง | กำลังประมวลผลธุรกรรม...",
+                "ระบบตรวจจับความเสี่ยง: ปกติ | การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
+                "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable | ความเร็วเชื่อมต่อ: Optimal",
+                "กำลังตรวจสอบธุรกรรมล่าสุด... | ไม่พบกิจกรรมต้องสงสัย | ระบบทำงานปกติ 100%",
+                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน | การสำรองข้อมูล: อัตโนมัติ"
+            ];
+            const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+            if (aiMsg) aiMsg.innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
         }
 
         // 🔥 HALL OF FAME
@@ -2802,6 +2803,7 @@
         function checkSystemStatus() {
             const ticker = document.getElementById('topTicker');
             const tickerText = document.getElementById('tickerText');
+            const aiMsg = document.getElementById('aiMsg');
             const hour = new Date().getHours();
             
             if (hour >= 3 && hour < 10) {
@@ -2809,11 +2811,13 @@
                 ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
                 tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) ระบบห้องเทรดทำงานปกติ แต่การเติม/ถอนอาจล่าช้ากว่าปกติเล็กน้อย';
                 tickerText.style.color = 'var(--warning)';
+                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
             } else {
                 ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
                 ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
                 tickerText.innerHTML = '✅ [System] ยินดีต้อนรับสู่ AEGIS NEX V.3.0 (Ultimate Edition) | ⚠️ [Admin] ห้ามซื้อขายของผิดกฎหมายทุกชนิด ตรวจพบแบนทันที! | 🚀 [Update] ระบบปลอดภัยอัปเกรดใหม่ 100%';
                 tickerText.style.color = 'var(--primary)';
+                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง"`;
             }
         }
 
@@ -2832,7 +2836,6 @@
         // ฟังก์ชันเปิดเควส modal ใหม่ (แก้ไขให้แสดง Modal ก่อน แล้วค่อยโหลดข้อมูล)
         window.openQuestModalNew = function() {
             document.getElementById('questModalNew').style.display = 'flex';
-            // เรียก loadQuests() แบบ async โดยไม่ต้องรอ (ป้องกัน error ขัดขวางการแสดง Modal)
             setTimeout(() => {
                 loadQuests().catch(e => console.error('loadQuests error:', e));
             }, 100);
@@ -2856,7 +2859,9 @@
         }
         
         function openInbox() { 
-            // ✅ แก้ไขชื่อไฟล์ให้ตรงกับ notification.html
+            // เมื่อเปิดหน้าแจ้งเตือน ให้บันทึก timestamp ปัจจุบัน เพื่อให้จุดแดงหายไป
+            localStorage.setItem('lastNotiCheck', Date.now().toString());
+            updateNotificationBadge(); // อัปเดตจุดให้หายไปทันที (หรือเมื่อกลับมาหน้านี้)
             window.location.href = 'notification.html';
         }
         
@@ -2928,22 +2933,33 @@
             `); 
         }
 
-        // NEW: อัปเดตตัวเลขที่ปุ่มกระดิ่ง
+        // NEW: อัปเดตจุดแจ้งเตือน (ให้กระพริบถ้ามีประกาศใหม่ที่ยังไม่ได้อ่าน)
         async function updateNotificationBadge() {
             if (!currentUserData?.id) return;
             try {
-                const { count, error } = await supa
+                const { data, error } = await supa
                     .from('notifications')
-                    .select('*', { count: 'exact', head: true })
+                    .select('created_at')
                     .eq('target', 'all')
-                    .eq('is_active', true);
-                
-                const badge = document.querySelector('.noti-badge');
-                if (!error && count > 0) {
-                    badge.innerText = count > 9 ? '9+' : count;
-                    badge.style.display = 'flex';
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                const dot = document.querySelector('.noti-badge');
+                if (!dot) return;
+
+                if (error || !data || data.length === 0) {
+                    dot.style.display = 'none';
+                    return;
+                }
+
+                const latestNotiTime = new Date(data[0].created_at).getTime();
+                const lastCheck = parseInt(localStorage.getItem('lastNotiCheck') || 0);
+
+                if (latestNotiTime > lastCheck) {
+                    dot.style.display = 'block'; // มีประกาศใหม่ จุดกระพริบ
                 } else {
-                    badge.style.display = 'none';
+                    dot.style.display = 'none';
                 }
             } catch (e) {
                 console.error('updateNotificationBadge error:', e);
@@ -3000,17 +3016,17 @@
             });
         });
 
-        // 🎵 ระบบ Mini Jukebox
+        // 🎵 ระบบ Mini Jukebox (ปรับปรุง: มีเครดิตทั้ง 2 เพลง)
         const globalPlaylist = [
             { 
                 title: "Cartoon - On & On", 
                 file: "./music/on_and_on.mp3", 
-                credit: "Track: Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds. Watch: http://ncs.io/onandon"
+                credit: "🎵 Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds" 
             },
             { 
                 title: "Warriyo - Mortals", 
                 file: "./music/mortals.mp3", 
-                credit: "Track: Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds. Watch: http://ncs.io/Mortals"
+                credit: "🎵 Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds" 
             }
         ];
 
