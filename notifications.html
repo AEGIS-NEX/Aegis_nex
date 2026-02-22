@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ===== IMPORT FONTS (เพิ่ม Mitr) ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Orbitron:wght@700&display=swap');
+
         /* ===== GLOBAL STYLE (เหมือน dashboard) ===== */
         :root {
             --primary: #00f2ff;
@@ -122,14 +125,16 @@
             gap: 15px;
         }
 
+        /* ===== ปรับแต่งการ์ดประกาศตามที่ต้องการ ===== */
         .notification-card {
-            background: var(--card-bg);
+            border-left: 5px solid var(--primary);
+            background: rgba(20, 30, 50, 0.8);
             backdrop-filter: blur(10px);
             border: var(--border);
-            border-radius: 16px;
-            padding: 18px;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
             transition: all 0.3s ease;
-            border-left: 4px solid var(--primary);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
@@ -140,9 +145,10 @@
         }
 
         .notification-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
+            font-family: 'Orbitron', 'Mitr', sans-serif;
+            font-size: 1.1rem;
             color: var(--primary);
+            text-shadow: 0 0 10px rgba(0,242,255,0.6);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -155,8 +161,9 @@
         }
 
         .notification-message {
+            font-family: 'Mitr', sans-serif;
             font-size: 14px;
-            color: #e0e6ed;
+            color: #ccc;
             line-height: 1.6;
             margin-bottom: 12px;
             word-break: break-word;
@@ -326,6 +333,21 @@
                     `;
                 });
                 container.innerHTML = html;
+
+                // 🟢 อัปเดตเควส daily_read ทันทีที่โหลดประกาศสำเร็จ
+                if (currentUser?.id) {
+                    try {
+                        await supa.rpc('increment_quest', { 
+                            p_user_id: currentUser.id, 
+                            p_slug: 'daily_read', 
+                            p_increment: 1 
+                        });
+                        console.log('Daily read quest updated');
+                    } catch (questErr) {
+                        console.error('Failed to update quest:', questErr);
+                    }
+                }
+
             } catch (err) {
                 console.error('loadNotifications error:', err);
                 container.innerHTML = `
