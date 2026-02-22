@@ -1190,14 +1190,19 @@
 
         // ฟังก์ชันสำหรับเรียกโดย Admin เมื่ออนุมัติ KYC (เพิ่มตามคำสั่ง)
         async function approveKYC(userId) {
-            try {
-                const { error } = await supa.rpc('complete_quest', { p_user_id: userId, p_slug: 'pioneer_kyc' });
-                if (error) throw error;
-                console.log('Quest completed for user:', userId);
-            } catch (err) {
-                console.error('Error completing quest:', err);
-            }
-        }
+    try {
+        // 🟢 เปลี่ยนมาใช้ increment_quest แบบนี้แทน
+        const { error } = await supa.rpc('increment_quest', { 
+            p_user_id: userId, 
+            p_slug: 'pioneer_kyc', 
+            p_increment: 1 
+        });
+        if (error) throw error;
+        console.log('Quest completed for user:', userId);
+    } catch (err) {
+        console.error('Error completing quest:', err);
+    }
+}
 
         // Enter key support
         document.addEventListener('keydown', function(event) {
