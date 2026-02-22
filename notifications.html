@@ -334,15 +334,14 @@
                 });
                 container.innerHTML = html;
 
-                // 🟢 อัปเดตเควส daily_read ทันทีที่โหลดประกาศสำเร็จ
+                // 🌟 จินนี่: ยิงเควสอ่านประกาศ (daily_read_noti)
                 if (currentUser?.id) {
                     try {
-                        await supa.rpc('increment_quest', { 
+                        await supa.rpc('process_quest_action', { 
                             p_user_id: currentUser.id, 
-                            p_slug: 'daily_read', 
-                            p_increment: 1 
+                            p_slug: 'daily_read_noti' 
                         });
-                        console.log('Daily read quest updated');
+                        console.log('Daily read noti quest updated');
                     } catch (questErr) {
                         console.error('Failed to update quest:', questErr);
                     }
