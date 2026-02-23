@@ -2,239 +2,225 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>เข้าสู่ระบบ | AEGIS NEX · เจนนี่ เอไอ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>AEGIS NEX · เข้าสู่ระบบ</title>
+    <meta name="description" content="เข้าสู่ระบบ AEGIS NEX แพลตฟอร์ม AI เพื่อการซื้อขายที่ปลอดภัย ระบบ Escrow ป้องกันการโกง 100% พร้อม AEGIS AI และทีมงานดูแล 24 ชม.">
     
-    <!-- Preconnect เพื่อลด latency -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://wwrvvnwdmqwoimvaazhb.supabase.co">
-    
-    <!-- ฟอนต์หลัก รองรับภาษาไทย -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* ===== GLOBAL VARIABLES ===== */
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
         :root {
             --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.6);
             --secondary: #bc13fe;
+            --secondary-glow: rgba(188, 19, 254, 0.6);
             --accent: #ff0080;
             --danger: #ff0055;
             --success: #00ff88;
             --warning: #ffd700;
-            --dark-bg: #050b14;
-            --card-bg: rgba(20, 30, 50, 0.75);
-            --border: 1px solid rgba(0, 242, 255, 0.3);
-            --glass: rgba(5, 10, 20, 0.85);
-            --glow-primary: 0 0 20px rgba(0, 242, 255, 0.7);
-            --glow-secondary: 0 0 20px rgba(188, 19, 254, 0.7);
+            --dark-bg: #03050b;
+            --text: #ffffff;
+            --text-muted: #a0a8b5;
+            --card-bg: rgba(10, 18, 28, 0.5);
+            --border: 1px solid rgba(0, 242, 255, 0.1);
             --toast-z: 99999;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-        
         body {
-            margin: 0; 
-            padding: 0;
-            background-color: var(--dark-bg);
-            color: #fff;
+            background: var(--dark-bg);
+            color: var(--text);
             font-family: 'Chakra Petch', sans-serif;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.05) 0%, transparent 20%),
-                linear-gradient(135deg, #050b14 0%, #0a1528 50%, #050b14 100%);
-            position: relative;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            position: relative;
         }
 
-        body::before {
-            content: '';
+        /* ===== พื้นหลังอวกาศ ===== */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(0, 150, 255, 0.15) 0%, transparent 40%),
+                        radial-gradient(ellipse at 70% 60%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
+                        linear-gradient(145deg, #03050b, #0a0f1f);
+        }
+
+        .stars {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-image: 
-                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f2ff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            pointer-events: none;
+                radial-gradient(2px 2px at 15px 60px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 72px 430px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 550px 210px, #aaf0ff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 890px 620px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 120px 950px, #bc13fe, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 700px 800px, #00f2ff, rgba(0,0,0,0)),
+                radial-gradient(4px 4px at 300px 400px, #ff0080, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.5;
+            animation: twinkle 4s infinite alternate;
             z-index: 0;
+            pointer-events: none;
         }
 
-        /* ===== SCAN LINE EFFECT ===== */
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
         .scan-line {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 1px;
+            height: 2px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            box-shadow: 0 0 10px var(--primary);
-            z-index: 1;
-            animation: scanMove 8s linear infinite;
-            opacity: 0.7;
+            box-shadow: 0 0 20px var(--primary);
+            z-index: 10;
+            animation: scan 12s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
         }
-        
-        @keyframes scanMove {
+
+        @keyframes scan {
             0% { top: 0; }
             100% { top: 100vh; }
         }
 
-        /* ===== PARTICLES (ลดจำนวนในมือถือ เพิ่มประสิทธิภาพ) ===== */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.2;
-            animation: floatParticle linear infinite;
-            will-change: transform;
-        }
-        
-        @keyframes floatParticle {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-100vh) rotate(360deg); }
-        }
-
-        /* ===== NEWS TICKER ===== */
-        .news-ticker {
-            background: linear-gradient(90deg, 
-                rgba(0,0,0,0) 0%, 
-                rgba(0, 242, 255, 0.15) 10%, 
-                rgba(0, 242, 255, 0.25) 50%, 
-                rgba(0, 242, 255, 0.15) 90%, 
-                rgba(0,0,0,0) 100%);
-            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
-            height: 40px; 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center;
-            position: relative; 
-            z-index: 10;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .news-ticker::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                rgba(188, 19, 254, 0) 0%, 
-                rgba(188, 19, 254, 0.2) 50%, 
-                rgba(188, 19, 254, 0) 100%);
-            animation: scanline 3s linear infinite;
-        }
-        
-        .ticker-content {
-            white-space: nowrap;
-            animation: ticker 25s linear infinite;
-            font-size: 13px; 
-            color: var(--primary);
-            font-family: 'Orbitron', sans-serif; 
-            letter-spacing: 1.5px;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
-            padding: 5px 0;
-        }
-        
-        @keyframes ticker { 
-            0% { transform: translateX(100vw); } 
-            100% { transform: translateX(-100%); } 
-        }
-        
-        @keyframes scanline {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* ===== HERO SECTION ===== */
-        .hero-section {
-            min-height: calc(100vh - 100px);
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center;
-            text-align: center; 
+        /* ===== MAIN CONTAINER ===== */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
             position: relative;
-            padding: 40px 20px 100px;
-            overflow: hidden;
             z-index: 5;
         }
-        
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, rgba(255, 0, 128, 0.05) 0%, transparent 40%);
-            z-index: -1;
+
+        /* ===== TOP BAR (เหมือน index) ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            margin-bottom: 20px;
+            background: rgba(3, 5, 11, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 30px 30px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(24px, 5vw, 30px);
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .logo .aegis {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .logo .nex {
+            color: #00f2ff;
+            text-shadow: 0 0 20px #00f2ff;
+        }
+
+        .live-badge {
+            background: rgba(255, 0, 0, 0.08);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 12px;
+            color: #ff8888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            white-space: nowrap;
+        }
+
+        .live-badge i {
+            color: #ff0000;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+            50% { opacity: 0.4; text-shadow: 0 0 15px #ff0000; }
+            100% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+        }
+
+        /* ===== HERO SECTION (LOGIN) ===== */
+        .hero-section {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
         }
 
         .hero-badge {
             background: linear-gradient(45deg, rgba(188, 19, 254, 0.2), rgba(0, 242, 255, 0.2));
             border: 1px solid var(--secondary);
-            padding: 12px 30px; 
-            border-radius: 25px; 
-            font-size: 14px; 
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 14px;
             color: #fff;
-            margin-bottom: 40px; 
+            margin-bottom: 40px;
             box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
             animation: pulse 2s infinite ease-in-out;
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
             font-weight: 600;
             letter-spacing: 1.5px;
-        }
-        
-        .hero-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shine 3s infinite;
-            z-index: -1;
+            text-align: center;
         }
 
-        /* ===== GLASS CARD ===== */
+        .hero-badge i {
+            margin-right: 8px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.4); transform: scale(1); }
+            50% { transform: scale(1.02); }
+            70% { box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); transform: scale(1); }
+        }
+
+        /* ===== GLASS CARD (เหมือน index แต่ปรับ padding) ===== */
         .glass-box {
-            width: 95%; 
-            max-width: 520px; 
+            width: 95%;
+            max-width: 520px;
             background: var(--card-bg);
-            border: var(--border); 
+            border: var(--border);
             border-radius: 28px;
-            padding: 40px 35px; 
+            padding: 40px 35px;
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            position: relative; 
+            position: relative;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             z-index: 10;
@@ -254,43 +240,43 @@
             opacity: 0.5;
         }
 
-        .logo-area { 
-            text-align: center; 
-            margin-bottom: 35px; 
-            position: relative;
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
         }
-        
-        .logo-area h1 { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 38px; 
-            margin: 0 0 10px 0; 
+
+        .logo-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px;
+            margin: 0 0 10px 0;
             letter-spacing: 4px;
             background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.6));
         }
-        
-        .logo-area p { 
-            font-size: 13px; 
-            color: #aaa; 
-            margin-top: 5px; 
-            letter-spacing: 2px; 
+
+        .logo-area p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            letter-spacing: 2px;
             font-weight: 300;
         }
 
-        /* ===== SECURITY NOTICE ===== */
+        /* ===== SECURITY NOTICE (เหมือนเดิม) ===== */
         .security-notice {
-            background: rgba(255, 215, 0, 0.08); 
+            background: rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px; 
-            padding: 20px; 
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 30px;
             border-left: 4px solid var(--warning);
             position: relative;
             overflow: hidden;
         }
-        
+
         .security-notice::before {
             content: '';
             position: absolute;
@@ -301,80 +287,82 @@
             background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.05), transparent);
             animation: scanline 4s linear infinite;
         }
-        
-        .security-notice h4 { 
-            color: var(--warning); 
-            margin: 0 0 10px 0; 
-            font-size: 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
+
+        .security-notice h4 {
+            color: var(--warning);
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-family: 'Orbitron', sans-serif;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-        
-        .security-notice p { 
-            font-size: 13px; 
-            color: #ccc; 
-            margin: 0; 
-            line-height: 1.6; 
-            font-weight: 400;
+
+        .security-notice p {
+            font-size: 13px;
+            color: #ccc;
+            margin: 0;
+            line-height: 1.6;
         }
-        
-        .security-notice b { 
-            color: #fff; 
-            border-bottom: 1px dashed var(--warning); 
+
+        .security-notice b {
+            color: #fff;
+            border-bottom: 1px dashed var(--warning);
             font-weight: 600;
         }
 
-        /* ===== FORM FIELD ===== */
-        .field-box { 
-            margin-bottom: 25px; 
-            position: relative; 
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
-        
-        .field-label { 
-            font-size: 12px; 
-            color: var(--primary); 
-            margin-bottom: 8px; 
-            display: block; 
-            font-weight: 600; 
-            font-family: 'Orbitron', sans-serif; 
+
+        /* ===== FORM FIELD ===== */
+        .field-box {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
             letter-spacing: 1px;
         }
-        
+
         .field-input {
-            width: 100%; 
-            padding: 18px 18px 18px 55px; 
+            width: 100%;
+            padding: 18px 18px 18px 55px;
             background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            color: #fff; 
-            font-family: 'Chakra Petch', sans-serif; 
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
             font-size: 15px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
         }
-        
+
         .field-input:focus {
-            border-color: var(--primary); 
+            border-color: var(--primary);
             background: rgba(0, 242, 255, 0.08);
-            outline: none; 
-            box-shadow: var(--glow-primary);
+            box-shadow: var(--primary-glow);
         }
-        
-        .field-icon { 
-            position: absolute; 
-            left: 20px; 
-            top: 42px; 
-            color: #64748b; 
-            font-size: 18px; 
-            transition: 0.3s; 
+
+        .field-icon {
+            position: absolute;
+            left: 20px;
+            top: 42px;
+            color: #64748b;
+            font-size: 18px;
+            transition: 0.3s;
         }
-        
-        .field-input:focus + .field-icon { 
-            color: var(--primary); 
+
+        .field-input:focus + .field-icon {
+            color: var(--primary);
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
         }
 
@@ -382,7 +370,7 @@
         .password-field {
             position: relative;
         }
-        
+
         .toggle-password {
             position: absolute;
             right: 20px;
@@ -398,7 +386,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .toggle-password:hover {
             color: var(--primary);
         }
@@ -411,7 +399,7 @@
             margin: 20px 0 30px;
             font-size: 13px;
         }
-        
+
         .remember-me {
             display: flex;
             align-items: center;
@@ -420,7 +408,7 @@
             color: #aaa;
             user-select: none;
         }
-        
+
         .remember-check {
             width: 18px;
             height: 18px;
@@ -431,18 +419,18 @@
             justify-content: center;
             transition: 0.2s;
         }
-        
+
         .remember-check.checked {
             background: var(--primary);
         }
-        
+
         .remember-check.checked::after {
             content: '✓';
             color: #000;
             font-size: 13px;
             font-weight: bold;
         }
-        
+
         .forgot-link {
             color: var(--primary);
             text-decoration: none;
@@ -451,7 +439,7 @@
             border-bottom: 1px dashed transparent;
             cursor: pointer;
         }
-        
+
         .forgot-link:hover {
             color: #fff;
             border-bottom-color: var(--primary);
@@ -459,26 +447,26 @@
 
         /* ===== LOGIN BUTTON ===== */
         .btn-submit {
-            width: 100%; 
-            padding: 20px; 
-            border: none; 
+            width: 100%;
+            padding: 20px;
+            border: none;
             border-radius: 18px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #000; 
-            font-family: 'Orbitron', sans-serif; 
-            font-weight: 800; 
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
             font-size: 16px;
-            cursor: pointer; 
-            text-transform: uppercase; 
+            cursor: pointer;
+            text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 10px; 
+            margin-top: 10px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 25px rgba(188, 19, 254, 0.4);
             position: relative;
             overflow: hidden;
             z-index: 1;
         }
-        
+
         .btn-submit::before {
             content: '';
             position: absolute;
@@ -490,25 +478,25 @@
             transition: 0.6s;
             z-index: -1;
         }
-        
+
         .btn-submit:hover:not(:disabled) {
-            transform: translateY(-5px); 
-            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.5); 
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.5);
             filter: brightness(1.1);
         }
-        
+
         .btn-submit:hover:not(:disabled)::before {
             left: 100%;
         }
-        
+
         .btn-submit:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none !important;
+            transform: none;
             box-shadow: 0 5px 15px rgba(188, 19, 254, 0.2);
         }
 
-        /* ===== SOCIAL LOGIN ===== */
+        /* ===== SOCIAL DIVIDER ===== */
         .social-divider {
             display: flex;
             align-items: center;
@@ -516,7 +504,7 @@
             color: #64748b;
             font-size: 13px;
         }
-        
+
         .social-divider::before,
         .social-divider::after {
             content: '';
@@ -524,18 +512,19 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
         }
-        
+
         .social-divider span {
             margin: 0 15px;
         }
-        
+
+        /* ===== SOCIAL BUTTONS ===== */
         .social-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
-        
+
         .social-btn {
             padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -551,66 +540,44 @@
             justify-content: center;
             gap: 10px;
             backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            opacity: 0.6;
         }
-        
-        .social-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-            background: rgba(0, 242, 255, 0.1);
-            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.2);
-        }
-        
+
         .social-btn.google {
             border-color: rgba(219, 68, 55, 0.3);
         }
-        
-        .social-btn.google:hover:not(:disabled) {
-            border-color: #DB4437;
-            background: rgba(219, 68, 55, 0.1);
-            box-shadow: 0 10px 20px rgba(219, 68, 55, 0.2);
-        }
-        
+
         .social-btn.facebook {
             border-color: rgba(66, 103, 178, 0.3);
         }
-        
-        .social-btn.facebook:hover:not(:disabled) {
-            border-color: #4267B2;
-            background: rgba(66, 103, 178, 0.1);
-            box-shadow: 0 10px 20px rgba(66, 103, 178, 0.2);
-        }
 
-        .social-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .social-btn:hover {
+            transform: translateY(-2px);
         }
 
         /* ===== REGISTER LINK ===== */
-        .register-link { 
-            text-align: center; 
-            margin-top: 30px; 
-            font-size: 14px; 
-            color: #64748b; 
+        .register-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #64748b;
             font-weight: 300;
         }
-        
-        .register-link span { 
-            color: var(--primary); 
-            cursor: pointer; 
-            font-weight: 700; 
-            text-decoration: none;
-            transition: 0.3s;
+
+        .register-link span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
             border-bottom: 1px dashed var(--primary);
+            transition: 0.3s;
         }
-        
-        .register-link span:hover { 
-            color: #fff; 
+
+        .register-link span:hover {
+            color: #fff;
             border-bottom-color: #fff;
         }
 
-        /* ===== SCAN OVERLAY (CYBER EFFECT) ===== */
+        /* ===== SCAN OVERLAY ===== */
         .scan-overlay {
             position: fixed;
             top: 0;
@@ -624,9 +591,8 @@
             align-items: center;
             flex-direction: column;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
         }
-        
+
         .scan-animation {
             width: 300px;
             height: 4px;
@@ -635,12 +601,12 @@
             position: relative;
             animation: scanning 2s infinite linear;
         }
-        
+
         @keyframes scanning {
             0% { top: -100px; }
             100% { top: 100vh; }
         }
-        
+
         .scan-text {
             margin-top: 30px;
             font-family: 'Orbitron', sans-serif;
@@ -650,20 +616,19 @@
             letter-spacing: 2px;
         }
 
-        /* ===== CYBER TOAST ===== */
+        /* ===== CYBER TOAST (ภาษาไทย) ===== */
         #cyberAlert {
-            position: fixed; 
-            top: 70px; 
-            left: 50%; 
+            position: fixed;
+            top: 70px;
+            left: 50%;
             transform: translateX(-50%);
-            z-index: var(--toast-z); 
-            padding: 15px 30px; 
+            z-index: var(--toast-z);
+            padding: 15px 30px;
             border-radius: 50px;
-            display: none; 
-            font-weight: 600; 
+            display: none;
+            font-weight: 600;
             font-size: 14px;
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
             border: 1px solid;
             box-shadow: 0 10px 40px rgba(0,0,0,0.8);
             animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -673,29 +638,24 @@
             max-width: 90%;
             word-break: break-word;
         }
-        
-        @keyframes toastIn { 
-            from { 
-                top: -100px; 
-                opacity: 0; 
-            } 
-            to { 
-                top: 70px; 
-                opacity: 1; 
-            } 
+
+        @keyframes toastIn {
+            from { top: -100px; opacity: 0; }
+            to { top: 70px; opacity: 1; }
         }
 
         /* ===== FOOTER ===== */
         footer {
             background: linear-gradient(to top, #020408, #050b14);
-            padding: 40px 20px; 
+            padding: 40px 20px;
             text-align: center;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
             width: 100%;
             z-index: 5;
+            margin-top: 60px;
         }
-        
+
         footer::before {
             content: '';
             position: absolute;
@@ -705,22 +665,22 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
         }
-        
-        .footer-logo { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 20px; 
-            color: #777; 
-            margin-bottom: 20px; 
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            color: #777;
+            margin-bottom: 20px;
             letter-spacing: 2px;
             position: relative;
             display: inline-block;
         }
-        
+
         .footer-logo span {
             color: var(--primary);
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
-        
+
         .footer-logo::after {
             content: '';
             position: absolute;
@@ -731,53 +691,52 @@
             height: 2px;
             background: linear-gradient(90deg, var(--primary), transparent);
         }
-        
-        .footer-links { 
-            font-size: 12px; 
-            color: #666; 
+
+        .footer-links {
+            font-size: 12px;
+            color: #666;
             line-height: 1.8;
             font-weight: 300;
         }
 
-        /* ===== RESPONSIVE (รองรับทุกจอในไทย) ===== */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .glass-box {
                 padding: 30px 25px;
                 border-radius: 22px;
                 width: 92%;
             }
-            
+
             .hero-section {
-                padding: 30px 15px 80px;
-                min-height: calc(100vh - 80px);
+                min-height: calc(100vh - 150px);
             }
-            
+
             .logo-area h1 {
                 font-size: 32px;
             }
-            
+
             .field-input {
                 padding: 16px 16px 16px 50px;
             }
-            
+
             .field-icon {
                 top: 40px;
                 left: 18px;
             }
-            
+
             .hero-badge {
                 font-size: 13px;
                 padding: 10px 25px;
             }
-            
+
             .btn-submit {
                 padding: 18px;
             }
-            
+
             .social-buttons {
                 grid-template-columns: 1fr;
             }
-            
+
             .options-row {
                 flex-direction: column;
                 gap: 15px;
@@ -790,9 +749,9 @@
                 top: 60px;
             }
 
-            @keyframes toastIn { 
-                from { top: -100px; } 
-                to { top: 60px; } 
+            @keyframes toastIn {
+                from { top: -100px; }
+                to { top: 60px; }
             }
         }
 
@@ -800,182 +759,136 @@
             .glass-box {
                 padding: 25px 20px;
             }
-            
+
             .logo-area h1 {
                 font-size: 28px;
             }
-            
+
             .hero-badge {
                 font-size: 12px;
                 padding: 8px 20px;
             }
         }
-
-        /* ===== KEYFRAMES ===== */
-        @keyframes pulse {
-            0% { 
-                box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.4); 
-                transform: scale(1);
-            } 
-            50% { 
-                transform: scale(1.02);
-            }
-            70% { 
-                box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); 
-            } 
-            100% { 
-                box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); 
-                transform: scale(1);
-            } 
-        }
-        
-        @keyframes shine {
-            0% { left: -100%; }
-            20% { left: 100%; }
-            100% { left: 100%; }
-        }
     </style>
 </head>
 <body>
-    <!-- เส้นแสงเคลื่อนที่ -->
+    <!-- พื้นหลัง -->
+    <div class="space-bg"></div>
+    <div class="stars"></div>
     <div class="scan-line"></div>
-    
-    <!-- อนุภาคพื้นหลัง (ปรับจำนวนตามประสิทธิภาพ) -->
-    <div class="particles" id="particles"></div>
-    
-    <!-- สแกนนิ่งเอฟเฟกต์ (ยืนยันตัวตน) -->
+
+    <!-- สแกนโอเวอร์เลย์ -->
     <div class="scan-overlay" id="scanOverlay">
         <div class="scan-animation"></div>
-        <div class="scan-text">กำลังยืนยันตัวตนด้วย Jeanny AI ...</div>
+        <div class="scan-text">AEGIS AI กำลังตรวจสอบความปลอดภัย...</div>
     </div>
 
-    <!-- ข่าวสารระบบ -->
-    <div class="news-ticker">
-        <div class="ticker-content">
-            ★ AEGIS NEX LOGIN PORTAL ★ เข้าสู่ระบบด้วยอีเมลหรือชื่อผู้ใช้งาน ★ ลืมรหัสผ่าน? กดที่ลิงก์ด้านล่าง ★ ปลอดภัย 100% ด้วย Jeanny AI ★ รองรับทุกเครือข่ายในประเทศไทย ★
+    <div class="app-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="logo">
+                <span class="aegis">AEGIS</span> <span class="nex">NEX</span>
+            </div>
+            <div class="live-badge"><i class="fas fa-circle"></i> AEGIS AI · ACTIVE</div>
         </div>
-    </div>
 
-    <!-- เนื้อหาหลัก -->
-    <section class="hero-section">
-        <div class="hero-badge"><i class="fa-solid fa-terminal"></i> PORTAL: USER AUTHENTICATION · JEANNY AI</div>
-        
-        <div class="glass-box">
-            <div class="logo-area">
-                <h1>AEGIS <span>NEX</span></h1>
-                <p>เข้าสู่ระบบเครือข่ายความปลอดภัยสูงสุด</p>
-            </div>
-
-            <!-- ประกาศความปลอดภัย -->
-            <div class="security-notice">
-                <h4><i class="fa-solid fa-shield-halved"></i> ประกาศความปลอดภัยระบบ</h4>
-                <p>
-                    ระบบของเราใช้เทคโนโลยี <b>Jeanny AI</b> ตรวจสอบการเข้าสู่ระบบทุกครั้ง 
-                    หากพบกิจกรรมน่าสงสัยระบบจะ <b>ระงับการเข้าถึงทันที</b> 
-                    กรุณาติดต่อ Support หากพบปัญหา
-                </p>
-            </div>
-
-            <!-- ฟอร์มเข้าสู่ระบบ -->
-            <div class="field-box">
-                <label class="field-label">อีเมลหรือชื่อผู้ใช้งาน</label>
-                <input type="text" id="loginInput" class="field-input" placeholder="อีเมล / ชื่อผู้ใช้..." autocomplete="username" spellcheck="false">
-                <i class="fa-solid fa-user-secret field-icon"></i>
-            </div>
-
-            <div class="field-box password-field">
-                <label class="field-label">รหัสผ่าน (PASSWORD)</label>
-                <input type="password" id="password" class="field-input" placeholder="ระบุรหัสผ่านของคุณ" autocomplete="current-password" style="padding-right: 50px;">
-                <i class="fa-solid fa-fingerprint field-icon"></i>
-                <button type="button" class="toggle-password" id="togglePassword" aria-label="แสดง/ซ่อนรหัสผ่าน">
-                    <i class="fa-solid fa-eye"></i>
-                </button>
-            </div>
-
-            <!-- ตัวเลือกจดจำ & ลืมรหัส -->
-            <div class="options-row">
-                <div class="remember-me" id="rememberMe">
-                    <div class="remember-check" id="rememberCheck"></div>
-                    <span>จดจำอีเมล / ชื่อผู้ใช้</span>
+        <!-- Hero Section Login -->
+        <section class="hero-section">
+            <div class="hero-badge"><i class="fa-solid fa-terminal"></i>เข้าสู่ระบบ · AEGIS AI </div>
+            
+            <div class="glass-box">
+                <div class="logo-area">
+                    <h1>AEGIS <span>NEX</span></h1>
+                    <p>เข้าสู่ระบบเครือข่ายความปลอดภัยสูงสุด</p>
                 </div>
-                <div class="forgot-link" onclick="showForgotPassword()">ลืมรหัสผ่าน?</div>
-            </div>
 
-            <!-- ปุ่มหลัก -->
-            <button class="btn-submit" onclick="processLogin()" id="submitBtn">
-                <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
-            </button>
+                <!-- ประกาศความปลอดภัย -->
+                <div class="security-notice">
+                    <h4><i class="fa-solid fa-shield-halved"></i> ประกาศความปลอดภัย</h4>
+                    <p>
+                        ระบบใช้ <b>AEGIS AI</b> ตรวจสอบการเข้าสู่ระบบทุกครั้ง 
+                        หากพบกิจกรรมน่าสงสัยจะระงับการเข้าถึงทันที 
+                        ติดต่อทีมงานหากพบปัญหา
+                    </p>
+                </div>
 
-            <!-- ตัวเลือก Social Login -->
-            <div class="social-divider">
-                <span>หรือเข้าสู่ระบบด้วย</span>
-            </div>
+                <!-- ฟอร์ม -->
+                <div class="field-box">
+                    <label class="field-label">อีเมลหรือชื่อผู้ใช้</label>
+                    <input type="text" id="loginInput" class="field-input" placeholder="example@email.com / ชื่อผู้ใช้" autocomplete="username">
+                    <i class="fa-solid fa-user-secret field-icon"></i>
+                </div>
 
-            <div class="social-buttons">
-                <!-- ปุ่ม Google แก้ไข: เพิ่ม disabled และข้อความ (เร็วๆ นี้) -->
-                <button type="button" class="social-btn google" onclick="loginWithGoogle()" id="googleBtn" disabled>
-                    <i class="fa-brands fa-google"></i> Google (เร็วๆ นี้)
+                <div class="field-box password-field">
+                    <label class="field-label">รหัสผ่าน</label>
+                    <input type="password" id="password" class="field-input" placeholder="················" autocomplete="current-password" style="padding-right: 50px;">
+                    <i class="fa-solid fa-fingerprint field-icon"></i>
+                    <button type="button" class="toggle-password" id="togglePassword" aria-label="แสดง/ซ่อนรหัสผ่าน">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- ตัวเลือกจดจำ & ลืมรหัส -->
+                <div class="options-row">
+                    <div class="remember-me" id="rememberMe">
+                        <div class="remember-check" id="rememberCheck"></div>
+                        <span>จดจำอีเมล/ชื่อผู้ใช้</span>
+                    </div>
+                    <div class="forgot-link" onclick="showForgotPassword()">ลืมรหัสผ่าน?</div>
+                </div>
+
+                <!-- ปุ่มหลัก -->
+                <button class="btn-submit" onclick="processLogin()" id="submitBtn">
+                    <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
                 </button>
-                <!-- ปุ่ม Facebook แก้ไข: เพิ่ม disabled และข้อความ (เร็วๆ นี้) -->
-                <button type="button" class="social-btn facebook" onclick="loginWithFacebook()" id="facebookBtn" disabled>
-                    <i class="fa-brands fa-facebook-f"></i> Facebook (เร็วๆ นี้)
-                </button>
+
+                <!-- Social Login (เร็วๆ นี้) -->
+                <div class="social-divider">
+                    <span>หรือเข้าสู่ระบบด้วย</span>
+                </div>
+
+                <div class="social-buttons">
+                    <button type="button" class="social-btn google" onclick="loginWithGoogle()" id="googleBtn" disabled>
+                        <i class="fa-brands fa-google"></i> Google (เร็วๆ นี้)
+                    </button>
+                    <button type="button" class="social-btn facebook" onclick="loginWithFacebook()" id="facebookBtn" disabled>
+                        <i class="fa-brands fa-facebook-f"></i> Facebook (เร็วๆ นี้)
+                    </button>
+                </div>
+
+                <!-- ลิงก์สมัครสมาชิก -->
+                <div class="register-link">
+                    ยังไม่มีบัญชี? <span onclick="window.location.href='register.html'">สมัครสมาชิก</span>
+                </div>
             </div>
+        </section>
 
-            <!-- ลิงก์สมัครสมาชิก -->
-            <div class="register-link">
-                ยังไม่มีบัญชีผู้ใช้งาน? <span onclick="window.location.href='register.html'">สมัครสมาชิกตอนนี้</span>
+        <!-- Footer -->
+        <footer>
+            <div class="footer-logo">AEGIS <span>NEX</span></div>
+            <div class="footer-links">
+                ข้อกำหนดการใช้งาน • นโยบายความเป็นส่วนตัว • ติดต่อเรา<br><br>
+                © 2026 AEGIS NEX · AEGIS AI SECURITY
             </div>
-        </div>
-    </section>
+        </footer>
+    </div>
 
-    <!-- ส่วนท้าย -->
-    <footer>
-        <div class="footer-logo">AEGIS <span>NEX</span> CORP.</div>
-        <div class="footer-links">
-            TERMS OF SERVICE • PRIVACY POLICY • CONTACT US<br><br>
-            COPYRIGHT © 2026 AEGIS NEX TECHNOLOGY · JEANNY AI SECURITY
-        </div>
-    </footer>
-
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script>
-        // ------------------------------------------------------------
-        //  AEGIS NEX LOGIN SYSTEM · SUPABASE INTEGRATION
-        //  แก้บัค ปรับปรุงประสิทธิภาพ พร้อมใช้งานทั่วประเทศไทย
-        // ------------------------------------------------------------
-        
         (function() {
             "use strict";
 
-            // ---------- SUPABASE CONFIG (ของคุณโดยตรง) ----------
+            // ---------- SUPABASE CONFIG ----------
             const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
             const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-                auth: {
-                    persistSession: true,        // ให้จำ session ข้ามแท็บได้
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true
-                }
+                auth: { persistSession: true, autoRefreshToken: true }
             });
 
-            // ------------------------------------------------------------
-            //  หมายเหตุ: เพื่อป้องกัน username ซ้ำ ควรกำหนด unique constraint
-            //  ในตาราง users โดยรัน SQL:
-            //  -- ตรวจสอบ username ซ้ำ
-            //  SELECT username, COUNT(*) FROM users GROUP BY username HAVING COUNT(*) > 1;
-            //  -- ถ้ามีข้อมูลซ้ำให้ลบหรือแก้ไขแล้วเพิ่ม unique constraint
-            //  ALTER TABLE users ADD CONSTRAINT users_username_unique UNIQUE (username);
-            // ------------------------------------------------------------
+            // ---------- GLOBAL ----------
+            let isRemembered = false;
+            let isProcessing = false;
 
-            // ---------- GLOBAL VARIABLES ----------
-            let isRemembered = false;          // สถานะจดจำ
-            let isProcessing = false;          // ป้องกันการกดซ้ำ
-            let currentToast = null;           // จัดการ toast ไม่ให้ซ้อน
-
-            // ---------- DOM ELEMENTS ----------
+            // DOM elements
             const loginInput = document.getElementById('loginInput');
             const passwordInput = document.getElementById('password');
             const submitBtn = document.getElementById('submitBtn');
@@ -986,51 +899,16 @@
             const googleBtn = document.getElementById('googleBtn');
             const facebookBtn = document.getElementById('facebookBtn');
 
-            // ---------- ฟังก์ชันสร้างอนุภาค (ปรับจำนวนตามความแรงเครื่อง) ----------
-            function createParticles() {
-                const container = document.getElementById('particles');
-                if (!container) return;
-                // ลบของเก่าออกก่อน (ป้องกันหน่วยความจำรั่ว)
-                container.innerHTML = '';
-                // ใช้ particleCount ตามความกว้างหน้าจอ (มือถือ = น้อยลง)
-                const isMobile = window.innerWidth <= 768;
-                const particleCount = isMobile ? 20 : 40;
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.classList.add('particle');
-                    
-                    const size = Math.random() * 4 + 1; // 1-5px
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-                    particle.style.left = `${Math.random() * 100}vw`;
-                    particle.style.top = `${Math.random() * 100}vh`;
-                    
-                    const colors = ['#00f2ff', '#bc13fe', '#ff0080', '#00e676', '#ffd700'];
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    particle.style.background = color;
-                    
-                    const duration = Math.random() * 20 + 15; // 15-35s ช้าลงหน่วง CPU
-                    const delay = Math.random() * 5;
-                    particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-                    
-                    container.appendChild(particle);
-                }
-            }
-
-            // ---------- CYBER TOAST (ไม่ซ้อน, ลบอันเก่า) ----------
+            // ---------- Cyber Toast (ภาษาไทย) ----------
             function showCyberToast(text, status = 'error') {
-                // ลบ toast เก่าถ้ามี
                 const oldToast = document.getElementById('cyberAlert');
-                if (oldToast && oldToast.parentNode) {
-                    oldToast.parentNode.removeChild(oldToast);
-                }
+                if (oldToast && oldToast.parentNode) oldToast.parentNode.removeChild(oldToast);
 
                 const toast = document.createElement('div');
                 toast.id = 'cyberAlert';
                 toast.innerText = text;
                 toast.style.display = 'block';
-                
+
                 let bgColor, borderColor, textColor;
                 if (status === 'success') {
                     bgColor = 'rgba(0, 255, 136, 0.15)';
@@ -1045,69 +923,55 @@
                     borderColor = 'var(--danger)';
                     textColor = 'var(--danger)';
                 }
-                
+
                 toast.style.backgroundColor = bgColor;
                 toast.style.borderColor = borderColor;
                 toast.style.color = textColor;
-                
                 document.body.appendChild(toast);
-                
-                // Auto remove หลังจาก 4 วินาที
+
                 setTimeout(() => {
-                    if (toast && toast.parentNode) {
-                        toast.style.display = 'none';
-                        toast.parentNode.removeChild(toast);
-                    }
+                    if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
                 }, 4000);
             }
 
-            // ---------- ตรวจสอบรูปแบบอีเมล ----------
+            // ---------- ตรวจสอบอีเมล ----------
             function isEmail(input) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(input);
             }
 
-            // ---------- จัดการ Remember Me (จดจำอีเมล/ชื่อผู้ใช้) ----------
+            // ---------- Remember Me ----------
             function initRememberMe() {
-                // โหลดค่าที่บันทึกไว้
-                const savedUsername = localStorage.getItem('aegis_remember_username');
-                if (savedUsername) {
-                    loginInput.value = savedUsername;
+                const saved = localStorage.getItem('aegis_remember_username');
+                if (saved) {
+                    loginInput.value = saved;
                     isRemembered = true;
                     rememberCheck.classList.add('checked');
                 }
 
-                // คลิกที่ rememberMe
                 rememberMe.addEventListener('click', function(e) {
                     e.preventDefault();
                     isRemembered = !isRemembered;
                     rememberCheck.classList.toggle('checked', isRemembered);
-                    
+
                     if (isRemembered) {
-                        // บันทึก username ถ้ามีการกรอก
-                        const currentVal = loginInput.value.trim();
-                        if (currentVal) {
-                            localStorage.setItem('aegis_remember_username', currentVal);
-                        }
+                        const val = loginInput.value.trim();
+                        if (val) localStorage.setItem('aegis_remember_username', val);
                     } else {
                         localStorage.removeItem('aegis_remember_username');
                     }
                 });
 
-                // อัปเดต localStorage เมื่อผู้ใช้พิมพ์ username (ถ้าเปิด remember อยู่)
                 loginInput.addEventListener('input', function() {
                     if (isRemembered) {
                         const val = this.value.trim();
-                        if (val) {
-                            localStorage.setItem('aegis_remember_username', val);
-                        } else {
-                            localStorage.removeItem('aegis_remember_username');
-                        }
+                        if (val) localStorage.setItem('aegis_remember_username', val);
+                        else localStorage.removeItem('aegis_remember_username');
                     }
                 });
             }
 
-            // ---------- แสดง/ซ่อนรหัสผ่าน ----------
+            // ---------- Toggle Password ----------
             function initTogglePassword() {
                 togglePassword.addEventListener('click', function() {
                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -1116,25 +980,21 @@
                 });
             }
 
-            // ---------- รีเซ็ตสถานะปุ่ม ----------
+            // ---------- รีเซ็ตปุ่ม ----------
             function resetButtonState() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ';
-                // Google และ Facebook ถูก disabled ไว้ตลอด (เร็วๆ นี้) จึงไม่ต้องรีเซ็ต
-                // if (googleBtn) googleBtn.disabled = false;
-                // if (facebookBtn) facebookBtn.disabled = false;
             }
 
-            // ---------- กระบวนการเข้าสู่ระบบหลัก ----------
+            // ---------- กระบวนการ login ----------
             window.processLogin = async function() {
-                // ป้องกันการกดซ้ำ
                 if (isProcessing) return;
-                
+
                 const loginVal = loginInput.value.trim();
                 const passVal = passwordInput.value;
 
                 if (!loginVal || !passVal) {
-                    showCyberToast("⚠️ กรุณากรอกข้อมูลให้ครบถ้วน"); 
+                    showCyberToast("⚠️ กรุณากรอกอีเมล/ชื่อผู้ใช้และรหัสผ่าน"); 
                     return;
                 }
 
@@ -1144,126 +1004,98 @@
                 scanOverlay.style.display = 'flex';
 
                 try {
-                    // จำลองการสแกน (เพื่อ UX)
                     await new Promise(resolve => setTimeout(resolve, 1200));
-                    
+
                     let emailToUse = loginVal;
-                    
-                    // ถ้าไม่ใช่รูปแบบอีเมล ให้ค้นหาจากตาราง users ด้วย username (case-insensitive, trim)
+
                     if (!isEmail(loginVal)) {
-                        const searchUsername = loginVal.trim().toLowerCase();  // แก้ไข: trim และ toLowerCase
-                        console.log('Searching for username:', searchUsername);
+                        const searchUsername = loginVal.trim().toLowerCase();
                         const { data: userData, error: userError } = await supa
                             .from('users')
                             .select('email')
-                            .eq('username', searchUsername)  // เปลี่ยนจาก ilike เป็น eq เพื่อความตรงตัว
+                            .eq('username', searchUsername)
                             .maybeSingle();
-                        
-                        console.log('User data found:', userData);
-                        
-                        if (userError) {
-                            console.error('DB Query Error:', userError);
-                            throw new Error('ไม่สามารถตรวจสอบชื่อผู้ใช้งานได้ กรุณาลองอีกครั้ง');
-                        }
-                        if (!userData) {
-                            throw new Error('ไม่พบชื่อผู้ใช้งานนี้ในระบบ');
-                        }
+
+                        if (userError) throw new Error('ระบบขัดข้อง กรุณาลองใหม่');
+                        if (!userData) throw new Error('ไม่พบชื่อผู้ใช้นี้ในระบบ');
                         emailToUse = userData.email;
                     }
 
-                    // เริ่มกระบวนการ login ด้วย Supabase Auth
                     const { data, error } = await supa.auth.signInWithPassword({
                         email: emailToUse,
                         password: passVal
                     });
-                    
+
                     if (error) throw error;
 
                     if (data?.user) {
-                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำท่านไปยังแดชบอร์ด...", "success");
-                        // บันทึก remember username (ถ้าเปิดอยู่)
+                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำไปยังแดชบอร์ด", "success");
                         if (isRemembered) {
                             localStorage.setItem('aegis_remember_username', loginVal);
                         }
-                        
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        await new Promise(resolve => setTimeout(resolve, 1500));
                         window.location.href = 'dashboard.html';
                     } else {
                         throw new Error('ไม่สามารถเข้าสู่ระบบได้');
                     }
                 } catch (err) {
-                    console.error('Login Error:', err);
                     scanOverlay.style.display = 'none';
-                    showCyberToast("❌ " + (err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่'));
+                    let errorMsg = err.message || 'เกิดข้อผิดพลาด';
+                    if (errorMsg.includes('Invalid login credentials')) {
+                        errorMsg = '❌ อีเมล/ชื่อผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง';
+                    } else if (errorMsg.includes('Email not confirmed')) {
+                        errorMsg = '❌ กรุณายืนยันอีเมลของคุณก่อน';
+                    }
+                    showCyberToast(errorMsg);
                     resetButtonState();
                 } finally {
                     isProcessing = false;
                 }
             };
 
-            // ---------- LOGIN WITH GOOGLE (เหลือไว้สำหรับอนาคต) ----------
-            window.loginWithGoogle = async function() {
-                // ปุ่มถูก disabled ไว้แล้ว ไม่ควรถูกเรียก
-                showCyberToast("⚠️ Google Login กำลังอยู่ในช่วงพัฒนา (เร็วๆ นี้)", "warning");
-            };
-
-            // ---------- LOGIN WITH FACEBOOK (เหลือไว้สำหรับอนาคต) ----------
-            window.loginWithFacebook = async function() {
-                // ปุ่มถูก disabled ไว้แล้ว ไม่ควรถูกเรียก
-                showCyberToast("⚠️ Facebook Login กำลังอยู่ในช่วงพัฒนา (เร็วๆ นี้)", "warning");
-            };
-
             // ---------- ลืมรหัสผ่าน ----------
             window.showForgotPassword = function() {
-                // ไปที่หน้า recovery เพื่อขอรีเซ็ตรหัสผ่าน (กรอกอีเมลและ PIN)
                 window.location.href = 'recovery.html';
             };
 
-            // ---------- รองรับการกด Enter ----------
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' && !isProcessing) {
-                    const activeElement = document.activeElement;
-                    if (activeElement === loginInput || activeElement === passwordInput) {
-                        event.preventDefault();
-                        window.processLogin();
+            // ---------- Social login (เร็วๆ นี้) ----------
+            window.loginWithGoogle = function() {
+                showCyberToast("⚠️ Google Login กำลังพัฒนา (เร็วๆ นี้)", "warning");
+            };
+            window.loginWithFacebook = function() {
+                showCyberToast("⚠️ Facebook Login กำลังพัฒนา (เร็วๆ นี้)", "warning");
+            };
+
+            // ---------- Enter key ----------
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !isProcessing) {
+                    const active = document.activeElement;
+                    if (active === loginInput || active === passwordInput) {
+                        e.preventDefault();
+                        processLogin();
                     }
                 }
             });
 
-            // ---------- เรียกใช้ฟังก์ชันเริ่มต้น ----------
+            // ---------- Init ----------
             function init() {
-                createParticles();
                 initRememberMe();
                 initTogglePassword();
-                
-                // รีเซ็ตปุ่มทุกครั้งที่โหลดหน้า (ในกรณีค้าง state)
                 resetButtonState();
-                
-                // ถ้า OAuth redirect กลับมา และมี error ให้แสดง
+
                 const hash = window.location.hash;
                 if (hash && hash.includes('error')) {
                     const params = new URLSearchParams(hash.substring(1));
-                    const errorDesc = params.get('error_description') || 'เกิดข้อผิดพลาดจากการยืนยันตัวตน';
+                    const errorDesc = params.get('error_description') || 'เกิดข้อผิดพลาด';
                     showCyberToast("❌ " + decodeURIComponent(errorDesc));
                 }
             }
 
-            // เริ่มต้นทุกอย่างเมื่อ DOM พร้อม
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
                 init();
             }
-
-            // ปรับจำนวนอนุภาคใหม่เมื่อหมุนจอ (responsive)
-            window.addEventListener('resize', function() {
-                // throttle เพื่อไม่ให้เรียกถี่เกินไป
-                clearTimeout(window.particleTimeout);
-                window.particleTimeout = setTimeout(() => {
-                    createParticles();
-                }, 200);
-            });
-
         })();
     </script>
 </body>
