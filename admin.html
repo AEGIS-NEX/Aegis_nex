@@ -1635,6 +1635,7 @@
             document.getElementById('confirmActionModal').style.display = 'flex';
         }
 
+        // ✅ แก้ไขตามคำสั่ง: เปลี่ยนจาก increment_quest เป็น process_quest_action
         async function executeApproveKyc(kycId, userId) {
             try {
                 const { error: userError } = await supa
@@ -1649,18 +1650,12 @@
                     .eq('id', kycId);
                 if (kycError) throw kycError;
 
-                // 🔥 แก้ไขตามที่ต้องการ: ใช้ increment_quest แทน complete_quest
-                const { error: questError } = await supa.rpc('increment_quest', {
-                    p_user_id: userId,
-                    p_slug: 'pioneer_kyc',
-                    p_increment: 1
-                });
-                if (questError) console.error('increment quest error:', questError);
+                // 🌟 จินนี่: ยิงเควส KYC ให้ลูกค้าเมื่อ Admin อนุมัติ!
+                await supa.rpc('process_quest_action', { p_user_id: userId, p_slug: 'pioneer_kyc' });
 
                 showToast('✅ อนุมัติ KYC สำเร็จ', 'success');
                 await loadPendingKyc();
             } catch (e) {
-                console.error(e);
                 showToast(`❌ เกิดข้อผิดพลาด: ${e.message}`, 'error');
             }
         }
@@ -1749,6 +1744,15 @@
                     .update({ status: 'completed', updated_at: new Date() })
                     .eq('id', txId);
                 if (txError) throw txError;
+
+                // ✅ เพิ่มการเรียก process_quest_action สำหรับเควสเติมเงินทันทีที่อนุมัติ
+                try {
+                    await supa.rpc('process_quest_action', { p_user_id: userId, p_slug: 'daily_topup' });
+                } catch (questErr) {
+                    console.error('Failed to process quest for topup:', questErr);
+                    // ไม่ throw ออก เพื่อไม่ให้กระทบการอนุมัติหลัก
+                }
+
                 showToast(`✅ อนุมัติการฝาก ${amount.toLocaleString()} AGS สำเร็จ`, 'success');
                 await loadPendingDeposits();
                 updateStats();
