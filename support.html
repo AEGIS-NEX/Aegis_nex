@@ -1293,15 +1293,6 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 🔥 กำหนด UID ของ CEO และ Admin
-        const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233"; // UID ของ CEO
-        const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000"; // เปลี่ยนเป็น UID พิเศษของคุณ
-        // เพิ่ม UID ของ Admin คนอื่น ๆ ได้ที่นี่
-        const ADMIN_UIDS = [
-            MY_SPECIAL_UID
-            // สามารถเพิ่ม UID อื่น ๆ ได้ เช่น "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        ];
-
         // 📁 ตั้งค่า Bucket สำหรับเก็บหลักฐาน - ต้องสร้าง Bucket ชื่อ 'support_evidence' ใน Supabase Storage ก่อน
         const EVIDENCE_BUCKET = 'support_evidence';
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -1404,55 +1395,15 @@
         }
 
         // ------------------------------
-        // 👥 ฟังก์ชันนับจำนวน CEO และ Admin ที่ออนไลน์
+        // 👥 ฟังก์ชันนับจำนวน CEO และ Admin ที่ออนไลน์ ผ่าน RPC
         // ------------------------------
-        async function fetchOnlineStaff() {
-            try {
-                // ดึงข้อมูล users ที่ uid อยู่ใน ADMIN_UIDS หรือเป็น CEO
-                const allStaffIds = [MY_GOD_UID, ...ADMIN_UIDS];
-                const { data: staff, error } = await supa
-                    .from('users')
-                    .select('id, last_seen')
-                    .in('id', allStaffIds);
-
-                if (error) throw error;
-
-                if (!staff) return { ceoOnline: 0, adminOnline: 0 };
-
-                const now = new Date();
-                const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-
-                let ceoOnline = 0;
-                let adminOnline = 0;
-
-                staff.forEach(person => {
-                    if (!person.last_seen) return;
-                    const lastSeen = new Date(person.last_seen);
-                    const isOnline = lastSeen >= fiveMinutesAgo;
-                    
-                    if (person.id === MY_GOD_UID) {
-                        if (isOnline) ceoOnline = 1;
-                    } else {
-                        if (isOnline) adminOnline++;
-                    }
-                });
-
-                return { ceoOnline, adminOnline };
-            } catch (error) {
-                console.error("Error fetching online staff:", error);
-                return { ceoOnline: 0, adminOnline: 0 };
-            }
-        }
-
         async function updateOnlineStaffCount() {
-            const { ceoOnline, adminOnline } = await fetchOnlineStaff();
-            const ceoElement = document.getElementById('onlineCEOCount');
-            const adminElement = document.getElementById('onlineAdminCount');
-            if (ceoElement) {
-                ceoElement.textContent = ceoOnline;
-            }
-            if (adminElement) {
-                adminElement.textContent = adminOnline;
+            const { data, error } = await supa.rpc('get_online_admin_counts');
+            if (!error && data && data.length > 0) {
+                document.getElementById('onlineCEOCount').textContent = data[0].ceo_count;
+                document.getElementById('onlineAdminCount').textContent = data[0].admin_count;
+            } else {
+                console.error('RPC get_online_admin_counts error:', error);
             }
         }
 
