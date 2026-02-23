@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* CSS เหมือนเดิมทุกประการ (คงไว้) */
+        /* CSS เดิมทั้งหมดคงเดิม ไม่มีการเปลี่ยนแปลง */
         :root {
             --primary: #00f2ff;
             --secondary: #bc13fe;
@@ -1145,7 +1145,7 @@
 
         // ตัวแปร global
         let currentUserId = '';
-        let currentUserPin = '';      // ✅ เปลี่ยนจาก pin_hash เป็น pin (เก็บ hashed PIN)
+        let currentUserPin = '';      // ✅ เก็บ hashed PIN จากคอลัมน์ pin
         let userBalance = 0;
         let userKYC = false;
         let dailyTransferLimit = 0;
@@ -1210,10 +1210,9 @@
             }
         }
 
-        // 🔥 LOAD USER DATA (แก้ไขตาม 10.1)
+        // 🔥 LOAD USER DATA
         async function loadUserData() {
             try {
-                // ✅ เปลี่ยนจาก pin_hash เป็น pin
                 const { data: userData, error } = await supa
                     .from('users')
                     .select('balance, pin, kyc_verified, username, email')
@@ -1224,7 +1223,7 @@
 
                 if (userData) {
                     userBalance = userData.balance || 0;
-                    currentUserPin = userData.pin;   // ✅ เก็บ hashed PIN จากคอลัมน์ pin
+                    currentUserPin = userData.pin;   // ✅ เก็บ hashed PIN
                     userKYC = userData.kyc_verified || false;
                     
                     // Update UI
@@ -1332,7 +1331,7 @@
             });
         }
 
-        // 🔥 VALIDATE TRANSFER (แก้ไขตาม 10.2)
+        // 🔥 VALIDATE TRANSFER
         async function validateTransfer() {
             const recipient = document.getElementById('recipientInput').value.trim();
             const amount = parseFloat(document.getElementById('amountInput').value);
@@ -1347,7 +1346,7 @@
             try {
                 const { data: userData, error } = await supa
                     .from('users')
-                    .select('id, username, display_name, email')   // ✅ เพิ่ม display_name
+                    .select('id, username, display_name, email')
                     .or(`username.eq.${recipient},email.eq.${recipient}`)
                     .neq('id', currentUserId)
                     .single();
@@ -1356,7 +1355,7 @@
                     return { valid: false, message: 'ไม่พบผู้รับ กรุณาตรวจสอบ username หรือ email อีกครั้ง' };
                 }
                 
-                recipientUser = userData;  // ✅ เก็บข้อมูลผู้รับ (รวม display_name)
+                recipientUser = userData;
             } catch (error) {
                 return { valid: false, message: 'ไม่สามารถตรวจสอบข้อมูลผู้รับได้' };
             }
@@ -1376,7 +1375,7 @@
                 return { valid: false, message: `จำนวนเงินเกินวงเงินโอนรายวัน (เหลือโอนได้ ${remainingLimit.toLocaleString('th-TH')} AGS, วงเงินสูงสุด ${limitMsg})` };
             }
             
-            // ✅ ตรวจสอบ PIN โดยใช้ hash (เปรียบเทียบกับ currentUserPin)
+            // ✅ ตรวจสอบ PIN โดยใช้ hash
             if (pin.length !== 6) {
                 return { valid: false, message: 'รหัส PIN ต้องมี 6 หลักเท่านั้น' };
             }
@@ -1386,7 +1385,6 @@
             }
             
             const hashedPin = await hashPIN(pin);
-            // ✅ ใช้ currentUserPin ที่โหลดไว้แล้วแทนการ query ซ้ำ
             if (hashedPin !== currentUserPin) {
                 return { valid: false, message: 'รหัส PIN ไม่ถูกต้อง' };
             }
@@ -1403,11 +1401,9 @@
         async function processTransfer() {
             const transferBtn = document.getElementById('transferBtn');
             
-            // Disable button temporarily
             transferBtn.disabled = true;
             transferBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
             
-            // Validate transfer
             const validation = await validateTransfer();
             
             if (!validation.valid) {
@@ -1417,15 +1413,12 @@
                 return;
             }
             
-            // Generate reference ID
             const referenceId = 'TRF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
-            // ✅ แสดงชื่อผู้รับโดยใช้ display_name ถ้ามี
             const recipientDisplay = validation.recipient.display_name || 
                                      validation.recipient.username || 
                                      validation.recipient.email;
             
-            // Show confirmation modal
             document.getElementById('confirmRecipient').textContent = recipientDisplay;
             document.getElementById('confirmAmount').textContent = 
                 validation.amount.toLocaleString('th-TH') + ' AGS';
@@ -1435,12 +1428,11 @@
             
             document.getElementById('confirmModal').style.display = 'flex';
             
-            // Reset button
             transferBtn.disabled = false;
             transferBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการโอนเงิน';
         }
 
-        // 🔥 CONFIRM TRANSFER (Step 2: Execute transfer) - แก้ไขตามคำสั่ง
+        // 🔥 CONFIRM TRANSFER (Step 2: Execute transfer)
         async function confirmTransfer() {
             const transferBtn = document.getElementById('transferBtn');
             const amount = parseFloat(document.getElementById('amountInput').value);
@@ -1463,13 +1455,29 @@
                 if (error) throw error;
                 if (!data.success) throw new Error(data.error);
 
+                // ===== 🚀 เพิ่ม logging เพื่อดีบัก =====
+                console.log('🟢 currentUserId =', currentUserId);
+                console.log('🟢 recipientUser =', recipientUser);
+                console.log('🟢 about to call process_quest_action with slug daily_p2p');
+
+                // 🌟 จินนี่: ยิงเควสโอนเงิน
+                try {
+                    const questResult = await supa.rpc('process_quest_action', { 
+                        p_user_id: currentUserId, 
+                        p_slug: 'daily_p2p' 
+                    });
+                    console.log('✅ Quest update success:', questResult);
+                } catch (questErr) {
+                    console.error('❌ Quest update failed:', questErr);
+                }
+                // =====================================
+
                 // อัปเดตยอดเงินในเครื่อง
                 userBalance -= amount;
                 dailyTransferred += amount;
 
                 document.getElementById('processingModal').style.display = 'none';
                 
-                // ✅ สร้างข้อความสำเร็จโดยใช้ display_name
                 const recipientDisplay = recipientUser.display_name || 
                                          recipientUser.username || 
                                          recipientUser.email;
@@ -1518,8 +1526,6 @@
         
         function closeSuccessModal() {
             document.getElementById('successModal').style.display = 'none';
-            // Optionally redirect to dashboard or keep on transfer page
-            // location.href = 'dashboard.html';
         }
         
         function closeErrorModal() {
@@ -1534,7 +1540,7 @@
             document.getElementById('helpModal').style.display = 'none';
         }
 
-        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้" (เพิ่มใหม่)
+        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้"
         function showComingSoon() {
             document.getElementById('comingSoonModal').style.display = 'flex';
         }
@@ -1575,12 +1581,9 @@
             // Validate amount input
             const amountInput = document.getElementById('amountInput');
             amountInput.addEventListener('input', function() {
-                // Clear active amount buttons when typing manually
                 document.querySelectorAll('.amount-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                
-                // Validate amount is positive
                 if (this.value < 0) {
                     this.value = Math.abs(this.value);
                 }
@@ -1595,13 +1598,11 @@
                 `วงเงินโอนรายวัน: ${userKYC ? '50,000 AGS (KYC Verified)' : '5,000 AGS (Unverified)'}`
             ];
             
-            // Update AI message randomly
             setInterval(() => {
                 const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
                 updateAIMessage(randomMsg);
             }, 15000);
             
-            // Set up event listeners
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     const modals = document.querySelectorAll('.modal-overlay[style*="flex"]');
@@ -1609,15 +1610,12 @@
                         modal.style.display = 'none';
                     });
                 }
-                
-                // Submit on Enter key
                 if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
                     e.preventDefault();
                     processTransfer();
                 }
             });
             
-            // Focus on recipient input on load
             setTimeout(() => {
                 document.getElementById('recipientInput').focus();
             }, 500);
