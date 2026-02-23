@@ -173,6 +173,60 @@
             100% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
         }
 
+        /* ===== NEWS TICKER ===== */
+        .news-ticker {
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0, 242, 255, 0.15) 10%, 
+                rgba(0, 242, 255, 0.25) 50%, 
+                rgba(0, 242, 255, 0.15) 90%, 
+                rgba(0,0,0,0) 100%);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .news-ticker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(188, 19, 254, 0) 0%, 
+                rgba(188, 19, 254, 0.2) 50%, 
+                rgba(188, 19, 254, 0) 100%);
+            animation: scanline 3s linear infinite;
+        }
+
+        .ticker-content {
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+            font-size: 13px;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
+            padding: 5px 0;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
         /* ===== HERO SECTION (LOGIN) ===== */
         .hero-section {
             min-height: calc(100vh - 200px);
@@ -211,7 +265,7 @@
             100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); transform: scale(1); }
         }
 
-        /* ===== GLASS CARD (เหมือน index แต่ปรับ padding) ===== */
+        /* ===== GLASS CARD ===== */
         .glass-box {
             width: 95%;
             max-width: 520px;
@@ -265,7 +319,7 @@
             font-weight: 300;
         }
 
-        /* ===== SECURITY NOTICE (เหมือนเดิม) ===== */
+        /* ===== SECURITY NOTICE ===== */
         .security-notice {
             background: rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.3);
@@ -310,11 +364,6 @@
             color: #fff;
             border-bottom: 1px dashed var(--warning);
             font-weight: 600;
-        }
-
-        @keyframes scanline {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         /* ===== FORM FIELD ===== */
@@ -577,13 +626,10 @@
             border-bottom-color: #fff;
         }
 
-        /* ===== SCAN OVERLAY ===== */
+        /* ===== 🔥 SCAN OVERLAY (แก้ไขให้เต็มจอ) ===== */
         .scan-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0; /* top:0; right:0; bottom:0; left:0; */
             background: rgba(5, 11, 20, 0.95);
             z-index: 9999;
             display: none;
@@ -591,6 +637,7 @@
             align-items: center;
             flex-direction: column;
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .scan-animation {
@@ -598,13 +645,13 @@
             height: 4px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
             box-shadow: 0 0 30px var(--primary);
-            position: relative;
             animation: scanning 2s infinite linear;
+            /* ใช้ transform แทน top เพื่อไม่ให้หลุด container */
         }
 
         @keyframes scanning {
-            0% { top: -100px; }
-            100% { top: 100vh; }
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100vh); }
         }
 
         .scan-text {
@@ -614,6 +661,8 @@
             color: var(--primary);
             text-shadow: 0 0 15px rgba(0, 242, 255, 0.7);
             letter-spacing: 2px;
+            text-align: center;
+            padding: 0 20px; /* เผื่อขอบจอเล็ก */
         }
 
         /* ===== CYBER TOAST (ภาษาไทย) ===== */
@@ -753,6 +802,10 @@
                 from { top: -100px; }
                 to { top: 60px; }
             }
+
+            .scan-text {
+                font-size: 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -768,6 +821,10 @@
                 font-size: 12px;
                 padding: 8px 20px;
             }
+
+            .scan-text {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -777,10 +834,20 @@
     <div class="stars"></div>
     <div class="scan-line"></div>
 
-    <!-- สแกนโอเวอร์เลย์ -->
+    <!-- 🔥 สแกนโอเวอร์เลย์ (แก้ไขให้เต็มจอ) -->
     <div class="scan-overlay" id="scanOverlay">
         <div class="scan-animation"></div>
         <div class="scan-text">AEGIS AI กำลังตรวจสอบความปลอดภัย...</div>
+    </div>
+
+    <!-- Cyber Toast -->
+    <div id="cyberAlert"></div>
+
+    <!-- News Ticker -->
+    <div class="news-ticker">
+        <div class="ticker-content">
+            ★ AEGIS NEX LOGIN PORTAL ★ เข้าสู่ระบบด้วยอีเมลหรือชื่อผู้ใช้งาน ★ ลืมรหัสผ่าน? กดที่ลิงก์ด้านล่าง ★ ปลอดภัย 100% ด้วย AEGIS AI ★ รองรับทุกเครือข่ายในประเทศไทย ★
+        </div>
     </div>
 
     <div class="app-container">
@@ -794,7 +861,7 @@
 
         <!-- Hero Section Login -->
         <section class="hero-section">
-            <div class="hero-badge"><i class="fa-solid fa-terminal"></i>เข้าสู่ระบบ · AEGIS AI </div>
+            <div class="hero-badge"><i class="fa-solid fa-terminal"></i> เข้าสู่ระบบ · AEGIS AI</div>
             
             <div class="glass-box">
                 <div class="logo-area">
@@ -802,7 +869,7 @@
                     <p>เข้าสู่ระบบเครือข่ายความปลอดภัยสูงสุด</p>
                 </div>
 
-                <!-- ประกาศความปลอดภัย -->
+                <!-- ประกาศความปลอดภัย (ภาษาไทย) -->
                 <div class="security-notice">
                     <h4><i class="fa-solid fa-shield-halved"></i> ประกาศความปลอดภัย</h4>
                     <p>
@@ -896,8 +963,6 @@
             const rememberCheck = document.getElementById('rememberCheck');
             const rememberMe = document.getElementById('rememberMe');
             const togglePassword = document.getElementById('togglePassword');
-            const googleBtn = document.getElementById('googleBtn');
-            const facebookBtn = document.getElementById('facebookBtn');
 
             // ---------- Cyber Toast (ภาษาไทย) ----------
             function showCyberToast(text, status = 'error') {
