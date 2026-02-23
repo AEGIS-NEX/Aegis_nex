@@ -2242,9 +2242,9 @@
                 pfImgEl.style.backgroundImage = img ? `url('${img}')` : 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
                 pName.innerHTML = name ? name.toUpperCase() : 'USER';
 
-                // ดึงข้อมูลจาก users และ trades
+                // ดึงข้อมูลจาก users_public และ trades
                 const [userResult, stats] = await Promise.all([
-                    supa.from('users').select('*').eq('id', uid).single(),
+                    supa.from('users_public').select('*').eq('id', uid).single(),
                     fetchUserStats(uid)
                 ]);
 
@@ -2287,7 +2287,7 @@
                 starsEl.innerHTML = getStarRating(rating, uid);
 
                 // อัปเดต online dot
-                const { data: userWithSeen } = await supa.from('users').select('last_seen').eq('id', uid).single();
+                const { data: userWithSeen } = await supa.from('users_public').select('last_seen').eq('id', uid).single();
                 const online = userWithSeen && isOnline(userWithSeen.last_seen);
                 const dot = document.getElementById('pfOnlineDot');
                 dot.style.background = online ? 'var(--success)' : '#666';
@@ -2486,10 +2486,26 @@
                 async function checkActiveRooms() {
                     const { data, error } = await supa
                         .from('trades')
-                        .select('room_id')
+                        .select('room_id, mode, buyer_id, seller_id, updated_at')
                         .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
-                        .in('status', ['waiting_payment', 'payment_done', 'shipped']);
-                    return !error && data && data.length > 0;
+                        .in('status', ['waiting_payment', 'payment_done', 'shipped'])
+                        .order('updated_at', { ascending: false });
+                    
+                    if (!error && data && data.length > 0) {
+                        // บันทึกห้องล่าสุด (ห้องแรกที่ได้จากการเรียง updated_at ล่าสุด)
+                        const latest = data[0];
+                        // กำหนด role โดยเปรียบเทียบกับ user.id
+                        let role = 'buyer';
+                        if (latest.seller_id === user.id) role = 'seller';
+                        
+                        localStorage.setItem('last_room', JSON.stringify({
+                            id: latest.room_id,
+                            mode: latest.mode || 'general', // fallback
+                            role: role
+                        }));
+                        return true;
+                    }
+                    return false;
                 }
 
                 async function updateBackRoomButton() {
@@ -2533,7 +2549,7 @@
         async function loadHallOfFame() {
             try {
                 const { data: users, error } = await supa
-                    .from('users')
+                    .from('users_public')
                     .select('*');
                 
                 if (error) throw error;
@@ -2769,6 +2785,15 @@
                 const baseUrl = pendingLink.split('?')[0];
                 const mode = isGameMode ? 'game' : 'general';
                 const finalUrl = `${baseUrl}?mode=${mode}&id=${roomID}&role=${role}`;
+                
+                // บันทึกห้องล่าสุดลง localStorage
+                const urlParams = new URLSearchParams(finalUrl.split('?')[1]);
+                localStorage.setItem('last_room', JSON.stringify({
+                    id: urlParams.get('id'),
+                    mode: urlParams.get('mode'),
+                    role: urlParams.get('role')
+                }));
+                
                 localStorage.setItem('last_room_url', finalUrl);
                 await Swal.fire({
                     title: 'สร้างห้องสำเร็จ!',
@@ -2788,11 +2813,9 @@
             }
         }
 
-        function backToLastRoom() {
-            const lastUrl = localStorage.getItem('last_room_url');
-            if(lastUrl) {
-                location.href = lastUrl;
-            } else {
+        async function backToLastRoom() {
+            const lastRoom = JSON.parse(localStorage.getItem('last_room') || '{}');
+            if (!lastRoom.id || !lastRoom.mode || !lastRoom.role) {
                 Swal.fire({ 
                     icon: 'info', 
                     title: 'ไม่มีห้องล่าสุด', 
@@ -2801,7 +2824,43 @@
                     color: '#fff', 
                     confirmButtonColor: '#00f2ff' 
                 });
+                return;
             }
+            
+            // ตรวจสอบว่าห้องยัง active อยู่ไหม
+            const { data: trade, error } = await supa
+                .from('trades')
+                .select('status')
+                .eq('room_id', lastRoom.id)
+                .maybeSingle();
+            
+            if (error || !trade) {
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'ไม่พบห้อง', 
+                    text: 'ห้องนี้อาจถูกลบไปแล้ว', 
+                    background: '#050b14', 
+                    color: '#fff' 
+                });
+                localStorage.removeItem('last_room');
+                return;
+            }
+            
+            if (['cancelled', 'received', 'banned'].includes(trade.status)) {
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'ห้องหมดอายุ', 
+                    text: 'การซื้อขายในห้องนี้สิ้นสุดแล้ว', 
+                    background: '#050b14', 
+                    color: '#fff' 
+                });
+                localStorage.removeItem('last_room');
+                return;
+            }
+            
+            // สร้าง URL จากข้อมูลที่บันทึกไว้
+            const url = `general_trade_hybrid.html?mode=${lastRoom.mode}&id=${lastRoom.id}&role=${lastRoom.role}`;
+            location.href = url;
         }
 
         function checkSystemStatus() {
