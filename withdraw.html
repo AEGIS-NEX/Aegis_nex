@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* CSS เหมือนเดิมทุกประการ (คงไว้) */
+        /* ===== CSS เดิมทั้งหมดคงเดิม (ไม่ได้ตัดทอน) ===== */
         :root {
             --primary: #00f2ff;
             --secondary: #bc13fe;
@@ -64,7 +64,7 @@
         }
 
         /* ------------------------------------------------
-           📢 ENHANCED NEWS TICKER
+           📢 NEWS TICKER (เพิ่ม id="tickerText")
            ------------------------------------------------ */
         .news-ticker {
             background: linear-gradient(90deg, 
@@ -102,7 +102,7 @@
         }
 
         /* ------------------------------------------------
-           🏰 ENHANCED APP CONTAINER
+           🏰 APP CONTAINER
            ------------------------------------------------ */
         .app-container {
             width: 100%; 
@@ -166,7 +166,7 @@
         }
 
         /* ------------------------------------------------
-           👤 DASHBOARD HEADER
+           👤 HEADER
            ------------------------------------------------ */
         .dash-header {
             padding: 20px 20px 15px; 
@@ -220,7 +220,110 @@
         }
 
         /* ------------------------------------------------
-           🧠 AI SECTION - อัพเกรดให้ดูเป็นระบบ AI จริงจัง
+           🎵 MINI JUKEBOX (เพิ่มจาก Dashboard)
+           ------------------------------------------------ */
+        .mini-juke-container {
+            width: calc(100% - 40px);
+            max-width: 560px;
+            margin: 10px auto 10px auto;
+            background: rgba(10, 15, 25, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+        }
+
+        .mini-juke-container:hover {
+            background: rgba(10, 15, 25, 0.95);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .juke-disk {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #000;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .juke-disk.spinning {
+            animation: spinDisk 4s linear infinite;
+        }
+
+        @keyframes spinDisk {
+            100% { transform: rotate(360deg); }
+        }
+
+        .juke-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .juke-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .juke-credit {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            height: 14px;
+        }
+
+        .juke-credit span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .juke-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .juke-btn {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+
+        /* ------------------------------------------------
+           🧠 AI SECTION (id="aiMsg" มีอยู่แล้ว)
            ------------------------------------------------ */
         .ai-section { 
             margin: 15px 20px; 
@@ -272,7 +375,7 @@
         }
 
         /* ------------------------------------------------
-           💰 WITHDRAW BALANCE CARD (เพิ่มข้อความเงื่อนไข)
+           💰 WITHDRAW BALANCE CARD
            ------------------------------------------------ */
         .balance-card {
             margin: 15px 20px; 
@@ -316,7 +419,6 @@
             -webkit-text-fill-color: var(--primary);
         }
         
-        /* ข้อความเงื่อนไขเพิ่มเติม */
         .withdraw-condition {
             font-size: 10px;
             color: var(--warning);
@@ -343,10 +445,9 @@
             letter-spacing: 1px;
         }
         
-        /* 🔥 ปรับเป็น 2 คอลัมน์ และให้การ์ดเป็นสี่เหลี่ยมจัตุรัส */
         .bank-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);   /* เปลี่ยนจาก 3 เป็น 2 คอลัมน์ */
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
         
@@ -354,7 +455,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 12px 5px;                        /* ปรับ padding เล็กน้อย */
+            padding: 12px 5px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -363,7 +464,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            aspect-ratio: 1 / 1;                      /* ทำให้เป็นสี่เหลี่ยมจัตุรัส */
+            aspect-ratio: 1 / 1;
             width: 100%;
         }
         
@@ -453,7 +554,7 @@
         }
 
         /* ------------------------------------------------
-           🚀 WITHDRAW BUTTON
+           🚀 ACTION BUTTONS
            ------------------------------------------------ */
         .action-buttons {
             margin: 0 20px 25px;
@@ -518,7 +619,7 @@
         }
 
         /* ------------------------------------------------
-           📱 BOTTOM NAVIGATION (เพิ่มปุ่มตลาด)
+           📱 BOTTOM NAVIGATION
            ------------------------------------------------ */
         .bottom-nav {
             position: fixed;
@@ -691,7 +792,6 @@
                 box-shadow: none;
             }
             
-            /* bank-grid ยังคงเป็น 2 คอลัมน์ตามค่าเริ่มต้น */
             .balance-amount {
                 font-size: 32px;
             }
@@ -712,7 +812,6 @@
         }
         
         @media (max-width: 480px) {
-            /* ลบการเปลี่ยนเป็น 2 คอลัมน์ซ้ำซ้อน เพราะค่าเริ่มต้นเป็น 2 อยู่แล้ว */
             .dash-header {
                 padding: 15px 15px 12px;
             }
@@ -722,13 +821,11 @@
             }
         }
 
-        /* เพิ่ม smooth transition สำหรับการคลิก */
         .bank-card:active, .withdraw-btn:active, .cancel-btn:active, .icon-btn:active {
             transform: scale(0.97);
             transition: transform 0.1s ease;
         }
         
-        /* เพิ่ม performance optimization */
         .bank-card, .withdraw-btn, .modal-box {
             will-change: transform;
             backface-visibility: hidden;
@@ -745,9 +842,9 @@
 
     <div class="app-container">
         
-        <!-- News Ticker -->
-        <div class="news-ticker">
-            <div class="ticker-content">
+        <!-- News Ticker (เพิ่ม id="tickerText" และปรับข้อความเริ่มต้น) -->
+        <div class="news-ticker" id="topTicker">
+            <div class="ticker-content" id="tickerText">
                 💰 [Withdraw] ระบบถอนเงิน AEGIS NEX พร้อมใช้งาน | ⚠️ [Security] ระบบเข้ารหัส AES-256 เปิดใช้งาน | 🚀 [Speed] ถอนเงินรวดเร็วภายใน 1-5 นาที
             </div>
         </div>
@@ -756,7 +853,7 @@
         <div class="dash-header">
             <div class="header-title">
                 <i class="fas fa-chevron-left" onclick="location.href='dashboard.html'" style="cursor:pointer"></i>
-                <span>WITHDRAW</span>
+                <span>ถอนเงิน</span>   <!-- เปลี่ยนจาก WITHDRAW เป็น ถอนเงิน -->
             </div>
             <div class="header-actions">
                 <div class="icon-btn" onclick="showHelp()">
@@ -768,7 +865,27 @@
             </div>
         </div>
 
-        <!-- AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <!-- 🎵 Mini Jukebox (เพิ่มจาก Dashboard) วางไว้เหนือ AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <div class="mini-juke-container" id="miniJukebox">
+            <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+                <i class="fas fa-play" id="jukeIcon"></i>
+            </div>
+            <div class="juke-controls">
+                <div class="juke-title" id="jukeTitle">NCS Music</div>
+                <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+                <div class="juke-btns">
+                    <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                    <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                    <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+                </div>
+            </div>
+        </div>
+        <audio id="globalAudioPlayer" preload="auto"></audio>
+        <!-- ███████████████████████████████████████████████████████ -->
+
+        <!-- AI Section (id="aiMsg" มีอยู่แล้ว) -->
         <div class="ai-section">
             <div class="ai-face">
                 <i class="fas fa-robot"></i>
@@ -778,14 +895,14 @@
             </div>
         </div>
 
-        <!-- Balance Card (เพิ่มข้อความเงื่อนไข) -->
+        <!-- Balance Card -->
         <div class="balance-card">
             <div class="balance-label">ยอดเงินที่ถอนได้</div>
             <div class="balance-amount" id="balanceAmount">0.00 <span>AGS</span></div>
             <div class="withdraw-condition">* ต้องมีดีลสำเร็จอย่างน้อย 1 ครั้งก่อนถอน</div>
         </div>
 
-        <!-- Bank Selection (2 คอลัมน์) -->
+        <!-- Bank Selection -->
         <div class="bank-section">
             <div class="section-title">
                 <i class="fas fa-university"></i> เลือกธนาคารปลายทาง
@@ -823,13 +940,12 @@
             </button>
         </div>
 
-        <!-- Bottom Navigation (เพิ่มปุ่มตลาดระหว่างหน้าหลักกับเติมเงิน) -->
+        <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <a href="dashboard.html" class="nav-link">
                 <i class="fas fa-home"></i>
                 <span>หน้าหลัก</span>
             </a>
-            <!-- แก้ไขปุ่มตลาดให้เรียก modal แทนการไปหน้า market.html -->
             <a href="javascript:void(0)" class="nav-link" onclick="showComingSoon()">
                 <i class="fas fa-store"></i>
                 <span>ตลาด</span>
@@ -878,7 +994,7 @@
         </div>
     </div>
 
-    <!-- Help Modal (เพิ่มเงื่อนไข) -->
+    <!-- Help Modal -->
     <div class="modal-overlay" id="helpModal">
         <div class="modal-box">
             <div class="modal-title"><i class="fas fa-question-circle"></i> คำแนะนำการถอนเงิน</div>
@@ -900,7 +1016,7 @@
         </div>
     </div>
 
-    <!-- Coming Soon Modal (เพิ่มใหม่) -->
+    <!-- Coming Soon Modal -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal-box">
             <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
@@ -913,12 +1029,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // 🔥 AEGIS CONFIG - ใช้ Supabase Project ใหม่
+        // 🔥 AEGIS CONFIG
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ========== เพิ่มฟังก์ชัน hashPIN สำหรับเข้ารหัส PIN ==========
+        // ========== ฟังก์ชัน hashPIN ==========
         async function hashPIN(pin) {
             const encoder = new TextEncoder();
             const data = encoder.encode(pin);
@@ -926,7 +1042,6 @@
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        // ============================================================
 
         // ข้อมูลธนาคาร
         const banks = [
@@ -954,32 +1069,26 @@
         // สร้างอนุภาคพื้นหลัง
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            particlesContainer.innerHTML = '';
             const particleCount = 30;
-            
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
                 const size = Math.random() * 4 + 1;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                
                 particle.style.left = `${Math.random() * 100}vw`;
                 particle.style.top = `${Math.random() * 100}vh`;
-                
                 const colors = ['#00f2ff', '#bc13fe', '#ff0080'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.background = color;
-                
                 const duration = Math.random() * 30 + 20;
                 const delay = Math.random() * 5;
                 particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
-                
                 particlesContainer.appendChild(particle);
             }
         }
-
-        // เริ่มต้นอนุภาค
         createParticles();
 
         // 🔥 INITIALIZE AUTHENTICATION
@@ -1009,12 +1118,12 @@
             }
         }
 
-        // 🔥 LOAD USER DATA (11.1: เพิ่ม pin ใน select)
+        // 🔥 LOAD USER DATA
         async function loadUserData() {
             try {
                 const { data: userData, error } = await supa
                     .from('users')
-                    .select('balance, pin, pin_attempts')   // ✅ เพิ่ม pin
+                    .select('balance, pin, pin_attempts')
                     .eq('id', currentUserId)
                     .single();
 
@@ -1024,12 +1133,10 @@
                     userBalance = userData.balance || 0;
                     pinAttempts = userData.pin_attempts || 0;
                     
-                    // Update UI
                     document.getElementById('balanceAmount').innerHTML = 
                         userBalance.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + 
                         ' <span>AGS</span>';
                     
-                    // Disable withdraw if too many attempts
                     if (pinAttempts >= MAX_PIN_ATTEMPTS) {
                         document.getElementById('withdrawBtn').disabled = true;
                         document.getElementById('withdrawBtn').innerHTML = 
@@ -1062,7 +1169,6 @@
                 bankGrid.appendChild(bankCard);
             });
             
-            // Auto-select first bank
             setTimeout(() => {
                 const firstBank = document.querySelector('.bank-card');
                 if (firstBank && !selectedBank) {
@@ -1073,16 +1179,11 @@
 
         // 🔥 SELECT BANK
         function selectBank(bankId, element) {
-            // Remove active class from all banks
             document.querySelectorAll('.bank-card').forEach(card => {
                 card.classList.remove('active');
             });
-            
-            // Add active class to selected bank
             element.classList.add('active');
             selectedBank = bankId;
-            
-            // Update AI message
             updateAIMessage(`เลือกธนาคาร ${bankId} สำหรับการถอนเงิน`);
         }
 
@@ -1092,7 +1193,7 @@
             aiMsg.innerHTML = `<b>AEGIS AI:</b> "${message}"`;
         }
 
-        // ========== ฟังก์ชันตรวจสอบจำนวนดีลที่สำเร็จ (เพิ่มใหม่) ==========
+        // ========== ฟังก์ชันตรวจสอบจำนวนดีลที่สำเร็จ ==========
         async function checkUserHasCompletedTrade() {
             try {
                 const { count, error } = await supa
@@ -1102,14 +1203,14 @@
                     .eq('status', 'received');
                 
                 if (error) throw error;
-                return count > 0;  // มีดีลสำเร็จอย่างน้อย 1 ครั้ง
+                return count > 0;
             } catch (error) {
                 console.error('Error checking completed trades:', error);
-                return false;  // กรณี error ให้ถือว่าไม่มีดีล (เพื่อความปลอดภัย)
+                return false;
             }
         }
 
-        // 🔥 PROCESS WITHDRAWAL (ปรับปรุง: ปิดการตรวจสอบ IP ซ้ำชั่วคราว)
+        // 🔥 PROCESS WITHDRAWAL
         async function processWithdrawal() {
             const amountInput = document.getElementById('amountInput');
             const accountInput = document.getElementById('accountInput');
@@ -1120,7 +1221,6 @@
             const account = accountInput.value.trim();
             const pin = pinInput.value;
             
-            // Validation
             if (!selectedBank) {
                 showError('กรุณาเลือกธนาคารปลายทาง', 'เลือกรายการธนาคารจากเมนูด้านบน');
                 return;
@@ -1151,36 +1251,19 @@
                 return;
             }
             
-            // Disable button and show processing
             withdrawBtn.disabled = true;
             withdrawBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังประมวลผล...';
             document.getElementById('processingMessage').textContent = 'ระบบกำลังตรวจสอบข้อมูลความปลอดภัย...';
             document.getElementById('processingModal').style.display = 'flex';
             
             try {
-                // 🔥 ปิดการตรวจสอบ IP ซ้ำชั่วคราว (comment ไว้)
-                /*
-                const { data: ipCheck, error: ipError } = await supa.functions.invoke('super-processor', {
-                    body: { userId: currentUserId }
-                });
-
-                if (ipError) {
-                    console.error('IP check error:', ipError);
-                    throw new Error('ไม่สามารถตรวจสอบความปลอดภัยได้ในขณะนี้');
-                }
-
-                if (!ipCheck.allowed) {
-                    throw { message: ipCheck.message, code: 'IP_DUPLICATE' };
-                }
-                */
-
-                // ✅ ตรวจสอบว่าผู้ใช้มีดีลสำเร็จอย่างน้อย 1 ครั้งหรือไม่
+                // ตรวจสอบดีลสำเร็จ
                 const hasCompletedTrade = await checkUserHasCompletedTrade();
                 if (!hasCompletedTrade) {
                     throw { message: 'คุณต้องทำการเทรดสำเร็จอย่างน้อย 1 ครั้งก่อนจึงจะสามารถถอนเงินได้', code: 'NO_TRADE' };
                 }
 
-                // ✅ ตรวจสอบ PIN
+                // ตรวจสอบ PIN
                 const { data: userData, error: userError } = await supa
                     .from('users')
                     .select('pin, pin_attempts')
@@ -1192,7 +1275,6 @@
                 const hashedPin = await hashPIN(pin);
 
                 if (hashedPin !== userData.pin) {
-                    // PIN ผิด
                     const newAttempts = (userData.pin_attempts || 0) + 1;
                     await supa
                         .from('users')
@@ -1212,15 +1294,13 @@
                     return;
                 }
 
-                // Reset pin attempts on success
+                // Reset pin attempts
                 await supa
                     .from('users')
                     .update({ pin_attempts: 0 })
                     .eq('id', currentUserId);
 
-                // =============================================================
-                // หักเงินทันที และบันทึก transaction เป็น pending
-                // =============================================================
+                // หักเงิน
                 const newBalance = userBalance - amount;
                 const { error: balanceError } = await supa
                     .from('users')
@@ -1229,7 +1309,7 @@
 
                 if (balanceError) throw balanceError;
 
-                // Record withdrawal transaction with status 'pending'
+                // บันทึกธุรกรรม
                 const { error: transError } = await supa
                     .from('transactions')
                     .insert({
@@ -1238,22 +1318,19 @@
                         amount: amount,
                         bank: selectedBank,
                         account: account,
-                        status: 'pending',          // เปลี่ยนจาก 'completed' เป็น 'pending'
+                        status: 'pending',
                         reference: 'WDR-' + Date.now(),
                         created_at: new Date().toISOString()
                     });
 
                 if (transError) throw transError;
 
-                // ปิด modal processing
                 document.getElementById('processingModal').style.display = 'none';
 
-                // แสดงข้อความรออนุมัติ
                 document.getElementById('successMessage').textContent = 
                     `ส่งคำขอถอนเงินเรียบร้อย กรุณารอ Admin ตรวจสอบและอนุมัติ`;
                 document.getElementById('successModal').style.display = 'flex';
 
-                // Reset form
                 amountInput.value = '';
                 accountInput.value = '';
                 pinInput.value = '';
@@ -1262,7 +1339,6 @@
                 });
                 selectedBank = '';
 
-                // Update balance display
                 userBalance = newBalance;
                 document.getElementById('balanceAmount').innerHTML = 
                     newBalance.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + 
@@ -1270,12 +1346,11 @@
 
             } catch (err) {
                 console.error('Withdrawal error:', err);
-                // คืนสถานะปุ่มและปิด modal
                 withdrawBtn.disabled = false;
                 withdrawBtn.innerHTML = '<i class="fas fa-arrow-circle-down"></i> ยืนยันการถอนเงิน';
                 document.getElementById('processingModal').style.display = 'none';
 
-                if (err.code === 'IP_DUPLICATE' || err.code === 'NO_TRADE') {
+                if (err.code === 'NO_TRADE') {
                     showError('ไม่สามารถดำเนินการได้', err.message);
                 } else {
                     showError('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้งในภายหลัง');
@@ -1290,7 +1365,6 @@
             document.getElementById('errorModal').style.display = 'flex';
         }
 
-        // 🔥 CLOSE MODALS
         function closeProcessingModal() {
             document.getElementById('processingModal').style.display = 'none';
         }
@@ -1312,7 +1386,6 @@
             document.getElementById('helpModal').style.display = 'none';
         }
 
-        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้" (เพิ่มใหม่)
         function showComingSoon() {
             document.getElementById('comingSoonModal').style.display = 'flex';
         }
@@ -1321,12 +1394,141 @@
             document.getElementById('comingSoonModal').style.display = 'none';
         }
 
+        // ========== ฟังก์ชัน checkSystemStatus (เพิ่มตาม Dashboard) ==========
+        function checkSystemStatus() {
+            const ticker = document.getElementById('topTicker');
+            const tickerText = document.getElementById('tickerText');
+            const aiMsg = document.getElementById('aiMsg');
+            const hour = new Date().getHours();
+            
+            if (hour >= 3 && hour < 10) {
+                // ช่วงพัก 03:00 - 10:00 น.
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,215,0,0.15) 10%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
+                tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) การถอนเงินอาจล่าช้ากว่าปกติเล็กน้อย';
+                tickerText.style.color = 'var(--warning)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
+                }
+            } else {
+                // ช่วงเวลาปกติ
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
+                tickerText.innerHTML = '💰 [Withdraw] ระบบถอนเงิน AEGIS NEX พร้อมใช้งาน | ⚠️ [Security] ระบบเข้ารหัส AES-256 เปิดใช้งาน | 🚀 [Speed] ถอนเงินรวดเร็วภายใน 1-5 นาที';
+                tickerText.style.color = 'var(--primary)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | ระบบถอนเงิน: พร้อมประมวลผล | สถานะเซิร์ฟเวอร์: Stable"`;
+                }
+            }
+        }
+
+        // ==================== JUKEBOX (ต่อเนื่องจาก dashboard) ====================
+        const globalPlaylist = [
+            { 
+                title: "Cartoon - On & On", 
+                file: "./music/on_and_on.mp3", 
+                credit: "🎵 Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds" 
+            },
+            { 
+                title: "Warriyo - Mortals", 
+                file: "./music/mortals.mp3", 
+                credit: "🎵 Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds" 
+            }
+        ];
+
+        const audioPlayer = document.getElementById('globalAudioPlayer');
+        const jukeIcon = document.getElementById('jukeIcon');
+        const jukePlayPause = document.getElementById('jukePlayPause');
+        const jukeDisk = document.getElementById('jukeToggleBtn');
+        const jukeTitle = document.getElementById('jukeTitle');
+        const jukeCredit = document.getElementById('jukeCredit');
+
+        let currentSongIdx = parseInt(localStorage.getItem('aegis_music_idx')) || 0;
+        let savedTime = parseFloat(localStorage.getItem('aegis_music_time')) || 0;
+        let isMusicPlaying = localStorage.getItem('aegis_music_playing') === 'true';
+
+        function loadGlobalSong(index, setTime = 0) {
+            if (index >= globalPlaylist.length) index = 0;
+            if (index < 0) index = globalPlaylist.length - 1;
+            
+            currentSongIdx = index;
+            audioPlayer.src = globalPlaylist[currentSongIdx].file;
+            audioPlayer.currentTime = setTime;
+            
+            jukeTitle.innerText = globalPlaylist[currentSongIdx].title;
+            jukeCredit.innerText = globalPlaylist[currentSongIdx].credit;
+            localStorage.setItem('aegis_music_idx', currentSongIdx);
+        }
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                jukeIcon.className = 'fas fa-music';
+                jukePlayPause.className = 'fas fa-pause juke-btn';
+                jukeDisk.classList.add('spinning');
+            } else {
+                jukeIcon.className = 'fas fa-play';
+                jukePlayPause.className = 'fas fa-play juke-btn';
+                jukeDisk.classList.remove('spinning');
+            }
+        }
+
+        window.toggleGlobalMusic = function(event) {
+            event.stopPropagation();
+            if (audioPlayer.paused) {
+                audioPlayer.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI();
+                    localStorage.setItem('aegis_music_playing', 'true');
+                }).catch(e => console.log('Autoplay blocked by browser'));
+            } else {
+                audioPlayer.pause();
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            }
+        };
+
+        window.nextSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx + 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        window.prevSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx - 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        audioPlayer.addEventListener('ended', () => {
+            window.nextSong(new Event('ended'));
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if(!audioPlayer.paused) {
+                localStorage.setItem('aegis_music_time', audioPlayer.currentTime);
+            }
+        });
+
+        loadGlobalSong(currentSongIdx, savedTime);
+        updateMusicUI();
+
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(e => {
+                console.log('Browser blocked auto-resume, user needs to interact first.');
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            });
+        }
+
         // 🔥 INITIALIZE ON LOAD
         document.addEventListener('DOMContentLoaded', function() {
             initAuth();
             initBanks();
+            checkSystemStatus(); // ตรวจสอบสถานะระบบตามเวลาจริง
+            setInterval(checkSystemStatus, 3600000); // ตรวจสอบทุก 1 ชั่วโมง
             
-            // Random AI messages
             const aiMessages = [
                 "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | ระบบถอนเงิน: พร้อมประมวลผล",
                 "การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
@@ -1335,13 +1537,15 @@
                 "ตรวจสอบเลขบัญชีให้ดีก่อนกดยืนยันนะครับ | ความปลอดภัยคือสิ่งสำคัญที่สุด"
             ];
             
-            // Update AI message randomly
             setInterval(() => {
-                const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-                updateAIMessage(randomMsg);
+                // อัปเดต AI message เฉพาะเมื่อไม่อยู่ในช่วงพัก เพราะถ้าช่วงพักข้อความจะถูก set ไว้แล้ว
+                const hour = new Date().getHours();
+                if (hour < 3 || hour >= 10) {
+                    const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+                    updateAIMessage(randomMsg);
+                }
             }, 15000);
             
-            // Set up event listeners
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     const modals = document.querySelectorAll('.modal-overlay[style*="flex"]');
