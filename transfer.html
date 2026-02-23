@@ -1051,9 +1051,9 @@
             <div class="transfer-form">
                 <!-- Recipient -->
                 <div class="form-group">
-                    <label class="form-label">ผู้รับเงิน (Username หรือ Email)</label>
-                    <input type="text" id="recipientInput" class="form-input" placeholder="กรอก username หรือ email ของผู้รับ">
-                    <div style="font-size: 10px; color: #888; margin-top: 5px;">สามารถค้นหาผู้รับด้วย username หรือ email</div>
+                    <label class="form-label">ผู้รับเงิน (Username)</label>
+                    <input type="text" id="recipientInput" class="form-input" placeholder="กรอก username ผู้รับ">
+                    <div style="font-size: 10px; color: #888; margin-top: 5px;">สามารถค้นหาผู้รับด้วย username เท่านั้น</div>
                 </div>
                 
                 <!-- Amount -->
@@ -1218,7 +1218,7 @@
                 </ul>
                 <p><strong>ขั้นตอนการโอนเงิน:</strong></p>
                 <ol style="text-align: left; margin: 10px 0; padding-left: 20px;">
-                    <li>กรอก username หรือ email ของผู้รับ</li>
+                    <li>กรอก username ของผู้รับ (ใช้ username เท่านั้น)</li>
                     <li>กรอกจำนวนเงิน AGS ที่ต้องการโอน</li>
                     <li>กรอกรหัส PIN 6 หลักเพื่อยืนยันตัวตน</li>
                     <li>ตรวจสอบข้อมูลในหน้าต่างยืนยัน</li>
@@ -1226,7 +1226,7 @@
                 </ol>
                 <p><strong>คำแนะนำด้านความปลอดภัย:</strong></p>
                 <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
-                    <li>ตรวจสอบ username หรือ email ของผู้รับให้ถูกต้อง</li>
+                    <li>ตรวจสอบ username ของผู้รับให้ถูกต้อง</li>
                     <li>อย่าโอนเงินให้กับบุคคลที่ไม่รู้จัก</li>
                     <li>บันทึกรหัสอ้างอิงไว้สำหรับติดตามการโอน</li>
                     <li>หากพบการโอนเงินโดยมิชอบ ให้ติดต่อแอดมินทันที</li>
@@ -1461,20 +1461,20 @@
             
             // Check recipient
             if (!recipient) {
-                return { valid: false, message: 'กรุณากรอก username หรือ email ของผู้รับ' };
+                return { valid: false, message: 'กรุณากรอก username ของผู้รับ' };
             }
             
-            // Check if recipient is not yourself
+            // Check if recipient is not yourself (ใช้ users_public และ username เท่านั้น)
             try {
                 const { data: userData, error } = await supa
-                    .from('users')
-                    .select('id, username, display_name, email')
-                    .or(`username.eq.${recipient},email.eq.${recipient}`)
+                    .from('users_public')
+                    .select('id, username, display_name')
+                    .eq('username', recipient)
                     .neq('id', currentUserId)
                     .single();
                 
                 if (error || !userData) {
-                    return { valid: false, message: 'ไม่พบผู้รับ กรุณาตรวจสอบ username หรือ email อีกครั้ง' };
+                    return { valid: false, message: 'ไม่พบผู้รับ กรุณาตรวจสอบ username อีกครั้ง' };
                 }
                 
                 recipientUser = userData;
@@ -1538,8 +1538,7 @@
             const referenceId = 'TRF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
             const recipientDisplay = validation.recipient.display_name || 
-                                     validation.recipient.username || 
-                                     validation.recipient.email;
+                                     validation.recipient.username;
             
             document.getElementById('confirmRecipient').textContent = recipientDisplay;
             document.getElementById('confirmAmount').textContent = 
@@ -1601,8 +1600,7 @@
                 document.getElementById('processingModal').style.display = 'none';
                 
                 const recipientDisplay = recipientUser.display_name || 
-                                         recipientUser.username || 
-                                         recipientUser.email;
+                                         recipientUser.username;
                 
                 document.getElementById('successMessage').textContent = 
                     `โอนเงิน ${amount.toLocaleString('th-TH')} AGS ให้ ${recipientDisplay} สำเร็จ! รหัสอ้างอิง: ${referenceId}`;
@@ -1846,7 +1844,7 @@
                 "ระบบโอนเงิน P2P: พร้อมใช้งาน | ตรวจสอบยอดเงินและวงเงินโอนรายวัน",
                 "คุณสามารถโอนเงินให้เพื่อนหรือสมาชิกคนอื่นได้ทันทีผ่านระบบนี้",
                 "ระบบเข้ารหัส: AES-256 เปิดใช้งาน | การตรวจสอบความปลอดภัย: ระดับสูง",
-                "ตรวจสอบ username หรือ email ของผู้รับให้ดีก่อนกดยืนยันการโอน",
+                "ตรวจสอบ username ของผู้รับให้ดีก่อนกดยืนยันการโอน",
                 `วงเงินโอนรายวัน: ${userKYC ? '50,000 AGS (KYC Verified)' : '5,000 AGS (Unverified)'}`
             ];
             
