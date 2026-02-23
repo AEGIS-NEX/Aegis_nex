@@ -327,15 +327,16 @@
             100% { box-shadow: 0 0 14px var(--primary), 0 0 21px rgba(0, 242, 255, 0.5), 0 0 28px rgba(0, 242, 255, 0.2); }
         }
 
+        /* ===== CONTROL PANEL ปรับเป็น Grid 2 คอลัมน์ ===== */
         .control-panel {
-            padding: 8px 15px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
+            padding: 8px 15px;
             background: rgba(5, 11, 20, 0.8);
             border-bottom: 1px solid rgba(0, 242, 255, 0.1);
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0; /* ห้ามหด */
+            flex-shrink: 0;
         }
         
         .control-btn {
@@ -407,6 +408,39 @@
             box-shadow: 0 2px 6px rgba(255, 0, 85, 0.2);
         }
         
+        /* ===== ปุ่มตรวจสอบพัสดุ (ปุ่มที่ 5) กินพื้นที่ 2 คอลัมน์ ===== */
+        .btn-track {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #4a90e2, #2c3e50);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(74, 144, 226, 0.3);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 4px;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-track:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #666, #444);
+            color: #aaa;
+            box-shadow: none;
+        }
+        .btn-track:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.5);
+        }
+        
         .control-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -423,17 +457,17 @@
         }
 
         .chat-area {
-            flex: 1; /* กินพื้นที่ที่เหลือทั้งหมด */
+            flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* ป้องกันล้น */
+            overflow: hidden;
             background: rgba(5, 11, 20, 0.6);
         }
         
         .messages-container {
-            flex: 1; /* ขยายเต็มพื้นที่ว่างใน chat-area */
+            flex: 1;
             padding: 15px;
-            overflow-y: auto; /* ให้เลื่อนข้อความได้ */
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -617,7 +651,7 @@
             align-items: center;
             gap: 8px;
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0; /* ห้ามหด */
+            flex-shrink: 0;
         }
         
         .media-buttons {
@@ -1994,6 +2028,10 @@
             .control-btn i {
                 font-size: 14px;
             }
+            .btn-track {
+                font-size: 11px;
+                padding: 8px 4px;
+            }
             .progress-status {
                 padding: 8px 12px;
             }
@@ -2072,16 +2110,11 @@
         
         @media (max-width: 480px) {
             .control-panel {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
+                gap: 6px;
             }
-            .control-btn {
-                min-height: 40px;
-                padding: 5px 3px;
-                font-size: 8px;
-            }
-            .control-btn i {
-                font-size: 12px;
+            .btn-track {
+                font-size: 10px;
+                padding: 8px 4px;
             }
             .status-steps {
                 padding: 0;
@@ -2630,7 +2663,7 @@
         </div>
     </div>
     
-    <!-- 🎮 CONTROL BUTTONS (4 ปุ่มหลัก) -->
+    <!-- 🎮 CONTROL BUTTONS (ปรับเป็น Grid 2 คอลัมน์ + ปุ่มตรวจสอบพัสดุ) -->
     <div class="control-panel">
         <button class="control-btn btn-transfer" id="btnTransfer" onclick="openTransferModal()">
             <i class="fas fa-money-bill-transfer"></i>
@@ -2642,7 +2675,6 @@
             รับของ
         </button>
         
-        <!-- ปุ่มนี้จะถูกเปลี่ยนใน JavaScript ตามโหมด -->
         <button class="control-btn btn-ship" id="btnShip" onclick="openShippingModal()" disabled>
             <i class="fas fa-shipping-fast"></i>
             ส่งของ
@@ -2651,6 +2683,12 @@
         <button class="control-btn btn-cancel" id="btnCancel" onclick="openCancelModal()">
             <i class="fas fa-ban"></i>
             ยกเลิกดีล
+        </button>
+        
+        <!-- ปุ่มที่ 5: ตรวจสอบพัสดุ (แสดงเฉพาะโหมดทั่วไปและเมื่อมีข้อมูลจัดส่ง) -->
+        <button class="control-btn btn-track" id="btnTrack" onclick="openTrackingModal()" disabled style="display: none;">
+            <i class="fas fa-search"></i>
+            ตรวจสอบพัสดุ
         </button>
     </div>
     
@@ -3374,7 +3412,52 @@
     </div>
 </div>
 
+<!-- ===== TRACKING MODAL (เพิ่มใหม่) ===== -->
+<div class="modal-overlay" id="trackingModal">
+    <div class="modal-box" style="background: rgba(10,15,30,0.98); border: 2px solid var(--primary); border-radius: 24px; padding: 25px; width: 90%; max-width: 420px;">
+        <!-- AI Message -->
+        <div style="display: flex; align-items: center; gap: 12px; background: rgba(0,242,255,0.1); padding: 12px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-robot" style="color: #000;"></i>
+            </div>
+            <div style="font-size: 12px; color: #ccc; flex: 1;">
+                <span style="color: var(--primary); font-weight: bold;">AEGIS AI:</span> 
+                คลิกปุ่มด้านล่างเพื่อติดตามพัสดุกับบริษัทขนส่งโดยตรง
+            </div>
+        </div>
+
+        <!-- รายละเอียดพัสดุ -->
+        <div id="trackingDetails" style="background: rgba(0,0,0,0.3); border-radius: 16px; padding: 20px; margin-bottom: 20px;"></div>
+
+        <!-- ปุ่มติดตามพัสดุ -->
+        <button class="control-btn btn-track" id="trackingActionBtn" onclick="goToTrackingPage()" style="width: 100%; padding: 14px; font-size: 14px; margin-bottom: 12px;">
+            <i class="fas fa-external-link-alt"></i> <span id="trackingBtnText">ติดตามพัสดุ</span>
+        </button>
+
+        <!-- หมายเหตุ -->
+        <div style="background: rgba(255,215,0,0.1); border-left: 3px solid var(--warning); padding: 12px; border-radius: 8px; font-size: 11px; color: #ffd966; margin-bottom: 20px;">
+            <i class="fas fa-info-circle"></i> 
+            ข้อมูลจากระบบขนส่งอาจใช้เวลาอัปเดต หากยังไม่พบกรุณาลองใหม่อีกครั้งใน 1-2 ชั่วโมง
+        </div>
+
+        <!-- ปุ่มปิด -->
+        <button class="control-btn btn-cancel" onclick="closeTrackingModal()" style="width: 100%; padding: 12px;">
+            <i class="fas fa-times"></i> ปิด
+        </button>
+    </div>
+</div>
+
 <!-- ===== ดีบักถูกลบออกทั้งหมด ===== -->
+
+<!-- เพิ่ม typing indicator -->
+<div class="typing-indicator" id="typingIndicator" style="display: none;">
+    <div class="typing-dots">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+    </div>
+    <span class="typing-text">กำลังพิมพ์...</span>
+</div>
 
 <script>
     // ============================================
@@ -3384,13 +3467,10 @@
     const roomId = urlParams.get('id') || 'TR-GEN-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     const mode = urlParams.get('mode') || 'general';
     const role = urlParams.get('role') || 'buyer';
-    const adminAccess = urlParams.get('adminAccess');
 
-    const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
-    const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000";
     const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop';
 
-    console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role, 'AdminAccess:', adminAccess);
+    console.log('🎮 Mode:', mode, 'Room:', roomId, 'Role:', role);
 
     // ============================================
     // 🎯 SUPABASE INITIALIZATION
@@ -3435,33 +3515,46 @@
     let feeRatesDescription = '';
     let isLoadingRoom = true;
 
+    // ตัวแปรเก็บข้อมูลพัสดุ (เพิ่มใหม่)
+    let shippingData = null;
+
+    // URL Tracking สำหรับแต่ละบริษัท (เพิ่มใหม่)
+    const TRACKING_URLS = {
+        'kerry': 'https://th.kerryexpress.com/track/?track=',
+        'flash': 'https://www.flashexpress.co.th/tracking/',
+        'jnt': 'https://www.jtexpress.co.th/track/',
+        'ninjavan': 'https://www.ninjavan.co/th-en/tracking?awb=',
+        'thai_post': 'https://track.thailandpost.co.th/?track=',
+        'best': 'https://www.17track.net/en/track?nums=',
+        'scg': 'https://www.17track.net/en/track?nums=',
+        'alpha': 'https://www.17track.net/en/track?nums=',
+        'dhl_th': 'https://www.dhl.com/th-en/home/tracking/tracking-express.html?submit=1&tracking-id=',
+        'fedex_th': 'https://www.fedex.com/fedextrack/?trknbr=',
+        'dhl_int': 'https://www.dhl.com/th-en/home/tracking/tracking-express.html?submit=1&tracking-id=',
+        'fedex_int': 'https://www.fedex.com/fedextrack/?trknbr=',
+        'ups': 'https://www.ups.com/track?tracknum=',
+        'tnt': 'https://www.tnt.com/express/th_th/site/tracking.html?search-type=con&cons=',
+        'ems_int': 'https://track.thailandpost.co.th/?track=',
+        'usps': 'https://tools.usps.com/go/TrackConfirmAction?tLabels=',
+        'china_post': 'https://www.17track.net/en/track?nums=',
+        'singpost': 'https://www.singpost.com/track-items/',
+        'yanwen': 'https://www.17track.net/en/track?nums=',
+        'sf_express': 'https://www.sf-express.com/th/th/dynamic_function/waybill/#search/list?trackingNumber='
+    };
+
+    // เพิ่มตัวแปรสำหรับ Pagination
+    let messagesPage = 0;
+    const MESSAGES_PER_PAGE = 30;
+    let hasMoreMessages = true;
+    let isLoadingMessages = false;
+
+    // Cache สำหรับ user public
+    const userCache = {};
+
     // ============================================
-    // 🏆 RANK FUNCTIONS
+    // 🏆 RANK FUNCTIONS (ไม่มี hardcoded UID)
     // ============================================
     function getRank(deals, uid) {
-        console.log('📌 getRank called with uid:', uid, 'MY_GOD_UID:', MY_GOD_UID);
-        if (String(uid).trim() === String(MY_GOD_UID).trim()) { 
-            console.log('✅ CEO detected');
-            return { 
-                name: 'CEO', 
-                html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
-                class: 'rank-CEO', 
-                color: '#ff0000', 
-                border: '#ff0000',
-                effects: true 
-            };
-        }
-        if(uid === MY_SPECIAL_UID) { 
-            console.log('✨ LEGENDARY detected');
-            return { 
-                name: 'LEGENDARY', 
-                html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
-                class: 'rank-LEGENDARY', 
-                color: '#ff00ff', 
-                border: '#ff00ff',
-                effects: true 
-            };
-        }
         const d = parseInt(deals) || 0;
         if (d > 1000) return { name: 'GOD', html: '<span class="rank-badge rb-10"><i class="fas fa-dragon"></i> GOD</span>', class: 'rank-GOD', color: '#ffffff', border: '#ffffff', effects: true };
         if (d > 600) return { name: 'IMMORTAL', html: '<span class="rank-badge rb-9"><i class="fas fa-fire"></i> IMMORTAL</span>', class: 'rank-IMMORTAL', color: '#ff1744', border: '#ff1744', effects: true };
@@ -3484,11 +3577,7 @@
         if (rankInfo.effects) {
             boxShadow = `0 0 20px ${color}`;
             animation = 'pulseGlow 2s infinite alternate';
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                boxShadow = `0 0 30px ${color}, 0 0 50px ${color}`;
-                animation = 'fireGlow 1s infinite alternate';
-            }
-            else if (['GOD','IMMORTAL','WARLORD','MASTER'].includes(rankInfo.name)) {
+            if (['GOD','IMMORTAL','WARLORD','MASTER'].includes(rankInfo.name)) {
                 boxShadow = `0 0 25px ${color}, 0 0 40px ${color}`;
                 animation = 'fireGlow 1.5s infinite alternate';
             }
@@ -3498,9 +3587,6 @@
 
     function getTextShadowStyle(rankInfo, uid) {
         const color = rankInfo.color;
-        if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-            return `0 0 15px ${color}, 0 0 30px ${color}, 0 0 45px ${color}`;
-        }
         if (rankInfo.effects) {
             return `0 0 8px ${color}, 0 0 15px ${color}`;
         }
@@ -3513,9 +3599,6 @@
             if (i <= Math.floor(rating)) stars += '<i class="fas fa-star"></i>';
             else if (i - 0.5 <= rating) stars += '<i class="fas fa-star-half-alt"></i>';
             else stars += '<i class="far fa-star"></i>';
-        }
-        if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-            return `<span class="rainbow-stars">${stars}</span> <span style="font-size:14px; color:#fff;">(${rating.toFixed(1)})</span>`;
         }
         return stars + ' <span style="font-size:14px; color:#fff;">(' + rating.toFixed(1) + ')</span>';
     }
@@ -3547,6 +3630,20 @@
     function loadGraphicsLevel() {
         const level = localStorage.getItem('graphicsLevel') || 'ultra';
         document.body.classList.add(`graphics-${level}`);
+    }
+
+    // ============================================
+    // 🔄 RETRY MECHANISM
+    // ============================================
+    async function queryWithRetry(fn, maxRetries = 3) {
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await fn();
+            } catch (err) {
+                if (i === maxRetries - 1) throw err;
+                await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+            }
+        }
     }
 
     // ============================================
@@ -3585,9 +3682,16 @@
             currentUser = session.user;
             console.log('✅ Auth user:', currentUser);
 
-            if (role === 'admin' && adminAccess === MY_GOD_UID && currentUser.id === MY_GOD_UID) {
+            // ตรวจสอบว่าเป็น admin หรือไม่
+            const { data: isAdmin, error: adminError } = await supabaseClient
+                .from('admin_users')
+                .select('user_id')
+                .eq('user_id', currentUser.id)
+                .maybeSingle();
+
+            if (isAdmin) {
                 isAdminPresent = true;
-                document.getElementById('adminControls').classList.add('active');
+                document.getElementById('adminControls')?.classList.add('active');
                 console.log('👑 Admin mode activated');
             }
             
@@ -3699,6 +3803,11 @@
             tradeStatus = tradeData.status;
             productPrice = tradeData.product_price || 0;
 
+            // โหลดข้อมูล shipping ถ้าสถานะเป็น shipped (เพิ่มใหม่)
+            if (tradeData && tradeData.status === 'shipped') {
+                await loadShippingData();
+            }
+
             if (tradeData.timer_started_at && tradeData.timer_minutes) {
                 const startedAt = new Date(tradeData.timer_started_at).getTime();
                 const now = new Date().getTime();
@@ -3726,7 +3835,7 @@
             await loadPartnerInfo();
             
             console.log('Loading messages...');
-            await loadMessages();
+            await loadMessages(false); // โหลดครั้งแรก
             
             console.log('Starting timer and realtime...');
             startTradeTimer();
@@ -3754,7 +3863,7 @@
     }
 
     // ============================================
-    // 👤 โหลดข้อมูลคู่ค้า
+    // 👤 โหลดข้อมูลคู่ค้า (ใช้ users_public)
     // ============================================
     async function loadPartnerInfo() {
         if (!tradeData || !currentUser) {
@@ -3776,11 +3885,7 @@
                 alert('ยังไม่มีคู่ค้าในห้องนี้ กรุณารอสักครู่');
             };
         } else {
-            const { data: partnerData } = await supabaseClient
-                .from('users')
-                .select('username, display_name, photo_url, rank, kyc_status')
-                .eq('id', partnerId)
-                .single();
+            const partnerData = await fetchUserPublic(partnerId);
                 
             if (partnerData) {
                 partnerName = partnerData.display_name || partnerData.username || 'คู่ค้า';
@@ -3838,39 +3943,62 @@
     }
 
     // ============================================
-    // 💬 โหลดข้อความเก่า
+    // 💬 โหลดข้อความเก่า (ใช้ users_public) พร้อม Pagination
     // ============================================
-    async function loadMessages() {
+    async function loadMessages(loadMore = false) {
+        if (isLoadingMessages) return;
+        if (!loadMore) {
+            messages = [];
+            messagesPage = 0;
+            hasMoreMessages = true;
+        }
+        if (!hasMoreMessages) return;
+
+        isLoadingMessages = true;
+        const container = document.getElementById('messagesContainer');
+        
         try {
-            console.log('กำลังโหลดข้อความสำหรับห้อง:', roomId);
+            const from = messagesPage * MESSAGES_PER_PAGE;
+            const to = from + MESSAGES_PER_PAGE - 1;
             
-            const { data, error } = await supabaseClient
-                .from('messages')
-               .select(`
-    *,
-    users:user_id (
-        username,
-        display_name,
-        photo_url
-    )
-`)
-                .eq('room_id', roomId)
-                .order('created_at', { ascending: true });
+            const { data, error } = await queryWithRetry(() => 
+                supabaseClient
+                    .from('messages')
+                    .select(`
+                        *,
+                        users_public:user_id (
+                            username,
+                            display_name,
+                            photo_url
+                        )
+                    `)
+                    .eq('room_id', roomId)
+                    .order('created_at', { ascending: false })
+                    .range(from, to)
+            );
             
-            if (error) {
-                console.error('❌ Error loading messages:', error);
-                console.error('❌ Error details (JSON):', JSON.stringify(error, null, 2));
-                addAiAlertMessage('❌ ไม่สามารถโหลดข้อความได้: ' + (error.message || error.details || 'unknown error'));
-                return;
+            if (error) throw error;
+            
+            if (data.length < MESSAGES_PER_PAGE) hasMoreMessages = false;
+            
+            const newMessages = data.reverse(); // เรียงกลับให้ chronological
+            if (loadMore) {
+                messages = [...newMessages, ...messages];
+            } else {
+                messages = newMessages;
             }
+            messagesPage++;
             
-            console.log('✅ โหลดข้อความสำเร็จ:', data?.length || 0, 'ข้อความ');
-            messages = data || [];
             renderMessages();
+            
+            // ถ้าโหลดครั้งแรกให้ scroll ลงล่างสุด
+            if (!loadMore) scrollToBottom();
+            
         } catch (err) {
-            console.error('❌ Exception loading messages:', err);
-            console.error('❌ Exception details:', JSON.stringify(err, null, 2));
-            addAiAlertMessage('❌ เกิดข้อผิดพลาด: ' + err.message);
+            console.error('loadMessages error:', err);
+            addAiAlertMessage('❌ ไม่สามารถโหลดข้อความได้');
+        } finally {
+            isLoadingMessages = false;
         }
     }
     
@@ -3888,7 +4016,7 @@
             const isMine = msg.user_id === currentUser?.id;
             const sender = isMine ? 'sent' : (msg.user_id === 'system' ? 'admin' : 'received');
             
-            const username = msg.users?.display_name || msg.users?.username || (msg.user_id === 'system' ? 'SYSTEM' : 'ผู้ใช้');
+            const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === 'system' ? 'SYSTEM' : 'ผู้ใช้');
             
             const avatarImg = document.createElement('img');
             if (sender === 'sent') {
@@ -3905,7 +4033,7 @@
                 avatarImg.src = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
                 avatarImg.onclick = null;
             } else {
-                avatarImg.src = msg.users?.photo_url || partnerAvatar || DEFAULT_AVATAR;
+                avatarImg.src = msg.users_public?.photo_url || partnerAvatar || DEFAULT_AVATAR;
                 avatarImg.onclick = openPartnerProfile;
             }
             avatarImg.className = 'message-avatar';
@@ -3967,6 +4095,23 @@
         }
     }
 
+    // ============================================
+    // 🤖 AI ตรวจจับคำต้องห้าม
+    // ============================================
+    const PROHIBITED_WORDS = [
+        'ยาเสพติด','ยาบ้า','ไอซ์','กัญชา','กระท่อม',
+        'อาวุธ','ปืน','ระเบิด','มีด',
+        'บัญชีม้า','คลิปโป๊','หนังโป๊','พนัน','คาสิโน','หวย'
+    ];
+    const SHIPPING_WORDS = ['ems','kerry','flash','j&t','ไปรษณีย์','เลขพัสดุ','tracking','พัสดุ'];
+
+    function containsProhibitedWords(text, mode = 'general') {
+        const lower = text.toLowerCase();
+        let words = PROHIBITED_WORDS;
+        if (mode === 'game') words = words.concat(SHIPPING_WORDS);
+        return words.some(w => lower.includes(w.toLowerCase()));
+    }
+
     async function sendMessage() {
         const input = document.getElementById('messageInput');
         const text = input.value.trim();
@@ -3974,6 +4119,39 @@
         if (!currentUser) {
             alert('กรุณาเข้าสู่ระบบก่อนส่งข้อความ');
             return;
+        }
+        if (tradeData.status === 'banned') {
+            addAiAlertMessage('⚠️ ห้องนี้ถูกแบน ไม่สามารถส่งข้อความได้');
+            return;
+        }
+
+        // ตรวจสอบคำต้องห้าม
+        if (containsProhibitedWords(text, mode)) {
+            let violations = parseInt(localStorage.getItem(`violations_${roomId}`) || '0') + 1;
+            localStorage.setItem(`violations_${roomId}`, violations);
+            
+            if (violations >= 5) {
+                // แบนห้อง
+                await supabaseClient
+                    .from('trades')
+                    .update({ status: 'banned' })
+                    .eq('room_id', roomId);
+                // แจ้ง Admin
+                await supabaseClient
+                    .from('support_tickets')
+                    .insert([{
+                        user_id: currentUser.id,
+                        room_id: roomId,
+                        topic: 'auto_ban',
+                        detail: 'ห้องถูกแบนอัตโนมัติเนื่องจากละเมิดคำต้องห้ามครบ 5 ครั้ง',
+                        status: 'pending'
+                    }]);
+                addAiAlertMessage('⚠️ ห้องนี้ถูกระงับเนื่องจากละเมิดกฎ กรุณารอ Admin ตรวจสอบ');
+                return;
+            } else {
+                addAiAlertMessage(`⚠️ ข้อความของคุณมีคำต้องห้าม (${violations}/5)`);
+                return; // ไม่ insert ข้อความ
+            }
         }
         
         const { error } = await supabaseClient
@@ -3984,15 +4162,20 @@
                 content: text,
                 type: 'text'
             }]);
-        
-        if (!error) {
-            input.value = '';
-            clearTyping();
-            incrementQuest('daily_chat', 1);
-        } else {
-            console.error('❌ Send message error:', error);
-            alert('ไม่สามารถส่งข้อความได้');
+
+        if (error) {
+            if (error.message.includes('ข้อความต้องห้าม')) {
+                addAiAlertMessage('⚠️ ' + error.message);
+            } else {
+                console.error('Send message error:', error);
+                addAiAlertMessage('❌ ไม่สามารถส่งข้อความได้');
+            }
+            return;
         }
+        
+        input.value = '';
+        clearTyping();
+        incrementQuest('daily_chat', 1);
     }
 
     function scrollToBottom() {
@@ -4015,46 +4198,26 @@
     };
 
     // ============================================
-    // 🔄 REALTIME SUBSCRIPTIONS
+    // 🔄 REALTIME SUBSCRIPTIONS (optimized)
     // ============================================
     function setupRealtime() {
         if (!currentUser) return;
-        supabaseClient
-            .channel(`room:${roomId}`)
+        
+        // ถ้ามี channel เก่าให้ปิดก่อน
+        if (window.roomChannel) supabaseClient.removeChannel(window.roomChannel);
+        
+        window.roomChannel = supabaseClient.channel(`room:${roomId}`, {
+            config: { broadcast: { self: true } }
+        });
+        
+        // ฟัง INSERT messages
+        window.roomChannel
             .on('postgres_changes', 
                 { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
-                payload => {
-                    const newMsg = payload.new;
-                    supabaseClient
-                        .from('users')
-                        .select('username, display_name, photo_url, kyc_status')
-                        .eq('id', newMsg.user_id)
-                        .single()
-                        .then(({ data }) => {
-                            newMsg.users = data;
-                            messages.push(newMsg);
-                            renderMessages();
-                        });
-                })
-            .subscribe();
-        
-        supabaseClient
-            .channel(`trade:${roomId}`)
+                handleNewMessage)
             .on('postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'trades', filter: `room_id=eq.${roomId}` },
-                payload => {
-                    tradeData = payload.new;
-                    tradeStatus = tradeData.status;
-                    productPrice = tradeData.product_price || 0;
-                    updateUIByStatus();
-                    if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
-                        loadRooms();
-                    }
-                })
-            .subscribe();
-        
-        supabaseClient
-            .channel('system-settings')
+                handleTradeUpdate)
             .on('postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'system_settings' },
                 payload => {
@@ -4064,17 +4227,81 @@
                 })
             .subscribe();
 
-        if (currentUser) {
-            supabaseClient
-                .channel('user-trades-changes')
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'trades', filter: `buyer_id=eq.${currentUser.id}` },
-                    () => { if (document.visibilityState === 'visible') loadRooms(); })
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'trades', filter: `seller_id=eq.${currentUser.id}` },
-                    () => { if (document.visibilityState === 'visible') loadRooms(); })
-                .subscribe();
+        // subscription สำหรับ sidebar (ถ้าจำเป็น ควรแยก channel หรือใช้ broadcast)
+        supabaseClient
+            .channel('sidebar-updates')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'trades',
+                filter: `buyer_id=eq.${currentUser.id}`
+            }, () => loadRooms())
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'trades',
+                filter: `seller_id=eq.${currentUser.id}`
+            }, () => loadRooms())
+            .subscribe();
+    }
+
+    // ฟังก์ชันจัดการ message ใหม่ (แยกออกมา)
+    async function handleNewMessage(payload) {
+        const newMsg = payload.new;
+        
+        // ถ้าเป็นข้อความของตัวเอง ใช้ profile ปัจจุบัน
+        if (newMsg.user_id === currentUser.id) {
+            newMsg.users_public = currentUser.profile;
+            messages.push(newMsg);
+            renderMessages();
+            return;
         }
+        
+        // ถ้าไม่ใช่ ใช้ cache หรือ query
+        const user = await fetchUserPublic(newMsg.user_id);
+        if (user) {
+            newMsg.users_public = user;
+            messages.push(newMsg);
+            renderMessages();
+        }
+    }
+
+    // ฟังก์ชันจัดการ trade update
+    function handleTradeUpdate(payload) {
+        tradeData = payload.new;
+        tradeStatus = tradeData.status;
+        productPrice = tradeData.product_price || 0;
+        
+        // ถ้าสถานะเป็น shipped ให้โหลด shippingData ใหม่
+        if (tradeStatus === 'shipped') {
+            loadShippingData();
+        }
+        updateUIByStatus();
+        if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
+            loadRooms();
+        }
+    }
+
+    // ฟังก์ชันโหลด shippingData (แยกออกมา)
+    async function loadShippingData() {
+        const { data, error } = await supabaseClient
+            .from('shipping')
+            .select('*')
+            .eq('trade_id', tradeData.id)
+            .maybeSingle();
+        if (!error && data) shippingData = data;
+    }
+
+    // ฟังก์ชัน fetch user แบบ cache
+    async function fetchUserPublic(userId) {
+        if (userCache[userId]) return userCache[userId];
+        const { data } = await supabaseClient
+            .from('users_public')
+            .select('username, display_name, photo_url, kyc_verified, rank, completed_deals, total_volume, success_rate, average_rating, created_at')
+            .eq('id', userId)
+            .single();
+        if (data) userCache[userId] = data;
+        return data;
     }
 
     function addAiAlertMessage(message) {
@@ -4335,17 +4562,35 @@
             confirmBtn.disabled = false;
             return;
         }
-        
+
+        // *** เพิ่มการแยกเวลา 4 วัน / 7 วัน ***
+        let shippingDays = 4; // ค่าเริ่มต้นในประเทศ
+        const internationalCarriers = [
+            'dhl_int', 'fedex_int', 'ups', 'tnt', 'ems_int',
+            'usps', 'china_post', 'singpost', 'yanwen', 'sf_express'
+        ];
+        if (internationalCarriers.includes(carrierValue)) {
+            shippingDays = 7;
+        }
+
         await supabaseClient
             .from('trades')
             .update({ 
                 status: 'shipped',
-                timer_minutes: 4*60,
+                timer_minutes: shippingDays * 60,
                 timer_started_at: new Date().toISOString()
             })
             .eq('room_id', roomId);
             
         tradeStatus = 'shipped';
+
+        // โหลดข้อมูล shipping ที่เพิ่ง insert (เพิ่มใหม่)
+        const { data: newShip } = await supabaseClient
+            .from('shipping')
+            .select('*')
+            .eq('trade_id', tradeData.id)
+            .single();
+        shippingData = newShip;
         
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
@@ -4357,7 +4602,7 @@
         document.getElementById('btnShip').disabled = true;
         document.getElementById('btnReceive').disabled = false;
         
-        extendTimer(4*60);
+        extendTimer(shippingDays * 60);
         
         showAiAlert(`📦 ผู้ขายได้ส่งสินค้าแล้ว!<br><b>บริษัท:</b> ${carrierSelect.options[carrierSelect.selectedIndex].text}<br><b>เลขพัสดุ:</b> ${trackingNumber}`, true, `https://track.example.com/${trackingNumber}`);
         addAiAlertMessage(`📦 ผู้ขายส่งสินค้าแล้ว! ${carrierSelect.options[carrierSelect.selectedIndex].text} - ${trackingNumber}`);
@@ -4465,8 +4710,13 @@
         
         addAiAlertMessage('✅ ผู้ซื้อรับสินค้าเรียบร้อยแล้ว! ธุรกรรมสำเร็จ');
         
-        // อัปเดตเควสเทรดสำเร็จ (ใช้ RPC โดยตรง)
-        await supabaseClient.rpc('increment_quest', { p_user_id: currentUser.id, p_slug: 'daily_trade', p_increment: 1 });
+        // 🌟 จินนี่: อัปเดตเควสเทรดสำเร็จด้วยระบบใหม่ V3.0
+        try {
+            const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
+            tradeQuests.forEach(slug => {
+                supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
+            });
+        } catch (qErr) { console.error('Quest update error:', qErr); }
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
@@ -4533,8 +4783,12 @@
         
         addAiAlertMessage('✅ ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว! ธุรกรรมสำเร็จ (โหมดเกม)');
         
-        // อัปเดตเควสเทรดสำเร็จ (ใช้ RPC โดยตรง)
-        await supabaseClient.rpc('increment_quest', { p_user_id: currentUser.id, p_slug: 'daily_trade', p_increment: 1 });
+        try {
+            const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
+            tradeQuests.forEach(slug => {
+                supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
+            });
+        } catch (qErr) { console.error('Quest update error:', qErr); }
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
@@ -4685,65 +4939,88 @@
     }     
     
     function updateUIByStatus() {
-        if (isLoadingRoom || !tradeData) {
-            document.getElementById('btnTransfer').disabled = true;
-            document.getElementById('btnShip').disabled = true;
-            document.getElementById('btnReceive').disabled = true;
-            document.getElementById('btnCancel').disabled = true;
-            return;
-        }
+        setTimeout(() => { // ป้องกัน race condition
+            if (isLoadingRoom || !tradeData) {
+                document.getElementById('btnTransfer').disabled = true;
+                document.getElementById('btnShip').disabled = true;
+                document.getElementById('btnReceive').disabled = true;
+                document.getElementById('btnCancel').disabled = true;
+                return;
+            }
 
-        const stepMap = {
-            'waiting_payment': 1,
-            'payment_done': 2,
-            'shipped': 3,
-            'received': 4,
-            'cancelled': 1,
-            'disputed': 1
-        };
-        const activeStep = stepMap[tradeStatus] || 1;
-        
-        const progressSteps = document.querySelectorAll('.status-step');
-        progressSteps.forEach((step, idx) => {
-            step.classList.remove('active', 'completed');
-            if (idx + 1 < activeStep) step.classList.add('completed');
-            else if (idx + 1 === activeStep) step.classList.add('active');
-        });
-        
-        document.getElementById('statusProgress').style.width = ((activeStep - 1) * 25) + '%';
-        
-        const isBuyer = role === 'buyer';
-        const isSeller = role === 'seller';
-        
-        document.getElementById('btnTransfer').disabled = true;
-        document.getElementById('btnShip').disabled = true;
-        document.getElementById('btnReceive').disabled = true;
-        document.getElementById('btnCancel').disabled = false;
-        
-        if (isBuyer && tradeStatus === 'waiting_payment') {
-            document.getElementById('btnTransfer').disabled = false;
-        }
-        
-        if (isSeller && tradeStatus === 'payment_done') {
-            document.getElementById('btnShip').disabled = false;
-        }
-        
-        if (isBuyer && tradeStatus === 'shipped') {
-            document.getElementById('btnReceive').disabled = false;
-        }
-        
-        if (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done') {
-            document.getElementById('btnCancel').disabled = false;
-        } else {
-            document.getElementById('btnCancel').disabled = true;
-        }
-        
-        if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
+            const stepMap = {
+                'waiting_payment': 1,
+                'payment_done': 2,
+                'shipped': 3,
+                'received': 4,
+                'cancelled': 1,
+                'disputed': 1,
+                'banned': 1
+            };
+            const activeStep = stepMap[tradeStatus] || 1;
+            
+            const progressSteps = document.querySelectorAll('.status-step');
+            progressSteps.forEach((step, idx) => {
+                step.classList.remove('active', 'completed');
+                if (idx + 1 < activeStep) step.classList.add('completed');
+                else if (idx + 1 === activeStep) step.classList.add('active');
+            });
+            
+            document.getElementById('statusProgress').style.width = ((activeStep - 1) * 25) + '%';
+            
+            const isBuyer = role === 'buyer';
+            const isSeller = role === 'seller';
+            
             document.getElementById('btnTransfer').disabled = true;
             document.getElementById('btnShip').disabled = true;
             document.getElementById('btnReceive').disabled = true;
-            document.getElementById('btnCancel').disabled = true;
-        }
+            document.getElementById('btnCancel').disabled = false;
+
+            // ปิดการใช้งานปุ่มส่งข้อความถ้าสถานะเป็น banned หรือจบแล้ว
+            const msgInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            if (tradeStatus === 'banned' || tradeStatus === 'cancelled' || tradeStatus === 'received') {
+                if (msgInput) msgInput.disabled = true;
+                if (sendBtn) sendBtn.disabled = true;
+            } else {
+                if (msgInput) msgInput.disabled = false;
+                if (sendBtn) sendBtn.disabled = false;
+            }
+            
+            if (isBuyer && tradeStatus === 'waiting_payment') {
+                document.getElementById('btnTransfer').disabled = false;
+            }
+            
+            if (isSeller && tradeStatus === 'payment_done') {
+                document.getElementById('btnShip').disabled = false;
+            }
+            
+            if (isBuyer && tradeStatus === 'shipped') {
+                document.getElementById('btnReceive').disabled = false;
+            }
+            
+            if (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done') {
+                document.getElementById('btnCancel').disabled = false;
+            } else {
+                document.getElementById('btnCancel').disabled = true;
+            }
+            
+            if (tradeStatus === 'cancelled' || tradeStatus === 'received' || tradeStatus === 'banned') {
+                document.getElementById('btnTransfer').disabled = true;
+                document.getElementById('btnShip').disabled = true;
+                document.getElementById('btnReceive').disabled = true;
+                document.getElementById('btnCancel').disabled = true;
+            }
+
+            // จัดการปุ่มตรวจสอบพัสดุ (เพิ่มใหม่)
+            const trackBtn = document.getElementById('btnTrack');
+            if (mode === 'general') {
+                trackBtn.style.display = 'flex';   // หรือ 'block' ตามต้องการ
+                trackBtn.disabled = !(tradeStatus === 'shipped' && shippingData);
+            } else {
+                trackBtn.style.display = 'none';
+            }
+        }, 0);
     }
 
     function showAiAlert(message, showTrackingLink = false, trackingUrl = '') {
@@ -4866,13 +5143,54 @@
         }
     };
 
-    window.adminRefund = function(target) {
-        const who = target === 'buyer' ? 'ผู้ซื้อ' : 'ผู้ขาย';
-        showAiAlert(`🛠️ Admin กำลังดำเนินการคืนเงินให้${who} (ระบบยังไม่สมบูรณ์)`, false);
+    // ============================================
+    // 🛠️ ADMIN FUNCTIONS (ใช้ RPC จริง)
+    // ============================================
+    async function loadTradeData() {
+        const { data, error } = await supabaseClient
+            .from('trades')
+            .select('*')
+            .eq('room_id', roomId)
+            .single();
+        if (!error) {
+            tradeData = data;
+            tradeStatus = data.status;
+            productPrice = data.product_price;
+            updateUIByStatus();
+        }
+    }
+
+    window.adminRefund = async function(target) {
+        if (!isAdminPresent) return;
+        const who = target === 'buyer' ? tradeData.buyer_id : tradeData.seller_id;
+        const amount = target === 'buyer' ? tradeData.total : tradeData.product_price;
+
+        const { error } = await supabaseClient.rpc('admin_refund', {
+            p_trade_id: tradeData.id,
+            p_target_user_id: who,
+            p_amount: amount
+        });
+        if (error) {
+            console.error(error);
+            showAiAlert('❌ คืนเงินไม่สำเร็จ: ' + error.message, false);
+        } else {
+            showAiAlert('✅ คืนเงินสำเร็จ', false);
+            await loadTradeData();
+        }
     };
 
-    window.adminForceComplete = function() {
-        showAiAlert('🛠️ Admin บังคับปิดดีลเรียบร้อย', false);
+    window.adminForceComplete = async function() {
+        if (!isAdminPresent) return;
+        const { error } = await supabaseClient.rpc('admin_force_complete', {
+            p_trade_id: tradeData.id
+        });
+        if (error) {
+            console.error(error);
+            showAiAlert('❌ บังคับเสร็จสิ้นไม่สำเร็จ', false);
+        } else {
+            showAiAlert('✅ บังคับเสร็จสิ้นสำเร็จ', false);
+            await loadTradeData();
+        }
     };
 
     window.sendSticker = function(stickerKey) {
@@ -5188,8 +5506,8 @@
                     updated_at,
                     buyer_id,
                     seller_id,
-                    buyer:users!buyer_id(username, photo_url),
-                    seller:users!seller_id(username, photo_url)
+                    buyer:users_public!buyer_id(username, photo_url),
+                    seller:users_public!seller_id(username, photo_url)
                 `)
                 .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
                 .in('status', ['waiting_payment', 'payment_done', 'shipped'])
@@ -5249,12 +5567,8 @@
         }
         const profile = currentUser.profile;
         const uid = currentUser.id;
-        console.log('🔍 openMyProfile uid:', uid);
-        console.log('🔍 MY_GOD_UID:', MY_GOD_UID);
-        console.log('🔍 isCEO:', uid === MY_GOD_UID);
         
         const rankInfo = getRank(profile.completed_deals || 0, uid);
-        console.log('🔍 rankInfo:', rankInfo);
         
         const nameEl = document.getElementById('myProfileName');
         nameEl.innerHTML = (profile.display_name || profile.username || 'ผู้ใช้').toUpperCase();
@@ -5272,9 +5586,7 @@
         const oldTick = nameEl.querySelector('.fa-check-circle');
         if (oldTick) oldTick.remove();
         
-        if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-            nameEl.innerHTML += ' <i class="fas fa-check-circle rainbow-tick" style="font-size:18px;"></i>';
-        } else if (profile.kyc_status === 'verified') {
+        if (profile.kyc_status === 'verified') {
             nameEl.innerHTML += ' <i class="fas fa-check-circle" style="color:var(--primary); text-shadow:0 0 8px var(--primary); font-size:18px;"></i>';
         }
         
@@ -5311,12 +5623,8 @@
             return;
         }
         try {
-            const { data, error } = await supabaseClient
-                .from('users')
-                .select('username, display_name, photo_url, rank, completed_deals, total_volume, success_rate, average_rating, kyc_status, created_at')
-                .eq('id', partnerId)
-                .single();
-            if (error) throw error;
+            const data = await fetchUserPublic(partnerId);
+            if (!data) throw new Error('ไม่พบข้อมูล');
             
             const rankInfo = getRank(data.completed_deals || 0, partnerId);
             
@@ -5326,9 +5634,7 @@
             
             const tick = document.querySelector('#profileName .fa-check-circle');
             if (tick) tick.remove();
-            if (partnerId === MY_GOD_UID || partnerId === MY_SPECIAL_UID) {
-                document.getElementById('profileName').innerHTML += ' <i class="fas fa-check-circle rainbow-tick" style="font-size:18px;"></i>';
-            } else if (data.kyc_status === 'verified') {
+            if (data.kyc_verified === true) {
                 document.getElementById('profileName').innerHTML += ' <i class="fas fa-check-circle" style="color:var(--primary); text-shadow:0 0 8px var(--primary); font-size:18px;"></i>';
             }
             
@@ -5417,6 +5723,14 @@
                 }
             });
         }
+
+        // เพิ่ม event listener สำหรับ scroll เพื่อโหลดข้อความเพิ่มเติม
+        const messagesContainer = document.getElementById('messagesContainer');
+        messagesContainer.addEventListener('scroll', () => {
+            if (messagesContainer.scrollTop === 0 && hasMoreMessages && !isLoadingMessages) {
+                loadMessages(true);
+            }
+        });
     }
 
     function showEmergencyAlert() {
@@ -5493,6 +5807,93 @@
         }
     };
 
+    // ============================================
+    // 🚚 ฟังก์ชันสำหรับ Tracking Modal (เพิ่มใหม่)
+    // ============================================
+    window.openTrackingModal = function() {
+        if (!shippingData) {
+            showAiAlert('❌ ไม่พบข้อมูลพัสดุ', false);
+            return;
+        }
+
+        const carrierNames = {
+            'kerry': 'Kerry Express',
+            'flash': 'Flash Express',
+            'jnt': 'J&T Express',
+            'ninjavan': 'Ninja Van',
+            'thai_post': 'ไปรษณีย์ไทย',
+            'best': 'Best Express',
+            'scg': 'SCG Express',
+            'alpha': 'Alpha Express',
+            'dhl_th': 'DHL Thailand',
+            'fedex_th': 'FedEx Thailand',
+            'dhl_int': 'DHL International',
+            'fedex_int': 'FedEx International',
+            'ups': 'UPS',
+            'tnt': 'TNT',
+            'ems_int': 'EMS International',
+            'usps': 'USPS',
+            'china_post': 'China Post',
+            'singpost': 'SingPost',
+            'yanwen': 'Yanwen',
+            'sf_express': 'SF Express'
+        };
+        const carrierName = carrierNames[shippingData.carrier] || shippingData.carrier;
+
+        const detailsHtml = `
+            <div style="margin-bottom: 15px;">
+                <div style="color: #8b9bb4; font-size: 11px; margin-bottom: 4px;">บริษัทขนส่ง</div>
+                <div style="font-size: 18px; font-weight: 600; color: var(--primary);">${carrierName}</div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <div style="color: #8b9bb4; font-size: 11px; margin-bottom: 4px;">เลขพัสดุ</div>
+                <div style="font-size: 20px; font-family: 'Orbitron'; letter-spacing: 1px; color: #fff;">${shippingData.tracking_number}</div>
+            </div>
+        `;
+        document.getElementById('trackingDetails').innerHTML = detailsHtml;
+
+        const btnText = document.getElementById('trackingBtnText');
+        btnText.innerText = `ติดตามกับ ${carrierName}`;
+
+        document.getElementById('trackingModal').style.display = 'flex';
+    };
+
+    window.closeTrackingModal = function() {
+        document.getElementById('trackingModal').style.display = 'none';
+    };
+
+    window.goToTrackingPage = function() {
+        if (!shippingData) return;
+
+        const carrier = shippingData.carrier;
+        const trackingNumber = shippingData.tracking_number;
+        let url = TRACKING_URLS[carrier];
+
+        if (!url) {
+            url = `https://www.17track.net/en/track?nums=${trackingNumber}`;
+        } else {
+            if (carrier === 'flash' || carrier === 'jnt' || carrier === 'best' || carrier === 'scg' || carrier === 'alpha' || carrier === 'singpost') {
+                url = url + trackingNumber;
+            } else if (carrier === 'ninjavan' || carrier === 'thai_post' || carrier === 'dhl_th' || carrier === 'fedex_th' || carrier === 'dhl_int' || carrier === 'fedex_int' || carrier === 'ups' || carrier === 'usps' || carrier === 'china_post' || carrier === 'yanwen') {
+                url = url + trackingNumber;
+            } else if (carrier === 'tnt') {
+                url = url + trackingNumber;
+            } else if (carrier === 'sf_express') {
+                url = `https://www.sf-express.com/th/th/dynamic_function/waybill/#search/list?trackingNumber=${trackingNumber}`;
+            } else {
+                url = url + trackingNumber;
+            }
+        }
+
+        window.open(url, '_blank');
+    };
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (window.roomChannel) supabaseClient.removeChannel(window.roomChannel);
+        if (tradeTimer) clearInterval(tradeTimer);
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         if (mode === 'game') {
             document.title = 'AEGIS NEX: GAME & ITEM TRADE';
@@ -5534,7 +5935,6 @@
             const chat = document.querySelector('.chat-area');
             const input = document.querySelector('.chat-input-area');
             const container = document.querySelector('.messages-container');
-            // ตรวจสอบเฉพาะว่า display ถูกต้องตาม CSS หรือไม่
             if (chat && window.getComputedStyle(chat).display === 'none') {
                 chat.style.display = 'flex';
             }
