@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>สนับสนุน | AEGIS NEX</title>
+    <title>ศูนย์ช่วยเหลือ | AEGIS NEX</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 Dark Theme (เพิ่มเข้ามาเพื่อให้ป๊อปอัพสวยงาม) -->
+    <!-- SweetAlert2 Dark Theme -->
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -65,7 +65,9 @@
             z-index: 0;
         }
 
-        /* News Ticker */
+        /* ------------------------------------------------
+           📢 NEWS TICKER (เพิ่ม id="tickerText" และ id="topTicker")
+           ------------------------------------------------ */
         .news-ticker {
             background: linear-gradient(90deg, 
                 rgba(0,0,0,0) 0%, 
@@ -101,7 +103,9 @@
             100% { transform: translateX(-100%); } 
         }
 
-        /* App Container */
+        /* ------------------------------------------------
+           🏰 ENHANCED APP CONTAINER
+           ------------------------------------------------ */
         .app-container {
             width: 100%; 
             max-width: 600px; 
@@ -117,7 +121,7 @@
             transform: translateZ(0);
         }
 
-        /* Scan line effect */
+        /* เส้นแสงเคลื่อนที่ */
         .scan-line {
             position: fixed;
             top: 0;
@@ -136,7 +140,7 @@
             100% { top: 100vh; }
         }
 
-        /* Particles */
+        /* อนุภาคพื้นหลัง */
         .particles {
             position: fixed;
             top: 0;
@@ -163,7 +167,9 @@
             100% { transform: translateY(-100vh) rotate(180deg); opacity: 0; }
         }
 
-        /* Header */
+        /* ------------------------------------------------
+           👤 DASHBOARD HEADER
+           ------------------------------------------------ */
         .dash-header {
             padding: 20px 20px 15px; 
             display: flex; 
@@ -215,7 +221,112 @@
             box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
         }
 
-        /* AI Section */
+        /* ------------------------------------------------
+           🎵 MINI JUKEBOX (เพิ่มจาก Dashboard)
+           ------------------------------------------------ */
+        .mini-juke-container {
+            width: calc(100% - 40px);
+            max-width: 560px;
+            margin: 10px auto 10px auto;
+            background: rgba(10, 15, 25, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+        }
+
+        .mini-juke-container:hover {
+            background: rgba(10, 15, 25, 0.95);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .juke-disk {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #000;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .juke-disk.spinning {
+            animation: spinDisk 4s linear infinite;
+        }
+
+        @keyframes spinDisk {
+            100% { transform: rotate(360deg); }
+        }
+
+        .juke-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .juke-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .juke-credit {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            height: 14px;
+        }
+
+        .juke-credit span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .juke-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .juke-btn {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+
+        /* ------------------------------------------------
+           🧠 AI SECTION (id="aiMsg" มีอยู่แล้ว)
+           ------------------------------------------------ */
         .ai-section { 
             margin: 15px 20px; 
             display: flex; 
@@ -265,7 +376,9 @@
             100% { transform: translateY(0px); } 
         }
 
-        /* Stats Card */
+        /* ------------------------------------------------
+           💬 SUPPORT STATS CARD (แสดงจำนวน Admin และ CEO ออนไลน์ แยกกัน)
+           ------------------------------------------------ */
         .stats-card {
             margin: 15px 20px; 
             padding: 25px; 
@@ -290,22 +403,89 @@
             margin-bottom: 8px;
         }
         
-        .stats-value { 
-            font-family: 'Orbitron'; 
-            font-size: 36px; 
-            font-weight: 900; 
-            margin: 10px 0 20px; 
-            text-shadow: 0 0 15px var(--primary);
-            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin: 15px 0;
         }
         
-        .stats-value span { 
-            font-size: 18px; 
-            color: var(--primary); 
-            -webkit-text-fill-color: var(--primary);
+        .stats-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-item.ceo-item {
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+        
+        .stats-item.admin-item {
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+        
+        .stats-value {
+            font-family: 'Orbitron';
+            font-size: 36px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+        
+        .stats-value.ceo-value {
+            background: linear-gradient(180deg, #ffffff 0%, #ff0000 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.7));
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            animation: pulseRed 2s infinite alternate;
+        }
+        
+        .stats-value.admin-value {
+            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.7));
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            animation: pulseBlue 2s infinite alternate;
+        }
+        
+        @keyframes pulseRed {
+            0% { filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9)); }
+        }
+        
+        @keyframes pulseBlue {
+            0% { filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.9)); }
+        }
+        
+        .stats-name {
+            font-size: 12px;
+            font-weight: bold;
+            font-family: 'Rajdhani';
+            letter-spacing: 1px;
+        }
+        
+        .stats-name.ceo-name {
+            color: #ff0000;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+        
+        .stats-name.admin-name {
+            color: var(--primary);
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+        }
+        
+        .stats-sub {
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-top: 5px;
         }
 
         /* 🔥 Problem Topic Selection - ปรับเป็น Grid 2 คอลัมน์ และการ์ดเป็นสี่เหลี่ยมจัตุรัส */
@@ -419,7 +599,7 @@
             box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
         }
         
-        /* File Upload - ปรับปรุงให้ใช้งานได้จริง */
+        /* 🔥 File Upload - รองรับหลายไฟล์สูงสุด 6 รูป */
         .file-upload-area {
             border: 2px dashed rgba(0, 242, 255, 0.3);
             border-radius: 12px;
@@ -464,8 +644,15 @@
             font-size: 10px;
         }
         
-        .file-info {
-            margin-top: 12px;
+        /* 🔥 รายการไฟล์ที่เลือก */
+        .file-list {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .file-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -475,7 +662,7 @@
             border: 1px solid rgba(0, 242, 255, 0.2);
         }
         
-        .file-name {
+        .file-item .file-name {
             font-size: 12px;
             color: var(--primary);
             word-break: break-all;
@@ -483,7 +670,7 @@
             text-align: left;
         }
         
-        .remove-file {
+        .file-item .remove-file {
             color: var(--danger);
             cursor: pointer;
             font-size: 16px;
@@ -491,7 +678,7 @@
             transition: 0.2s;
         }
         
-        .remove-file:hover {
+        .file-item .remove-file:hover {
             transform: scale(1.2);
             color: #ff4d4d;
         }
@@ -809,6 +996,10 @@
             .nav-link i {
                 font-size: 18px;
             }
+            
+            .stats-grid {
+                gap: 10px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -839,6 +1030,11 @@
             .topic-name {
                 font-size: 11px;
             }
+            
+            .stats-grid {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
 
         .topic-card:active, .submit-btn:active, .cancel-btn:active, .icon-btn:active {
@@ -862,18 +1058,18 @@
 
     <div class="app-container">
         
-        <!-- News Ticker -->
-        <div class="news-ticker">
-            <div class="ticker-content">
+        <!-- News Ticker (เพิ่ม id="topTicker" และ id="tickerText") -->
+        <div class="news-ticker" id="topTicker">
+            <div class="ticker-content" id="tickerText">
                 🆘 [Support] ศูนย์ช่วยเหลือ AEGIS NEX พร้อมบริการ 24 ชั่วโมง | ⚡ [Response] ทีมงานตอบกลับภายใน 5-15 นาที | 🔒 [Security] ข้อมูลของคุณได้รับการปกป้อง 100%
             </div>
         </div>
         
-        <!-- Dashboard Header -->
+        <!-- Dashboard Header (เปลี่ยนหัวข้อเป็นภาษาไทย) -->
         <div class="dash-header">
             <div class="header-title">
                 <i class="fas fa-chevron-left" onclick="location.href='dashboard.html'" style="cursor:pointer"></i>
-                <span>SUPPORT CENTER</span>
+                <span>ศูนย์ช่วยเหลือ</span>
             </div>
             <div class="header-actions">
                 <div class="icon-btn" onclick="showHelp()">
@@ -885,7 +1081,27 @@
             </div>
         </div>
 
-        <!-- AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <!-- 🎵 Mini Jukebox (เพิ่มจาก Dashboard) วางไว้เหนือ AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <div class="mini-juke-container" id="miniJukebox">
+            <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+                <i class="fas fa-play" id="jukeIcon"></i>
+            </div>
+            <div class="juke-controls">
+                <div class="juke-title" id="jukeTitle">NCS Music</div>
+                <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+                <div class="juke-btns">
+                    <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                    <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                    <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+                </div>
+            </div>
+        </div>
+        <audio id="globalAudioPlayer" preload="auto"></audio>
+        <!-- ███████████████████████████████████████████████████████ -->
+
+        <!-- AI Section (id="aiMsg" มีอยู่แล้ว) -->
         <div class="ai-section">
             <div class="ai-face">
                 <i class="fas fa-robot"></i>
@@ -895,11 +1111,20 @@
             </div>
         </div>
 
-        <!-- Support Stats Card -->
+        <!-- Support Stats Card (แสดงจำนวน CEO และ Admin ออนไลน์ แยกกัน) -->
         <div class="stats-card">
-            <div class="stats-label">การตอบกลับล่าสุด</div>
-            <div class="stats-value" id="responseTime">5<span>นาที</span></div>
-            <div style="font-size: 11px; color: #cbd5e1;">โดยเฉลี่ยจากการร้องเรียน 24 ชั่วโมงล่าสุด</div>
+            <div class="stats-label">ทีมงานออนไลน์</div>
+            <div class="stats-grid">
+                <div class="stats-item ceo-item">
+                    <div class="stats-value ceo-value" id="onlineCEOCount">0</div>
+                    <div class="stats-name ceo-name">CEO</div>
+                </div>
+                <div class="stats-item admin-item">
+                    <div class="stats-value admin-value" id="onlineAdminCount">0</div>
+                    <div class="stats-name admin-name">ADMIN</div>
+                </div>
+            </div>
+            <div class="stats-sub">พร้อมให้ความช่วยเหลือคุณ</div>
         </div>
 
         <!-- 🔥 Problem Topic Selection (Grid 2 คอลัมน์ สี่เหลี่ยมจัตุรัส) -->
@@ -920,19 +1145,19 @@
                 <div style="font-size: 10px; color: #888; margin-top: 5px;">อธิบายปัญหาอย่างน้อย 20 ตัวอักษร</div>
             </div>
             
-            <!-- File Upload for Evidence - ปรับปรุงให้อัปโหลดจริง พร้อมลบไฟล์ -->
+            <!-- 🔥 File Upload for Evidence - รองรับหลายไฟล์ สูงสุด 6 รูป -->
             <div class="form-group">
-                <label class="form-label">อัพโหลดหลักฐาน (ถ้ามี)</label>
+                <label class="form-label">อัพโหลดหลักฐาน (สูงสุด 6 รูป)</label>
                 <div class="file-upload-area" id="fileUploadArea">
                     <div class="file-upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
-                    <div class="file-upload-text">คลิกเพื่ออัพโหลดรูปภาพหรือสลิป</div>
-                    <div class="file-upload-hint">รองรับไฟล์: JPG, PNG, PDF (สูงสุด 5MB)</div>
+                    <div class="file-upload-text">คลิกเพื่อเลือกไฟล์ (เลือกได้หลายไฟล์)</div>
+                    <div class="file-upload-hint">รองรับไฟล์: JPG, PNG, PDF (สูงสุด 5MB ต่อไฟล์) สูงสุด 6 ไฟล์</div>
                 </div>
-                <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" style="display: none;">
-                <!-- พื้นที่แสดงไฟล์ที่แนบแล้ว (ซ่อนไว้ก่อน) -->
-                <div id="fileInfoContainer" style="display: none;"></div>
+                <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" multiple style="display: none;">
+                <!-- พื้นที่แสดงรายการไฟล์ที่เลือก -->
+                <div id="fileListContainer" class="file-list" style="display: none;"></div>
             </div>
         </div>
 
@@ -988,7 +1213,7 @@
         <div class="modal-box modal-processing">
             <div class="spinner"></div>
             <div class="modal-title">กำลังประมวลผล</div>
-            <div class="modal-message" id="processingMessage">ระบบกำลังบันทึกรายงานปัญหาของคุณ...</div>
+            <div class="modal-message" id="processingMessage">ระบบกำลังบันทึกรายงานปัญหาและอัปโหลดหลักฐาน...</div>
         </div>
     </div>
 
@@ -1021,7 +1246,7 @@
                 <ol style="text-align: left; margin: 10px 0; padding-left: 20px;">
                     <li>เลือกประเภทปัญหาที่คุณพบ</li>
                     <li>อธิบายปัญหาอย่างละเอียดในช่องรายละเอียด</li>
-                    <li>แนบหลักฐานประกอบ (สลิป, ภาพหน้าจอ, แชท)</li>
+                    <li>แนบหลักฐานประกอบ (สลิป, ภาพหน้าจอ, แชท) สูงสุด 6 ไฟล์</li>
                     <li>กดส่งเรื่องแจ้ง Admin</li>
                 </ol>
                 <p><strong>ประเภทปัญหาที่แจ้งได้:</strong></p>
@@ -1034,6 +1259,16 @@
                 <p><strong>ข้อมูลที่ควรระบุ:</strong> Username, รหัสอ้างอิง, เวลาเกิดปัญหา, จำนวนเงิน (ถ้ามี)</p>
             </div>
             <button class="modal-btn btn-primary" onclick="closeHelpModal()">เข้าใจแล้ว</button>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal (เพิ่มใหม่) -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal-box">
+            <i class="fas fa-clock modal-icon" style="color: var(--primary);"></i>
+            <div class="modal-title">กำลังมาเร็วๆ นี้</div>
+            <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
+            <button class="modal-btn btn-primary" onclick="closeComingSoon()">OK</button>
         </div>
     </div>
 
@@ -1058,10 +1293,20 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // 🔥 กำหนด UID ของ CEO และ Admin
+        const MY_GOD_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233"; // UID ของ CEO
+        const MY_SPECIAL_UID = "00000000-0000-0000-0000-000000000000"; // เปลี่ยนเป็น UID พิเศษของคุณ
+        // เพิ่ม UID ของ Admin คนอื่น ๆ ได้ที่นี่
+        const ADMIN_UIDS = [
+            MY_SPECIAL_UID
+            // สามารถเพิ่ม UID อื่น ๆ ได้ เช่น "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        ];
+
         // 📁 ตั้งค่า Bucket สำหรับเก็บหลักฐาน - ต้องสร้าง Bucket ชื่อ 'support_evidence' ใน Supabase Storage ก่อน
         const EVIDENCE_BUCKET = 'support_evidence';
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
         const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        const MAX_FILES = 6; // 🔥 กำหนดจำนวนไฟล์สูงสุด
 
         // ข้อมูลประเภทปัญหา
         const problemTopics = [
@@ -1074,10 +1319,11 @@
         // ตัวแปร global
         let selectedTopic = '';
         let currentUserId = '';
-        let uploadedFile = null;
+        let uploadedFiles = []; // 🔥 เปลี่ยนเป็น array สำหรับเก็บหลายไฟล์
         let ticketId = '';
         let authListener = null;   // เก็บ listener เพื่อ cleanup
         let aiInterval = null;     // เก็บ interval AI
+        let onlineAdminInterval = null; // interval สำหรับอัปเดตจำนวน Admin ออนไลน์
 
         // ------------------------------
         // อนุภาคพื้นหลัง
@@ -1115,6 +1361,8 @@
                 if (session) {
                     currentUserId = session.user.id;
                     await loadUserData();
+                    // เริ่มนับ Admin ออนไลน์เมื่อล็อกอินแล้ว
+                    startOnlineAdminCounter();
                 } else {
                     window.location.href = 'index.html';
                 }
@@ -1153,6 +1401,66 @@
                 console.error("Error loading user data:", error);
                 // ไม่ต้องกระโดดออก แค่ log ไว้
             }
+        }
+
+        // ------------------------------
+        // 👥 ฟังก์ชันนับจำนวน CEO และ Admin ที่ออนไลน์
+        // ------------------------------
+        async function fetchOnlineStaff() {
+            try {
+                // ดึงข้อมูล users ที่ uid อยู่ใน ADMIN_UIDS หรือเป็น CEO
+                const allStaffIds = [MY_GOD_UID, ...ADMIN_UIDS];
+                const { data: staff, error } = await supa
+                    .from('users')
+                    .select('id, last_seen')
+                    .in('id', allStaffIds);
+
+                if (error) throw error;
+
+                if (!staff) return { ceoOnline: 0, adminOnline: 0 };
+
+                const now = new Date();
+                const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+
+                let ceoOnline = 0;
+                let adminOnline = 0;
+
+                staff.forEach(person => {
+                    if (!person.last_seen) return;
+                    const lastSeen = new Date(person.last_seen);
+                    const isOnline = lastSeen >= fiveMinutesAgo;
+                    
+                    if (person.id === MY_GOD_UID) {
+                        if (isOnline) ceoOnline = 1;
+                    } else {
+                        if (isOnline) adminOnline++;
+                    }
+                });
+
+                return { ceoOnline, adminOnline };
+            } catch (error) {
+                console.error("Error fetching online staff:", error);
+                return { ceoOnline: 0, adminOnline: 0 };
+            }
+        }
+
+        async function updateOnlineStaffCount() {
+            const { ceoOnline, adminOnline } = await fetchOnlineStaff();
+            const ceoElement = document.getElementById('onlineCEOCount');
+            const adminElement = document.getElementById('onlineAdminCount');
+            if (ceoElement) {
+                ceoElement.textContent = ceoOnline;
+            }
+            if (adminElement) {
+                adminElement.textContent = adminOnline;
+            }
+        }
+
+        function startOnlineAdminCounter() {
+            // อัปเดตครั้งแรกทันที
+            updateOnlineStaffCount();
+            // แล้วอัปเดตทุก 30 วินาที
+            onlineAdminInterval = setInterval(updateOnlineStaffCount, 30000);
         }
 
         // ------------------------------
@@ -1203,14 +1511,14 @@
         }
 
         // ------------------------------
-        // 📁 ฟังก์ชันจัดการไฟล์อัปโหลด
+        // 📁 ฟังก์ชันจัดการไฟล์อัปโหลด (รองรับหลายไฟล์)
         // ------------------------------
         function initFileUpload() {
             const fileUploadArea = document.getElementById('fileUploadArea');
             const fileInput = document.getElementById('fileInput');
-            const fileInfoContainer = document.getElementById('fileInfoContainer');
+            const fileListContainer = document.getElementById('fileListContainer');
 
-            if (!fileUploadArea || !fileInput || !fileInfoContainer) return;
+            if (!fileUploadArea || !fileInput || !fileListContainer) return;
 
             // คลิกที่พื้นที่อัปโหลด
             fileUploadArea.onclick = () => {
@@ -1235,94 +1543,123 @@
                 fileUploadArea.classList.remove('dragover');
                 if (fileUploadArea.classList.contains('disabled')) return;
                 if (e.dataTransfer.files.length > 0) {
-                    const file = e.dataTransfer.files[0];
                     // จำลองให้ input file มีไฟล์นี้
                     fileInput.files = e.dataTransfer.files;
-                    handleFileSelect({ target: { files: [file] } });
+                    handleFileSelect({ target: { files: e.dataTransfer.files } });
                 }
             });
         }
 
-        // จัดการเมื่อเลือกไฟล์
+        // จัดการเมื่อเลือกไฟล์ (รองรับหลายไฟล์)
         function handleFileSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // ตรวจสอบขนาดไฟล์
-            if (file.size > MAX_FILE_SIZE) {
-                showError('ไฟล์มีขนาดใหญ่เกินไป', 'กรุณาอัปโหลดไฟล์ที่มีขนาดไม่เกิน 5MB');
+            const files = Array.from(e.target.files);
+            
+            // ตรวจสอบจำนวนไฟล์
+            if (uploadedFiles.length + files.length > MAX_FILES) {
+                showError('ไฟล์เกินจำนวนที่กำหนด', `สามารถอัปโหลดได้สูงสุด ${MAX_FILES} ไฟล์เท่านั้น`);
                 return;
             }
 
-            // ตรวจสอบประเภทไฟล์
-            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                showError('ประเภทไฟล์ไม่ถูกต้อง', 'รองรับเฉพาะไฟล์ JPG, PNG, PDF เท่านั้น');
+            // ตรวจสอบแต่ละไฟล์
+            for (const file of files) {
+                // ตรวจสอบขนาดไฟล์
+                if (file.size > MAX_FILE_SIZE) {
+                    showError('ไฟล์มีขนาดใหญ่เกินไป', `ไฟล์ ${file.name} มีขนาดเกิน 5MB`);
+                    return;
+                }
+
+                // ตรวจสอบประเภทไฟล์
+                if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                    showError('ประเภทไฟล์ไม่ถูกต้อง', `ไฟล์ ${file.name} รองรับเฉพาะ JPG, PNG, PDF เท่านั้น`);
+                    return;
+                }
+            }
+
+            // เก็บไฟล์ทั้งหมดลง array
+            uploadedFiles = [...uploadedFiles, ...files];
+
+            // อัปเดต UI รายการไฟล์
+            renderFileList();
+
+            updateAIMessage(`เลือกไฟล์หลักฐานแล้ว ${uploadedFiles.length} ไฟล์`);
+        }
+
+        // ลบไฟล์ที่แนบตาม index
+        window.removeAttachedFile = function(index) {
+            uploadedFiles.splice(index, 1);
+            renderFileList();
+            
+            // เคลียร์ input file (เพื่อให้เลือกไฟล์เดิมซ้ำได้)
+            document.getElementById('fileInput').value = '';
+            
+            if (uploadedFiles.length === 0) {
+                updateAIMessage('ลบไฟล์หลักฐานทั้งหมดแล้ว');
+            } else {
+                updateAIMessage(`เหลือไฟล์หลักฐาน ${uploadedFiles.length} ไฟล์`);
+            }
+        }
+
+        // แสดงรายการไฟล์ใน UI
+        function renderFileList() {
+            const fileListContainer = document.getElementById('fileListContainer');
+            if (uploadedFiles.length === 0) {
+                fileListContainer.style.display = 'none';
+                fileListContainer.innerHTML = '';
                 return;
             }
 
-            // เก็บไฟล์ไว้ในตัวแปร global
-            uploadedFile = file;
+            fileListContainer.style.display = 'flex';
+            fileListContainer.innerHTML = '';
 
-            // แสดงชื่อไฟล์และปุ่มลบ
-            const fileInfoContainer = document.getElementById('fileInfoContainer');
-            fileInfoContainer.style.display = 'block';
-            fileInfoContainer.innerHTML = `
-                <div class="file-info">
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
                     <span class="file-name"><i class="fas fa-paperclip"></i> ${file.name}</span>
-                    <span class="remove-file" onclick="removeAttachedFile()"><i class="fas fa-times-circle"></i></span>
-                </div>
-            `;
-
-            updateAIMessage(`ตรวจพบไฟล์หลักฐาน: ${file.name} | ระบบ AI กำลังตรวจสอบ...`);
-        }
-
-        // ลบไฟล์ที่แนบ
-        window.removeAttachedFile = function() {
-            uploadedFile = null;
-            const fileInput = document.getElementById('fileInput');
-            fileInput.value = ''; // เคลียร์ input
-            const fileInfoContainer = document.getElementById('fileInfoContainer');
-            fileInfoContainer.style.display = 'none';
-            fileInfoContainer.innerHTML = '';
-            updateAIMessage('ลบไฟล์หลักฐานเรียบร้อย | สามารถอัปโหลดไฟล์ใหม่ได้');
+                    <span class="remove-file" onclick="removeAttachedFile(${index})"><i class="fas fa-times-circle"></i></span>
+                `;
+                fileListContainer.appendChild(fileItem);
+            });
         }
 
         // ------------------------------
-        // ☁️ อัปโหลดไฟล์ไปยัง Supabase Storage
+        // ☁️ อัปโหลดไฟล์ไปยัง Supabase Storage (รองรับหลายไฟล์)
         // ------------------------------
-        async function uploadEvidenceFile(file, userId, ticketRef) {
-            if (!file) return null;
+        async function uploadEvidenceFiles(files, userId, ticketRef) {
+            if (!files || files.length === 0) return [];
 
-            // สร้าง path: user_id/ticketId/ชื่อไฟล์ (timestamp เพื่อป้องกันซ้ำ)
-            const timestamp = Date.now();
-            const fileExt = file.name.split('.').pop();
-            const safeFileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`; // ลบอักขระพิเศษ
-            const filePath = `${userId}/${ticketRef}_${safeFileName}`;
+            const uploadPromises = files.map(async (file) => {
+                const timestamp = Date.now();
+                const randomStr = Math.random().toString(36).substring(2, 8);
+                const safeFileName = `${timestamp}_${randomStr}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                const filePath = `${userId}/${ticketRef}/${safeFileName}`;
 
-            try {
-                const { data, error } = await supa.storage
-                    .from(EVIDENCE_BUCKET)
-                    .upload(filePath, file, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
+                try {
+                    const { error } = await supa.storage
+                        .from(EVIDENCE_BUCKET)
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
 
-                if (error) throw error;
+                    if (error) throw error;
 
-                // ขอ public URL
-                const { data: publicUrlData } = supa.storage
-                    .from(EVIDENCE_BUCKET)
-                    .getPublicUrl(filePath);
+                    const { data: publicUrlData } = supa.storage
+                        .from(EVIDENCE_BUCKET)
+                        .getPublicUrl(filePath);
 
-                return publicUrlData.publicUrl;
-            } catch (error) {
-                console.error('Upload error:', error);
-                throw new Error('ไม่สามารถอัปโหลดไฟล์หลักฐานได้ กรุณาลองอีกครั้ง');
-            }
+                    return publicUrlData.publicUrl;
+                } catch (error) {
+                    console.error('Upload error for file:', file.name, error);
+                    throw new Error(`ไม่สามารถอัปโหลดไฟล์ ${file.name} ได้`);
+                }
+            });
+
+            return Promise.all(uploadPromises);
         }
 
         // ------------------------------
-        // 📨 SUBMIT SUPPORT TICKET (แก้ไขให้อัปโหลดไฟล์จริง)
+        // 📨 SUBMIT SUPPORT TICKET
         // ------------------------------
         async function submitSupportTicket() {
             const problemDetail = document.getElementById('problemDetail');
@@ -1366,11 +1703,11 @@
                 // 2. สร้าง Ticket ID
                 ticketId = 'TKT-' + Date.now().toString().slice(-8) + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
                 
-                // 3. อัปโหลดไฟล์ (ถ้ามี)
-                let evidenceUrl = null;
-                if (uploadedFile) {
+                // 3. อัปโหลดไฟล์ทั้งหมด (ถ้ามี)
+                let evidenceUrls = [];
+                if (uploadedFiles.length > 0) {
                     try {
-                        evidenceUrl = await uploadEvidenceFile(uploadedFile, currentUserId, ticketId);
+                        evidenceUrls = await uploadEvidenceFiles(uploadedFiles, currentUserId, ticketId);
                     } catch (uploadError) {
                         throw new Error('อัปโหลดไฟล์ไม่สำเร็จ: ' + uploadError.message);
                     }
@@ -1385,8 +1722,7 @@
                         user_email: userData.email,
                         topic: selectedTopic,
                         detail: detail,
-                        evidence: evidenceUrl ? 'attached' : null,
-                        evidence_url: evidenceUrl,   // เก็บ URL ของไฟล์
+                        evidence: evidenceUrls.length > 0 ? JSON.stringify(evidenceUrls) : null, // เก็บเป็น JSON string
                         status: 'pending',
                         ticket_id: ticketId,
                         created_at: new Date().toISOString()
@@ -1426,7 +1762,8 @@
                 
                 // รีเซ็ตฟอร์ม
                 problemDetail.value = '';
-                removeAttachedFile(); // ลบไฟล์ที่แนบ
+                uploadedFiles = []; // ลบไฟล์ที่แนบ
+                renderFileList(); // เคลียร์ UI
                 
                 // เคลียร์ topic ที่เลือก
                 document.querySelectorAll('.topic-card').forEach(card => {
@@ -1490,21 +1827,143 @@
         // 🎉 SHOW COMING SOON (ป๊อปอัพสวยๆ)
         // ------------------------------
         function showComingSoon() {
-            Swal.fire({
-                icon: 'info',
-                title: '🚧 เร็วๆ นี้',
-                text: 'ระบบกำลังปิดปรับปรุงเพื่อให้บริการที่ดีขึ้น โปรดติดตามเร็วๆ นี้',
-                background: '#050b14',
-                color: '#fff',
-                confirmButtonColor: '#00f2ff',
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: true
+            document.getElementById('comingSoonModal').style.display = 'flex';
+        }
+
+        function closeComingSoon() {
+            document.getElementById('comingSoonModal').style.display = 'none';
+        }
+
+        // ========== ฟังก์ชัน checkSystemStatus (เพิ่มตาม Dashboard) ==========
+        function checkSystemStatus() {
+            const ticker = document.getElementById('topTicker');
+            const tickerText = document.getElementById('tickerText');
+            const aiMsg = document.getElementById('aiMsg');
+            const hour = new Date().getHours();
+            
+            if (hour >= 3 && hour < 10) {
+                // ช่วงพัก 03:00 - 10:00 น.
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,215,0,0.15) 10%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
+                tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) การตอบกลับอาจช้ากว่าปกติ';
+                tickerText.style.color = 'var(--warning)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบรับเรื่องและตรวจสอบปัญหายังทำงานเต็มประสิทธิภาพ 100%"`;
+                }
+            } else {
+                // ช่วงเวลาปกติ
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
+                tickerText.innerHTML = '🆘 [Support] ศูนย์ช่วยเหลือ AEGIS NEX พร้อมบริการ 24 ชั่วโมง | ⚡ [Response] ทีมงานตอบกลับภายใน 5-15 นาที | 🔒 [Security] ข้อมูลของคุณได้รับการปกป้อง 100%';
+                tickerText.style.color = 'var(--primary)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบสนับสนุนอัตโนมัติ: พร้อมใช้งาน | การตรวจสอบปัญหา: AI Active | เวลาตอบกลับ: 5-15 นาที"`;
+                }
+            }
+        }
+
+        // ==================== JUKEBOX (ต่อเนื่องจาก dashboard) ====================
+        const globalPlaylist = [
+            { 
+                title: "Cartoon - On & On", 
+                file: "./music/on_and_on.mp3", 
+                credit: "🎵 Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds" 
+            },
+            { 
+                title: "Warriyo - Mortals", 
+                file: "./music/mortals.mp3", 
+                credit: "🎵 Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds" 
+            }
+        ];
+
+        const audioPlayer = document.getElementById('globalAudioPlayer');
+        const jukeIcon = document.getElementById('jukeIcon');
+        const jukePlayPause = document.getElementById('jukePlayPause');
+        const jukeDisk = document.getElementById('jukeToggleBtn');
+        const jukeTitle = document.getElementById('jukeTitle');
+        const jukeCredit = document.getElementById('jukeCredit');
+
+        let currentSongIdx = parseInt(localStorage.getItem('aegis_music_idx')) || 0;
+        let savedTime = parseFloat(localStorage.getItem('aegis_music_time')) || 0;
+        let isMusicPlaying = localStorage.getItem('aegis_music_playing') === 'true';
+
+        function loadGlobalSong(index, setTime = 0) {
+            if (index >= globalPlaylist.length) index = 0;
+            if (index < 0) index = globalPlaylist.length - 1;
+            
+            currentSongIdx = index;
+            audioPlayer.src = globalPlaylist[currentSongIdx].file;
+            audioPlayer.currentTime = setTime;
+            
+            jukeTitle.innerText = globalPlaylist[currentSongIdx].title;
+            jukeCredit.innerText = globalPlaylist[currentSongIdx].credit;
+            localStorage.setItem('aegis_music_idx', currentSongIdx);
+        }
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                jukeIcon.className = 'fas fa-music';
+                jukePlayPause.className = 'fas fa-pause juke-btn';
+                jukeDisk.classList.add('spinning');
+            } else {
+                jukeIcon.className = 'fas fa-play';
+                jukePlayPause.className = 'fas fa-play juke-btn';
+                jukeDisk.classList.remove('spinning');
+            }
+        }
+
+        window.toggleGlobalMusic = function(event) {
+            event.stopPropagation();
+            if (audioPlayer.paused) {
+                audioPlayer.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI();
+                    localStorage.setItem('aegis_music_playing', 'true');
+                }).catch(e => console.log('Autoplay blocked by browser'));
+            } else {
+                audioPlayer.pause();
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            }
+        };
+
+        window.nextSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx + 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        window.prevSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx - 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        audioPlayer.addEventListener('ended', () => {
+            window.nextSong(new Event('ended'));
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if(!audioPlayer.paused) {
+                localStorage.setItem('aegis_music_time', audioPlayer.currentTime);
+            }
+        });
+
+        loadGlobalSong(currentSongIdx, savedTime);
+        updateMusicUI();
+
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(e => {
+                console.log('Browser blocked auto-resume, user needs to interact first.');
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
             });
         }
 
         // ------------------------------
-        // 🧠 AI RANDOM MESSAGES
+        // 🧠 AI RANDOM MESSAGES (เฉพาะช่วงเวลาปกติ)
         // ------------------------------
         function startAiRandomMessages() {
             const aiMessages = [
@@ -1515,8 +1974,11 @@
                 "อธิบายปัญหาอย่างละเอียดจะช่วยให้ทีมงานแก้ไขได้เร็วขึ้นนะครับ"
             ];
             aiInterval = setInterval(() => {
-                const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-                updateAIMessage(randomMsg);
+                const hour = new Date().getHours();
+                if (hour < 3 || hour >= 10) {
+                    const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+                    updateAIMessage(randomMsg);
+                }
             }, 15000);
         }
 
@@ -1528,6 +1990,8 @@
             initTopics();
             initFileUpload();    // เปิดใช้งานระบบอัปโหลดไฟล์
             startAiRandomMessages();
+            checkSystemStatus(); // ตรวจสอบสถานะระบบตามเวลาจริง
+            setInterval(checkSystemStatus, 3600000); // ตรวจสอบทุก 1 ชั่วโมง
             
             // กด ESC เพื่อปิด modal
             document.addEventListener('keydown', function(e) {
@@ -1543,6 +2007,7 @@
         // ล้าง interval และ listener เมื่อออกจากหน้า (optional)
         window.addEventListener('beforeunload', function() {
             if (aiInterval) clearInterval(aiInterval);
+            if (onlineAdminInterval) clearInterval(onlineAdminInterval);
             if (authListener && authListener.unsubscribe) authListener.unsubscribe();
         });
     </script>
