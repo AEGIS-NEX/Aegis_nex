@@ -1498,8 +1498,8 @@
                     
                     if (transError) throw transError;
 
-                 // อัปเดตเควสรายวันเมื่อกดเติมเงิน
-await supa.rpc('increment_quest', { p_user_id: currentUserId, p_slug: 'daily_topup', p_increment: 1 });
+                    // ***** เควสเติมเงินถูกย้ายไปที่ admin.html ในฟังก์ชันอนุมัติแล้ว *****
+                    // await supa.rpc('process_quest_action', { p_user_id: currentUserId, p_slug: 'daily_topup' });
 
                     window.location.href = 'dashboard.html';
                     
