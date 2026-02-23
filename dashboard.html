@@ -2218,31 +2218,50 @@
         async function openProfilePopup() {
             if (!currentUserData?.id) return;
             viewProfile(
+                currentUserData.id,
                 currentUserData.display_name || currentUserData.username || 'USER',
                 currentUserData.photo_url,
-                currentUserData.completed_deals || 0,
-                currentUserData.id,
-                currentUserData.kyc_status || 'unverified',
-                0, 100,
-                currentUserData.average_rating || 5.0
+                currentUserData.kyc_status || 'unverified'
             );
         }
 
-        // 🔥 VIEW PROFILE
-        window.viewProfile = async function(name, img, initialDeals, uid, kyc, initialCancelled = 0, initialScore = 100, rating = 5.0) {
+        // 🔥 VIEW PROFILE (แก้ไขใหม่: ไม่รับ deals, ดึงจากฐานข้อมูลเอง)
+        window.viewProfile = async function(uid, name = '', img = '', kyc = 'unverified') {
             try {
-                const rankInfo = getRank(initialDeals, uid);
                 const box = document.getElementById('pfBox');
+                const pfImgEl = document.getElementById('pfImg');
+                const pName = document.getElementById('pfName');
+                const rankContainer = document.getElementById('pfBadge');
+                const dealsEl = document.getElementById('pfDealsSuccess');
+                const cancelEl = document.getElementById('pfDealsCancel');
+                const scoreEl = document.getElementById('pfScore');
+                const starCountEl = document.getElementById('pfStarCount');
+                const starsEl = document.getElementById('pfStars');
+
+                // ตั้งค่ารูปและชื่อเบื้องต้น
+                pfImgEl.style.backgroundImage = img ? `url('${img}')` : 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
+                pName.innerHTML = name ? name.toUpperCase() : 'USER';
+
+                // ดึงข้อมูลจาก users และ trades
+                const [userResult, stats] = await Promise.all([
+                    supa.from('users').select('*').eq('id', uid).single(),
+                    fetchUserStats(uid)
+                ]);
+
+                const user = userResult.data || {};
+                const displayName = user.display_name || user.username || name || 'USER';
+                const photoUrl = user.photo_url || img;
+                const kycStatus = user.kyc_status || kyc;
+                const rating = user.average_rating || 5.0;
+                const deals = stats.completed;
+                const cancelled = stats.cancelled;
+                const score = stats.score;
+
+                const rankInfo = getRank(deals, uid);
                 box.style.borderColor = rankInfo.border;
                 box.style.boxShadow = `0 0 25px ${rankInfo.color}30`;
 
-                const pfImgEl = document.getElementById('pfImg');
-                if (img) {
-                    pfImgEl.style.backgroundImage = `url('${img}')`;
-                } else {
-                    pfImgEl.style.backgroundImage = 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
-                }
-
+                pfImgEl.style.backgroundImage = `url('${photoUrl}')`;
                 const avatarGlow = getAvatarGlowStyle(rankInfo, uid);
                 pfImgEl.style.borderColor = rankInfo.border;
                 pfImgEl.style.boxShadow = avatarGlow.boxShadow;
@@ -2252,27 +2271,23 @@
                 let tick = '';
                 if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
                     tick = ` <i class="fas fa-check-circle rainbow-tick" style="font-size:20px;"></i>`;
-                } else if (kyc === 'verified' || kyc === true) {
+                } else if (kycStatus === 'verified' || user.kyc_verified === true) {
                     tick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:20px;"></i>`;
                 }
 
-                const pName = document.getElementById('pfName');
-                pName.innerHTML = name.toUpperCase() + tick;
+                pName.innerHTML = displayName.toUpperCase() + tick;
                 pName.style.color = rankInfo.color;
                 pName.style.textShadow = getTextShadowStyle(rankInfo, uid);
 
-                document.getElementById('pfBadge').innerHTML = rankInfo.html;
-                document.getElementById('pfDealsSuccess').innerText = initialDeals;
-                document.getElementById('pfDealsCancel').innerText = initialCancelled;
-                document.getElementById('pfScore').innerText = initialScore + '%';
-                document.getElementById('pfStarCount').innerText = Math.round(rating);
-                document.getElementById('pfStars').innerHTML = getStarRating(rating, uid);
+                rankContainer.innerHTML = rankInfo.html;
+                dealsEl.innerText = deals;
+                cancelEl.innerText = cancelled;
+                scoreEl.innerText = score + '%';
+                starCountEl.innerText = Math.round(rating);
+                starsEl.innerHTML = getStarRating(rating, uid);
 
-                const { data: userWithSeen } = await supa
-                    .from('users')
-                    .select('last_seen')
-                    .eq('id', uid)
-                    .single();
+                // อัปเดต online dot
+                const { data: userWithSeen } = await supa.from('users').select('last_seen').eq('id', uid).single();
                 const online = userWithSeen && isOnline(userWithSeen.last_seen);
                 const dot = document.getElementById('pfOnlineDot');
                 dot.style.background = online ? 'var(--success)' : '#666';
@@ -2280,41 +2295,8 @@
 
                 document.getElementById('pfModal').style.display = 'flex';
 
-                // Background update
-                (async () => {
-                    try {
-                        const { data: user } = await supa
-                            .from('users')
-                            .select('*')
-                            .eq('id', uid)
-                            .single();
-                        if (user) {
-                            const stats = await fetchUserStats(uid);
-                            const newRankInfo = getRank(stats.completed, uid);
-                            box.style.borderColor = newRankInfo.border;
-                            box.style.boxShadow = `0 0 25px ${newRankInfo.color}30`;
-                            const newAvatarGlow = getAvatarGlowStyle(newRankInfo, uid);
-                            pfImgEl.style.borderColor = newRankInfo.border;
-                            pfImgEl.style.boxShadow = newAvatarGlow.boxShadow;
-                            pfImgEl.style.animation = newAvatarGlow.animation;
-                            let newTick = '';
-                            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                                newTick = ` <i class="fas fa-check-circle rainbow-tick" style="font-size:20px;"></i>`;
-                            } else if (user.kyc_status === 'verified' || user.kyc_verified === true) {
-                                newTick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:20px;"></i>`;
-                            }
-                            pName.innerHTML = (user.display_name || user.username || name).toUpperCase() + newTick;
-                            pName.style.color = newRankInfo.color;
-                            pName.style.textShadow = getTextShadowStyle(newRankInfo, uid);
-                            document.getElementById('pfBadge').innerHTML = newRankInfo.html;
-                            document.getElementById('pfDealsSuccess').innerText = stats.completed;
-                            document.getElementById('pfDealsCancel').innerText = stats.cancelled;
-                            document.getElementById('pfScore').innerText = stats.score + '%';
-                        }
-                    } catch (e) {}
-                })();
-
             } catch (error) {
+                console.error('viewProfile error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'ไม่สามารถโหลดข้อมูลโปรไฟล์',
@@ -2608,7 +2590,7 @@
                     
                     const displayName = user.display_name || user.username || 'USER';
                     
-                    html += `<div class="user-list-item" onclick="viewProfile('${displayName.replace(/'/g, "\\'")}', '${user.photo_url || ''}', ${user.realDeals || 0}, '${user.id}', '${user.kyc_status}', 0, 0, ${user.average_rating || 5.0})">
+                    html += `<div class="user-list-item" onclick="viewProfile('${user.id}', '${displayName.replace(/'/g, "\\'")}', '${user.photo_url || ''}', '${user.kyc_status}')">
                                 ${rankDisplay}
                                 <div style="position:relative;">
                                     <img src="${user.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=100&h=100&fit=crop'}" 
