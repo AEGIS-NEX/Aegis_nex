@@ -69,7 +69,7 @@
         }
 
         /* ------------------------------------------------
-           📢 ENHANCED NEWS TICKER
+           📢 NEWS TICKER (เพิ่ม id="tickerText")
            ------------------------------------------------ */
         .news-ticker {
             background: linear-gradient(90deg, 
@@ -219,6 +219,112 @@
             box-shadow: 0 0 7px rgba(0, 242, 255, 0.2);
         }
 
+        /* ------------------------------------------------
+           🎵 MINI JUKEBOX (เพิ่มจาก Dashboard)
+           ------------------------------------------------ */
+        .mini-juke-container {
+            width: calc(100% - 40px);
+            max-width: 560px;
+            margin: 10px auto 10px auto;
+            background: rgba(10, 15, 25, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+        }
+
+        .mini-juke-container:hover {
+            background: rgba(10, 15, 25, 0.95);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .juke-disk {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #000;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .juke-disk.spinning {
+            animation: spinDisk 4s linear infinite;
+        }
+
+        @keyframes spinDisk {
+            100% { transform: rotate(360deg); }
+        }
+
+        .juke-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .juke-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .juke-credit {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            height: 14px;
+        }
+
+        .juke-credit span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .juke-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .juke-btn {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+
+        /* ------------------------------------------------
+           🧠 AI SECTION
+           ------------------------------------------------ */
         .ai-section { 
             margin: 15px 20px; 
             display: flex; 
@@ -1383,16 +1489,18 @@
 
     <div class="app-container">
         
-        <div class="news-ticker">
-            <div class="ticker-content">
-                👤 [Profile] ระบบโปรไฟล์ AEGIS NEX พร้อมใช้งาน | ⚠️ [Security] ตรวจสอบความปลอดภัยบัญชีเป็นประจำ | 🛡️ [KYC] ยืนยันตัวตนเพื่อสิทธิพิเศษ
+        <!-- News Ticker (เพิ่ม id="tickerText" และ id="topTicker") -->
+        <div class="news-ticker" id="topTicker">
+            <div class="ticker-content" id="tickerText">
+                👤 [โปรไฟล์] ระบบโปรไฟล์ AEGIS NEX พร้อมใช้งาน | ⚠️ [Security] ตรวจสอบความปลอดภัยบัญชีเป็นประจำ | 🛡️ [KYC] ยืนยันตัวตนเพื่อสิทธิพิเศษ
             </div>
         </div>
         
+        <!-- Dashboard Header -->
         <div class="dash-header">
             <div class="header-title">
                 <i class="fas fa-chevron-left" onclick="location.href='dashboard.html'" style="cursor:pointer"></i>
-                <span>PROFILE</span>
+                <span>โปรไฟล์</span>   <!-- เปลี่ยนจาก PROFILE เป็น โปรไฟล์ -->
             </div>
             <div class="header-actions">
                 <div class="icon-btn" onclick="showHelp()">
@@ -1404,6 +1512,27 @@
             </div>
         </div>
 
+        <!-- ███████████████████████████████████████████████████████ -->
+        <!-- 🎵 Mini Jukebox (เพิ่มจาก Dashboard) วางไว้เหนือ AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <div class="mini-juke-container" id="miniJukebox">
+            <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+                <i class="fas fa-play" id="jukeIcon"></i>
+            </div>
+            <div class="juke-controls">
+                <div class="juke-title" id="jukeTitle">NCS Music</div>
+                <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+                <div class="juke-btns">
+                    <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                    <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                    <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+                </div>
+            </div>
+        </div>
+        <audio id="globalAudioPlayer" preload="auto"></audio>
+        <!-- ███████████████████████████████████████████████████████ -->
+
+        <!-- AI Section (id="aiMsg" มีอยู่แล้ว) -->
         <div class="ai-section">
             <div class="ai-face">
                 <i class="fas fa-robot"></i>
@@ -1413,6 +1542,7 @@
             </div>
         </div>
 
+        <!-- Profile Header -->
         <div class="profile-header">
             <div class="avatar-wrapper" onclick="document.getElementById('uploadProfile').click()">
                 <img id="userAvatar" class="avatar-img" src="https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop" alt="Profile" loading="lazy">
@@ -1453,6 +1583,7 @@
             </div>
         </div>
 
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-item">
                 <div id="statDeals" class="stat-val">0</div>
@@ -1468,6 +1599,7 @@
             </div>
         </div>
 
+        <!-- Menu Section: Security -->
         <div class="menu-section">
             <div class="menu-title">
                 <i class="fas fa-shield-alt"></i> ความปลอดภัย (SECURITY)
@@ -1504,6 +1636,7 @@
             </div>
         </div>
 
+        <!-- Menu Section: General -->
         <div class="menu-section">
             <div class="menu-title">
                 <i class="fas fa-cog"></i> ทั่วไป (GENERAL)
@@ -1526,12 +1659,14 @@
             </div>
         </div>
 
+        <!-- Logout Button -->
         <div class="logout-container">
             <button class="btn-logout" onclick="openLogoutModal()">
                 <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
             </button>
         </div>
 
+        <!-- Footer Links -->
         <div class="footer-links">
             <a href="#">เงื่อนไขการใช้งาน</a> • 
             <a href="#">นโยบายความเป็นส่วนตัว</a> • 
@@ -1541,12 +1676,12 @@
         </div>
     </div>
 
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <a href="dashboard.html" class="nav-link">
             <i class="fas fa-home"></i>
             <span>หน้าหลัก</span>
         </a>
-        <!-- แก้ไขปุ่มตลาดให้เรียก modal แทนการไปหน้า market.html -->
         <a href="javascript:void(0)" class="nav-link" onclick="showComingSoon()">
             <i class="fas fa-store"></i>
             <span>ตลาด</span>
@@ -1752,7 +1887,7 @@
         </div>
     </div>
 
-    <!-- Coming Soon Modal (เพิ่มใหม่) -->
+    <!-- Coming Soon Modal -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal-box">
             <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
@@ -2253,12 +2388,11 @@
                     currentUserData.photo_url = e.target.result;
                     updateProfileUI(currentUserData, currentUserData.uid); // จะบันทึกลง localStorage ด้วย
                     
-                    // ตรวจสอบว่านี่เป็นการอัปโหลดรูปครั้งแรกหรือไม่ (รูปเดิมเป็นค่าเริ่มต้น)
-                    const defaultImage = 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
-                    if (!oldPhotoUrl || oldPhotoUrl === defaultImage) {
-                        await supa.rpc('increment_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup', p_increment: 1 });
-                    }
-                    
+                    // 🌟 จินนี่: ยิงเควสอัปเดตโปรไฟล์
+                    try {
+                        await supa.rpc('process_quest_action', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup' });
+                    } catch (qErr) { console.error('Quest error:', qErr); }
+
                     showAlert('อัปเดตรูปโปรไฟล์สำเร็จ!', 'success');
                 } catch (error) {
                     console.error('Error uploading profile image:', error);
@@ -2332,11 +2466,11 @@
                 // บันทึก cache และ localStorage
                 updateProfileUI(currentUserData, currentUserData.uid);
                 
-                // ถ้าเป็นการเปลี่ยนชื่อครั้งแรก ให้ increment quest
-                if (nameChangeCount === 1) { // เพราะเพิ่มแล้ว
-                    await supa.rpc('increment_quest', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup', p_increment: 1 });
-                }
-                
+                // 🌟 จินนี่: ยิงเควสอัปเดตโปรไฟล์
+                try {
+                    await supa.rpc('process_quest_action', { p_user_id: currentUserData.uid, p_slug: 'pioneer_setup' });
+                } catch (qErr) { console.error('Quest error:', qErr); }
+
                 closeNameModal();
                 showAlert('✅ เปลี่ยนชื่อสำเร็จ!', 'success');
             } catch (error) {
@@ -2440,10 +2574,140 @@
             document.getElementById('comingSoonModal').style.display = 'none';
         }
 
+        // ========== ฟังก์ชัน checkSystemStatus (เพิ่มตาม Dashboard) ==========
+        function checkSystemStatus() {
+            const ticker = document.getElementById('topTicker');
+            const tickerText = document.getElementById('tickerText');
+            const aiMsg = document.getElementById('aiMsg');
+            const hour = new Date().getHours();
+            
+            if (hour >= 3 && hour < 10) {
+                // ช่วงพัก 03:00 - 10:00 น.
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,215,0,0.15) 10%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
+                tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) การอัปเดตโปรไฟล์หรือข้อมูลอาจช้ากว่าปกติ';
+                tickerText.style.color = 'var(--warning)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
+                }
+            } else {
+                // ช่วงเวลาปกติ
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
+                tickerText.innerHTML = '👤 [โปรไฟล์] ระบบโปรไฟล์ AEGIS NEX พร้อมใช้งาน | ⚠️ [Security] ตรวจสอบความปลอดภัยบัญชีเป็นประจำ | 🛡️ [KYC] ยืนยันตัวตนเพื่อสิทธิพิเศษ';
+                tickerText.style.color = 'var(--primary)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | โปรไฟล์: โหมดประมวลผลเรียลไทม์ | สถานะ: ปกติ"`;
+                }
+            }
+        }
+
+        // ==================== JUKEBOX (ต่อเนื่องจาก dashboard) ====================
+        const globalPlaylist = [
+            { 
+                title: "Cartoon - On & On", 
+                file: "./music/on_and_on.mp3", 
+                credit: "🎵 Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds" 
+            },
+            { 
+                title: "Warriyo - Mortals", 
+                file: "./music/mortals.mp3", 
+                credit: "🎵 Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds" 
+            }
+        ];
+
+        const audioPlayer = document.getElementById('globalAudioPlayer');
+        const jukeIcon = document.getElementById('jukeIcon');
+        const jukePlayPause = document.getElementById('jukePlayPause');
+        const jukeDisk = document.getElementById('jukeToggleBtn');
+        const jukeTitle = document.getElementById('jukeTitle');
+        const jukeCredit = document.getElementById('jukeCredit');
+
+        let currentSongIdx = parseInt(localStorage.getItem('aegis_music_idx')) || 0;
+        let savedTime = parseFloat(localStorage.getItem('aegis_music_time')) || 0;
+        let isMusicPlaying = localStorage.getItem('aegis_music_playing') === 'true';
+
+        function loadGlobalSong(index, setTime = 0) {
+            if (index >= globalPlaylist.length) index = 0;
+            if (index < 0) index = globalPlaylist.length - 1;
+            
+            currentSongIdx = index;
+            audioPlayer.src = globalPlaylist[currentSongIdx].file;
+            audioPlayer.currentTime = setTime;
+            
+            jukeTitle.innerText = globalPlaylist[currentSongIdx].title;
+            jukeCredit.innerText = globalPlaylist[currentSongIdx].credit;
+            localStorage.setItem('aegis_music_idx', currentSongIdx);
+        }
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                jukeIcon.className = 'fas fa-music';
+                jukePlayPause.className = 'fas fa-pause juke-btn';
+                jukeDisk.classList.add('spinning');
+            } else {
+                jukeIcon.className = 'fas fa-play';
+                jukePlayPause.className = 'fas fa-play juke-btn';
+                jukeDisk.classList.remove('spinning');
+            }
+        }
+
+        window.toggleGlobalMusic = function(event) {
+            event.stopPropagation();
+            if (audioPlayer.paused) {
+                audioPlayer.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI();
+                    localStorage.setItem('aegis_music_playing', 'true');
+                }).catch(e => console.log('Autoplay blocked by browser'));
+            } else {
+                audioPlayer.pause();
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            }
+        };
+
+        window.nextSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx + 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        window.prevSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx - 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        audioPlayer.addEventListener('ended', () => {
+            window.nextSong(new Event('ended'));
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if(!audioPlayer.paused) {
+                localStorage.setItem('aegis_music_time', audioPlayer.currentTime);
+            }
+        });
+
+        loadGlobalSong(currentSongIdx, savedTime);
+        updateMusicUI();
+
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(e => {
+                console.log('Browser blocked auto-resume, user needs to interact first.');
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            });
+        }
+
         // ========== รันเมื่อโหลดหน้า ==========
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             loadGraphicsLevel();
+            checkSystemStatus(); // ตรวจสอบสถานะระบบตามเวลาจริง
+            setInterval(checkSystemStatus, 3600000); // ตรวจสอบทุก 1 ชั่วโมง
             
             // ดึงข้อมูลจาก localStorage มาแสดงทันที (ถ้ามี) เพื่อไม่ให้เห็น LOADING
             const local = loadFromLocalStorage();
@@ -2467,15 +2731,19 @@
         });
 
         function updateAIMessage() {
-            const aiMessages = [
-                "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | โปรไฟล์: โหมดประมวลผลเรียลไทม์",
-                "การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
-                "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable",
-                "ตรวจสอบความปลอดภัยโปรไฟล์: ปกติ | ไม่พบกิจกรรมต้องสงสัย",
-                "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน"
-            ];
-            const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
-            document.getElementById('aiMsg').innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
+            const hour = new Date().getHours();
+            // อัปเดต AI message เฉพาะเมื่อไม่อยู่ในช่วงพัก เพราะถ้าช่วงพักข้อความจะถูก set ไว้แล้ว
+            if (hour < 3 || hour >= 10) {
+                const aiMessages = [
+                    "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | โปรไฟล์: โหมดประมวลผลเรียลไทม์",
+                    "การเข้ารหัส: AES-256 เปิดใช้งาน | ฟังก์ชั่นปกป้อง: เปิดใช้งานทั้งหมด",
+                    "ประมวลผลข้อมูลเรียลไทม์... | สถานะเซิร์ฟเวอร์: Stable",
+                    "ตรวจสอบความปลอดภัยโปรไฟล์: ปกติ | ไม่พบกิจกรรมต้องสงสัย",
+                    "โหมดป้องกัน: เปิดสูงสุด | ระบบแจ้งเตือน: พร้อมใช้งาน"
+                ];
+                const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+                document.getElementById('aiMsg').innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
+            }
         }
     </script>
 </body>
