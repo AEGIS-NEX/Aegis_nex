@@ -18,16 +18,35 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         :root {
             --primary: #00f2ff;
             --primary-glow: rgba(0, 242, 255, 0.6);
             --secondary: #bc13fe;
+            --secondary-glow: rgba(188, 19, 254, 0.6);
             --accent: #ff0080;
             --dark-bg: #03050b;
             --text: #ffffff;
             --text-muted: #a0a8b5;
+            --live-red: #ff0000;
+            --live-red-glow: rgba(255, 0, 0, 0.6);
+            
+            --rank-newbie: #b0bec5;
+            --rank-trainee: #cfd8dc;
+            --rank-rookie: #80cbc4;
+            --rank-expert: #00e676;
+            --rank-pro: #2979ff;
+            --rank-elite: #304ffe;
+            --rank-veteran: #d500f9;
+            --rank-master: #ffab00;
+            --rank-warlord: #ff6d00;
+            --rank-immortal: #ff1744;
+            --rank-god: #bc13fe;
+            --rank-legendary: linear-gradient(45deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+            --rank-ceo: #ff0000;
         }
 
         body {
@@ -39,7 +58,6 @@
             position: relative;
         }
 
-        /* ===== พื้นหลังอวกาศ ===== */
         .space-bg {
             position: fixed;
             top: 0;
@@ -98,7 +116,6 @@
             100% { top: 100vh; }
         }
 
-        /* ===== MAIN CONTAINER ===== */
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -107,7 +124,6 @@
             z-index: 5;
         }
 
-        /* ===== TOP BAR ===== */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -140,12 +156,12 @@
         }
 
         .live-badge {
-            background: rgba(0, 242, 255, 0.08);
-            border: 1px solid rgba(0, 242, 255, 0.3);
+            background: rgba(255, 0, 0, 0.08);
+            border: 1px solid rgba(255, 0, 0, 0.3);
             padding: 6px 15px;
             border-radius: 40px;
             font-size: 12px;
-            color: var(--primary);
+            color: #ff8888;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -154,13 +170,16 @@
         }
 
         .live-badge i {
-            color: var(--primary);
-            animation: pulse 2s infinite;
+            color: #ff0000;
+            animation: pulse-red 1.5s infinite;
         }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        @keyframes pulse-red {
+            0% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+            50% { opacity: 0.4; text-shadow: 0 0 15px #ff0000; }
+            100% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+        }
 
-        /* ===== HERO SPLIT LAYOUT ===== */
         .hero-split {
             display: flex;
             flex-direction: column;
@@ -179,7 +198,6 @@
             align-items: center;
         }
 
-        /* ===== TIME CORNER ===== */
         .time-corner {
             background: rgba(0, 10, 20, 0.4);
             backdrop-filter: blur(10px);
@@ -207,7 +225,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ===== HERO QUOTE ===== */
         .hero-quote {
             font-size: clamp(16px, 4vw, 22px);
             font-weight: 300;
@@ -228,7 +245,6 @@
             text-shadow: 0 0 10px var(--primary);
         }
 
-        /* ===== CTA BUTTONS ===== */
         .cta-buttons {
             display: flex;
             gap: 15px;
@@ -249,6 +265,8 @@
             align-items: center;
             gap: 8px;
             letter-spacing: 1px;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         .btn-primary {
@@ -275,7 +293,6 @@
             box-shadow: 0 0 30px var(--primary);
         }
 
-        /* ===== VIDEO CONTAINER - แก้ให้เต็มพื้นที่ ===== */
         .video-container {
             width: 100%;
             border-radius: 30px;
@@ -301,12 +318,11 @@
             width: 100%;
             height: auto;
             display: block;
-            aspect-ratio: 16 / 9; /* เปลี่ยนเป็น 16:9 ให้กว้างเหมือน YouTube */
+            aspect-ratio: 16 / 9;
             object-fit: cover;
             background: #0a0a0a;
         }
 
-        /* ===== FEATURES SECTION ===== */
         .section-title {
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(28px, 6vw, 36px);
@@ -387,7 +403,7 @@
             border: 1px solid rgba(255, 215, 0, 0.2);
         }
 
-        /* ===== RANK SHOWCASE ===== */
+        /* ===== RANK SHOWCASE - นำมาจาก profile.html ===== */
         .rank-showcase {
             display: flex;
             flex-wrap: wrap;
@@ -405,35 +421,236 @@
             font-size: 11px;
             padding: 5px 12px;
             border-radius: 30px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid currentColor;
-            color: #aaa;
             font-family: 'Orbitron', sans-serif;
             transition: 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: visible;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
 
         .rank-badge-mini:hover {
-            color: var(--primary);
-            border-color: var(--primary);
             transform: scale(1.05);
-            box-shadow: 0 0 15px var(--primary);
+            box-shadow: 0 0 15px currentColor;
         }
 
-        .rank-badge-mini.special {
-            background: linear-gradient(45deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
-            background-size: 400%;
-            color: white;
-            border: none;
-            animation: rainbow 8s infinite;
+        /* คลาสยศต่างๆ จาก profile */
+        .rank-badge-mini.rb-0 { 
+            color: #b0bec5; 
+            border: 1px solid #555; 
+            background: rgba(255,255,255,0.035); 
+            text-shadow: 0 0 2px #b0bec5;
+        }
+        .rank-badge-mini.rb-1 { 
+            color: #cfd8dc; 
+            border: 1px solid #cfd8dc; 
+            background: rgba(255,255,255,0.07); 
+            text-shadow: 0 0 3px #cfd8dc;
+            box-shadow: 0 0 3px rgba(207, 216, 220, 0.2);
+        }
+        .rank-badge-mini.rb-2 { 
+            color: #80cbc4; 
+            border: 1px solid #80cbc4; 
+            background: rgba(128,203,196,0.07); 
+            text-shadow: 0 0 3px #80cbc4;
+            box-shadow: 0 0 5px rgba(128, 203, 196, 0.3);
+        }
+        .rank-badge-mini.rb-3 { 
+            color: #00e676; 
+            border: 1px solid #00e676; 
+            background: rgba(0,230,118,0.07); 
+            box-shadow: 0 0 7px rgba(0,230,118,0.3);
+            text-shadow: 0 0 5px #00e676;
+        }
+        .rank-badge-mini.rb-4 { 
+            color: #2979ff; 
+            border: 1px solid #2979ff; 
+            background: rgba(41,121,255,0.07); 
+            box-shadow: 0 0 8px rgba(41,121,255,0.3);
+            text-shadow: 0 0 5px #2979ff;
+        }
+        .rank-badge-mini.rb-5 { 
+            color: #304ffe; 
+            border: 1px solid #304ffe; 
+            background: rgba(48,79,254,0.1); 
+            box-shadow: 0 0 10px rgba(48,79,254,0.35);
+            text-shadow: 0 0 7px #304ffe;
+        }
+        .rank-badge-mini.rb-6 { 
+            color: #d500f9; 
+            border: 1px solid #d500f9; 
+            background: rgba(213,0,249,0.1); 
+            box-shadow: 0 0 10px rgba(213,0,249,0.35); 
+            text-shadow: 0 0 7px #d500f9;
+        }
+        .rank-badge-mini.rb-7 { 
+            color: #ffab00; 
+            border: 2px solid #ffab00; 
+            background: rgba(255,171,0,0.15); 
+            box-shadow: 0 0 14px rgba(255,171,0,0.35);
+            text-shadow: 0 0 8px #ffab00;
+        }
+        .rank-badge-mini.rb-8 { 
+            color: #ff6d00; 
+            border: 2px solid #ff6d00; 
+            background: rgba(255,109,0,0.15); 
+            box-shadow: 0 0 18px rgba(255,109,0,0.35);
+            text-shadow: 0 0 10px #ff6d00;
+        }
+        .rank-badge-mini.rb-9 { 
+            color: #fff; 
+            background: linear-gradient(45deg, #d50000, #ff1744); 
+            border: 2px solid #ff1744; 
+            box-shadow: 0 0 21px rgba(255,23,68,0.4); 
+            text-shadow: 0 0 10px #fff;
+        }
+        .rank-badge-mini.rb-10 { 
+            background: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc, #ff00cc); 
+            background-size: 400% 400%; 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent; 
+            border: 2px solid #fff; 
+            box-shadow: 0 0 21px rgba(255,255,255,0.35);
+            animation: rainbowBorder 4s infinite linear;
+            position: relative;
+        }
+        .rank-badge-mini.rb-special {
+            background: linear-gradient(45deg, 
+                #ff0000, #ff8800, #ffff00, #00ff00, 
+                #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 400% 400%;
+            color: white !important;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            overflow: hidden;
+            animation: rainbow 3s infinite linear, glowSpecial 2s infinite alternate;
+            text-shadow: 0 0 7px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.15);
+        }
+        .rank-badge-mini.rb-special::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                #ff0000, #ff8800, #ffff00, #00ff00, 
+                #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 15px;
+            animation: rainbow 3s infinite linear;
+            filter: blur(3px);
+        }
+        .rank-badge-mini.rb-ceo { 
+            color: #ff0000; 
+            text-shadow: 0 0 10px red, 0 0 18px red;
+            border: 2px solid red;
+            background: rgba(0,0,0,0.9);
+            box-shadow: 0 0 25px rgba(255,0,0,0.6);
+            font-family: 'Orbitron'; 
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+            animation: fireGlow 0.8s infinite alternate;
+        }
+        .rank-badge-mini.rb-ceo::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff0000, #ff4400, #ff8800, #ffcc00);
+            z-index: -1;
+            border-radius: 15px;
+            animation: fireBorder 1.5s infinite linear;
+            filter: blur(2px);
         }
 
+        /* ปิด animation สำหรับยศที่ไม่ใช่ 3 ยศพิเศษ (ยกเว้น rb-10, rb-special, rb-ceo) */
+        .rank-badge-mini.rb-3,
+        .rank-badge-mini.rb-4,
+        .rank-badge-mini.rb-5,
+        .rank-badge-mini.rb-6,
+        .rank-badge-mini.rb-7,
+        .rank-badge-mini.rb-8,
+        .rank-badge-mini.rb-9 {
+            animation: none !important;
+        }
+        .rank-badge-mini.rb-4::before {
+            display: none !important;
+        }
+
+        /* Keyframes ทั้งหมดจาก profile */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 7px currentColor; }
+            100% { box-shadow: 0 0 18px currentColor, 0 0 25px currentColor; }
+        }
+        @keyframes fireGlow {
+            0% { 
+                box-shadow: 0 0 10px #ff6d00, 0 0 18px #ff3d00; 
+                text-shadow: 0 0 5px #ff6d00;
+            }
+            100% { 
+                box-shadow: 0 0 18px #ff0000, 0 0 25px #ff0000, 0 0 32px #ff4400; 
+                text-shadow: 0 0 10px #ff0000, 0 0 18px #ff4400;
+            }
+        }
+        @keyframes rainbowBorder {
+            0% { 
+                border-image: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc, #ff00cc) 1;
+                box-shadow: 0 0 14px #ff00cc;
+            }
+            33% { 
+                border-image: linear-gradient(90deg, #3333ff, #00ffcc, #ff00cc, #ff00cc) 1;
+                box-shadow: 0 0 14px #3333ff;
+            }
+            66% { 
+                border-image: linear-gradient(90deg, #00ffcc, #ff00cc, #ff00cc, #3333ff) 1;
+                box-shadow: 0 0 14px #00ffcc;
+            }
+            100% { 
+                border-image: linear-gradient(90deg, #ff00cc, #3333ff, #00ffcc, #ff00cc) 1;
+                box-shadow: 0 0 14px #ff00cc;
+            }
+        }
         @keyframes rainbow {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @keyframes glowSpecial {
+            0% { box-shadow: 0 0 18px rgba(255, 255, 255, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.15); }
+            100% { box-shadow: 0 0 32px rgba(255, 255, 255, 0.6), 0 0 18px rgba(255, 0, 255, 0.35), inset 0 0 14px rgba(255, 255, 255, 0.3); }
+        }
+        @keyframes fireBorder {
+            0% { 
+                background: linear-gradient(45deg, #ff0000, #ff4400, #ff8800, #ffcc00);
+                opacity: 0.6;
+            }
+            50% { 
+                background: linear-gradient(45deg, #ffcc00, #ff0000, #ff4400, #ff8800);
+                opacity: 0.8;
+            }
+            100% { 
+                background: linear-gradient(45deg, #ff8800, #ffcc00, #ff0000, #ff4400);
+                opacity: 0.6;
+            }
         }
 
-        /* ===== TRUST SECTION ===== */
         .trust-section {
             margin: 40px 0;
             padding: 30px 20px;
@@ -466,7 +683,6 @@
             font-size: 12px;
         }
 
-        /* ===== FOOTER ===== */
         footer {
             margin-top: 50px;
             border-top: 1px solid rgba(0, 242, 255, 0.1);
@@ -507,7 +723,6 @@
             transform: scale(1.1);
         }
 
-        /* ===== MOBILE DOCK ===== */
         .mobile-dock {
             position: fixed;
             bottom: 15px;
@@ -530,7 +745,96 @@
             justify-content: center;
         }
 
-        /* ===== DESKTOP STYLES (จอใหญ่ขึ้น) ===== */
+        /* Modal สำหรับแสดงรายละเอียดยศ (คงเดิม) */
+        .rank-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rank-modal-box {
+            width: 300px;
+            max-width: 80%;
+            background: #000000;
+            border: 2px solid transparent;
+            background-image: linear-gradient(#000, #000), 
+                              linear-gradient(90deg, #00f2ff 0%, #00f2ff 50%, #bc13fe 50%, #bc13fe 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border-radius: 20px;
+            padding: 20px 15px;
+            position: relative;
+            animation: fadeIn 0.2s ease;
+            box-shadow: 0 0 30px #bc13fe;
+        }
+
+        .rank-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            color: #fff;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+        }
+
+        .rank-modal-close:hover {
+            opacity: 1;
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .rank-modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 1px;
+            color: #bc13fe;
+            text-shadow: 0 0 10px #bc13fe;
+        }
+
+        .rank-modal-desc {
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .rank-modal-requirement {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #bc13fe;
+            color: #bc13fe;
+            margin-bottom: 10px;
+        }
+
+        .rank-modal-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         @media (min-width: 768px) {
             .app-container {
                 padding: 0 30px 40px;
@@ -574,10 +878,6 @@
             
             .trust-grid {
                 grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .video-container {
-                max-width: 100%; /* ให้เต็มพื้นที่บน desktop */
             }
         }
 
@@ -625,7 +925,6 @@
             </div>
 
             <div class="hero-right">
-                <!-- วิดีโอขนาดใหญ่ กว้างเต็มพื้นที่ -->
                 <div class="video-container">
                     <video class="custom-video" controls playsinline>
                         <source src="https://github.com/AEGIS-NEX/Aegis_nex/raw/b7ad0d57b0448bdc365a3b77761fe48972ff8141/videos/aegis-intro.mp4" type="video/mp4">
@@ -677,20 +976,21 @@
             </div>
         </div>
 
+        <!-- Rank Showcase - ใช้คลาส rb-0 ถึง rb-10, rb-special, rb-ceo ตาม profile -->
         <div class="rank-showcase">
-            <span class="rank-badge-mini">🐣 NEWBIE</span>
-            <span class="rank-badge-mini">🔰 TRAINEE</span>
-            <span class="rank-badge-mini">⚜️ ROOKIE</span>
-            <span class="rank-badge-mini">⭐ EXPERT</span>
-            <span class="rank-badge-mini">💎 PRO</span>
-            <span class="rank-badge-mini">🛡️ ELITE</span>
-            <span class="rank-badge-mini">🔥 VETERAN</span>
-            <span class="rank-badge-mini">👑 MASTER</span>
-            <span class="rank-badge-mini">⚔️ WARLORD</span>
-            <span class="rank-badge-mini">🌌 IMMORTAL</span>
-            <span class="rank-badge-mini">✨ GOD</span>
-            <span class="rank-badge-mini special">🏆 LEGENDARY</span>
-            <span class="rank-badge-mini special">🚀 CEO</span>
+            <span class="rank-badge-mini rb-0" onclick="showRankDetail('NEWBIE')">🐣 NEWBIE</span>
+            <span class="rank-badge-mini rb-1" onclick="showRankDetail('TRAINEE')">🔰 TRAINEE</span>
+            <span class="rank-badge-mini rb-2" onclick="showRankDetail('ROOKIE')">⚜️ ROOKIE</span>
+            <span class="rank-badge-mini rb-3" onclick="showRankDetail('EXPERT')">⭐ EXPERT</span>
+            <span class="rank-badge-mini rb-4" onclick="showRankDetail('PRO')">💎 PRO</span>
+            <span class="rank-badge-mini rb-5" onclick="showRankDetail('ELITE')">🛡️ ELITE</span>
+            <span class="rank-badge-mini rb-6" onclick="showRankDetail('VETERAN')">🔥 VETERAN</span>
+            <span class="rank-badge-mini rb-7" onclick="showRankDetail('MASTER')">👑 MASTER</span>
+            <span class="rank-badge-mini rb-8" onclick="showRankDetail('WARLORD')">⚔️ WARLORD</span>
+            <span class="rank-badge-mini rb-9" onclick="showRankDetail('IMMORTAL')">🌌 IMMORTAL</span>
+            <span class="rank-badge-mini rb-10" onclick="showRankDetail('GOD')">✨ GOD</span>
+            <span class="rank-badge-mini rb-special" onclick="showRankDetail('LEGENDARY')">🏆 LEGENDARY</span>
+            <span class="rank-badge-mini rb-ceo" onclick="showRankDetail('CEO')">🚀 CEO</span>
         </div>
 
         <div class="trust-section">
@@ -741,6 +1041,17 @@
         <button class="btn btn-outline" onclick="location.href='register.html'"><i class="fas fa-user-plus"></i> SIGN UP</button>
     </div>
 
+    <!-- Modal สำหรับแสดงรายละเอียดยศ (คงเดิม) -->
+    <div class="rank-modal-overlay" id="rankModal" onclick="closeRankModal()">
+        <div class="rank-modal-box" id="rankModalBox" onclick="event.stopPropagation()">
+            <span class="rank-modal-close" onclick="closeRankModal()">&times;</span>
+            <div class="rank-modal-title" id="rankModalTitle">NEWBIE</div>
+            <div class="rank-modal-desc" id="rankModalDesc">สมาชิกใหม่ เริ่มต้นเส้นทาง</div>
+            <div class="rank-modal-requirement" id="rankModalReq">ดีลที่ต้องทำ: 0</div>
+            <div class="rank-modal-note" id="rankModalNote">กดที่ใดก็ได้เพื่อปิด</div>
+        </div>
+    </div>
+
     <script>
         (function() {
             const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
@@ -763,6 +1074,65 @@
             updateClock();
             setInterval(updateClock, 1000);
         })();
+
+        // ข้อมูลระบบยศ (เหมือนเดิม)
+        const rankData = {
+            'NEWBIE': { name: 'NEWBIE', desc: 'สมาชิกใหม่ เริ่มต้นเส้นทาง', requirement: 'ดีลที่ต้องทำ: 0 (เริ่มต้น)', color: '#b0bec5', border: '#b0bec5', icon: '🐣' },
+            'TRAINEE': { name: 'TRAINEE', desc: 'ฝึกหัด เรียนรู้ระบบ', requirement: 'ดีลที่ต้องทำ: 1 - 10', color: '#cfd8dc', border: '#cfd8dc', icon: '🔰' },
+            'ROOKIE': { name: 'ROOKIE', desc: 'มือใหม่ เริ่มมีประสบการณ์', requirement: 'ดีลที่ต้องทำ: 11 - 25', color: '#80cbc4', border: '#80cbc4', icon: '⚜️' },
+            'EXPERT': { name: 'EXPERT', desc: 'ผู้เชี่ยวชาญ เริ่มช่ำชอง', requirement: 'ดีลที่ต้องทำ: 26 - 50', color: '#00e676', border: '#00e676', icon: '⭐' },
+            'PRO': { name: 'PRO', desc: 'มืออาชีพ เชื่อถือได้', requirement: 'ดีลที่ต้องทำ: 51 - 100', color: '#2979ff', border: '#2979ff', icon: '💎' },
+            'ELITE': { name: 'ELITE', desc: 'ระดับแนวหน้า', requirement: 'ดีลที่ต้องทำ: 101 - 200', color: '#304ffe', border: '#304ffe', icon: '🛡️' },
+            'VETERAN': { name: 'VETERAN', desc: 'ทหารผ่านศึก ผ่านร้อนผ่านหนาว', requirement: 'ดีลที่ต้องทำ: 201 - 300', color: '#d500f9', border: '#d500f9', icon: '🔥' },
+            'MASTER': { name: 'MASTER', desc: 'ปรมาจารย์ เป็นที่ยอมรับ', requirement: 'ดีลที่ต้องทำ: 301 - 450', color: '#ffab00', border: '#ffab00', icon: '👑' },
+            'WARLORD': { name: 'WARLORD', desc: 'จอมทัพ ผู้ทรงอิทธิพล', requirement: 'ดีลที่ต้องทำ: 451 - 600', color: '#ff6d00', border: '#ff6d00', icon: '⚔️' },
+            'IMMORTAL': { name: 'IMMORTAL', desc: 'อมตะ ตำนานผู้อยู่ยงคงกระพัน', requirement: 'ดีลที่ต้องทำ: 601 - 1000', color: '#ff1744', border: '#ff1744', icon: '🌌' },
+            'GOD': { name: 'GOD', desc: 'เทพเจ้า สูงสุดในจักรวาล', requirement: 'ดีลที่ต้องทำ: 1001+', color: '#bc13fe', border: '#bc13fe', icon: '✨' },
+            'LEGENDARY': { name: 'LEGENDARY', desc: 'ตำนาน เฉพาะบุคคลพิเศษ', requirement: 'เฉพาะ UID พิเศษเท่านั้น', color: '#ff00ff', border: '#ff00ff', icon: '🏆', special: true },
+            'CEO': { name: 'CEO', desc: 'ผู้บริหารสูงสุด', requirement: 'เฉพาะผู้บริหารระบบเท่านั้น', color: '#ff0000', border: '#ff0000', icon: '🚀', ceo: true }
+        };
+
+        function showRankDetail(rankName) {
+            const rank = rankData[rankName];
+            if (!rank) return;
+
+            document.getElementById('rankModalTitle').innerText = rank.icon + ' ' + rank.name;
+            document.getElementById('rankModalDesc').innerText = rank.desc;
+            document.getElementById('rankModalReq').innerText = rank.requirement;
+            
+            const modalBox = document.getElementById('rankModalBox');
+            
+            if (rankName === 'GOD') {
+                modalBox.style.border = '2px solid transparent';
+                modalBox.style.backgroundImage = 'linear-gradient(#000, #000), linear-gradient(90deg, #00f2ff 0%, #00f2ff 50%, #bc13fe 50%, #bc13fe 100%)';
+                modalBox.style.backgroundOrigin = 'border-box';
+                modalBox.style.backgroundClip = 'padding-box, border-box';
+                modalBox.style.boxShadow = '0 0 30px #bc13fe';
+                document.getElementById('rankModalTitle').style.color = '#bc13fe';
+                document.getElementById('rankModalReq').style.borderColor = '#bc13fe';
+                document.getElementById('rankModalReq').style.color = '#bc13fe';
+            } else {
+                modalBox.style.border = `2px solid ${rank.color}`;
+                modalBox.style.backgroundImage = 'none';
+                modalBox.style.background = '#000';
+                modalBox.style.boxShadow = `0 0 30px ${rank.color}`;
+                document.getElementById('rankModalTitle').style.color = rank.color;
+                document.getElementById('rankModalReq').style.borderColor = rank.color;
+                document.getElementById('rankModalReq').style.color = rank.color;
+            }
+            
+            document.getElementById('rankModal').style.display = 'flex';
+        }
+
+        function closeRankModal() {
+            document.getElementById('rankModal').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRankModal();
+            }
+        });
     </script>
 </body>
 </html>
