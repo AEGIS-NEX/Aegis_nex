@@ -6,6 +6,10 @@
     <title>AEGIS NEX · ศูนย์กลางการเงินอัจฉริยะ</title>
     <meta name="description" content="แพลตฟอร์ม AI เพื่อการซื้อขายที่ปลอดภัย ระบบ Escrow ป้องกันการโกง 100% พร้อม AEGIS AI และทีมงานดูแล 24 ชม.">
     
+    <!-- เพิ่ม manifest และ theme-color ตามที่แจ้ง -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -1133,6 +1137,19 @@
                 closeRankModal();
             }
         });
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
     </script>
 </body>
 </html>
