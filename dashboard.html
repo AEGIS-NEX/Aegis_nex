@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
     <title>แดชบอร์ด | AEGIS NEX</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1562,6 +1564,36 @@
             font-size: 10px;
             color: #aaa;
         }
+
+        /* ===== ปุ่มติดตั้งแอป (Install PWA) แบบมีแสงกระพริบ ===== */
+        .install-pwa-btn {
+            position: relative;
+            overflow: visible;
+        }
+        .install-pwa-btn i {
+            font-size: 18px;
+        }
+        /* เอฟเฟกต์แสงกระพริบรอบปุ่ม */
+        .install-pwa-btn::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00f2ff, #bc13fe, #ff0080, #00f2ff);
+            background-size: 300% 300%;
+            z-index: -1;
+            animation: installGlow 1.5s ease infinite;
+            filter: blur(6px);
+            opacity: 0.8;
+        }
+        @keyframes installGlow {
+            0% { background-position: 0% 50%; opacity: 0.6; transform: scale(0.9); }
+            50% { background-position: 100% 50%; opacity: 1; transform: scale(1.1); }
+            100% { background-position: 0% 50%; opacity: 0.6; transform: scale(0.9); }
+        }
     </style>
 </head>
 <body>
@@ -1606,6 +1638,13 @@
                 <div class="icon-btn" onclick="marketComingSoon(event)">
                     <i class="fas fa-store"></i>
                 </div>
+                <!-- ███████████████████████████████████████████████████████ -->
+                <!-- ปุ่มติดตั้งแอป PWA (แสดงเฉพาะเมื่อยังไม่ได้ติดตั้ง)        -->
+                <!-- ███████████████████████████████████████████████████████ -->
+                <div class="icon-btn install-pwa-btn" id="installPwaBtn" onclick="showInstallPopup()" style="display: none;">
+                    <i class="fas fa-download"></i>
+                </div>
+                <!-- ปุ่มกระดิ่ง (แจ้งเตือน) -->
                 <div class="icon-btn" onclick="openInbox()">
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge" id="notificationDot"></div>
@@ -1918,7 +1957,7 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
+    <!-- Profile Modal (แก้ไข label เป็น "อัตราความสำเร็จ") -->
     <div class="modal-overlay" id="pfModal">
         <div class="modal-box" id="pfBox">
             <i class="fas fa-times close-modal" onclick="closeModal('pfModal')"></i>
@@ -1941,7 +1980,7 @@
                 </div>
                 <div class="pf-stat-box">
                     <div class="pf-val" id="pfScore">100%</div>
-                    <div class="pf-lbl">คะแนน</div>
+                    <div class="pf-lbl">อัตราความสำเร็จ</div>   <!-- เปลี่ยนจาก "คะแนน" เป็น "อัตราความสำเร็จ" -->
                 </div>
                 <div class="pf-stat-box">
                     <div class="pf-val" id="pfStarCount">5</div>
@@ -1999,6 +2038,16 @@
         </div>
     </div>
 
+    <!-- Coming Soon Modal (เพิ่มใหม่ ให้เหมือน profile.html) -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal-box">
+            <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
+            <div class="modal-title">กำลังมาเร็วๆ นี้</div>
+            <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
+            <button class="modal-btn btn-primary" onclick="closeComingSoon()">OK</button>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -2026,6 +2075,75 @@
         
         // *** เพิ่มตัวแปรสำหรับ Quest Realtime ***
         let questChannel = null;
+
+        // ========== ตัวแปรและฟังก์ชันสำหรับปุ่มติดตั้ง PWA ==========
+        let deferredPrompt; // เก็บ beforeinstallprompt event
+        const installBtn = document.getElementById('installPwaBtn');
+
+        // ตรวจสอบว่าเรียกใช้ในโหมด standalone (ติดตั้งแล้ว) หรือไม่
+        function isAppInstalled() {
+            return (window.matchMedia('(display-mode: standalone)').matches || 
+                    window.navigator.standalone === true);
+        }
+
+        // แสดงปุ่มติดตั้งเมื่อพร้อม (และยังไม่ได้ติดตั้ง)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // แสดงปุ่มเฉพาะเมื่อยังไม่ได้ติดตั้ง
+            if (!isAppInstalled()) {
+                installBtn.style.display = 'flex';
+            }
+        });
+
+        // ซ่อนปุ่มทันทีถ้าติดตั้งแล้ว
+        if (isAppInstalled()) {
+            installBtn.style.display = 'none';
+        }
+
+        // ฟังก์ชันเรียก popup อธิบายรายละเอียดก่อนติดตั้ง
+        window.showInstallPopup = function() {
+            Swal.fire({
+                title: '📲 ติดตั้งแอป AEGIS NEX',
+                html: `
+                    <div style="text-align:left; color:#ccc;">
+                        <p><i class="fas fa-bolt" style="color:var(--primary);"></i> <strong>เร็วขึ้น:</strong> เปิดแอปได้ทันที ไม่ต้องผ่าน browser</p>
+                        <p><i class="fas fa-bell" style="color:var(--warning);"></i> <strong>แจ้งเตือนทันใจ:</strong> รับประกาศสำคัญแบบเรียลไทม์</p>
+                        <p><i class="fas fa-rocket" style="color:var(--success);"></i> <strong>ประสบการณ์เต็มรูปแบบ:</strong> ไม่มีแถบ, เนียนตา</p>
+                        <p><i class="fas fa-shield-alt" style="color:var(--secondary);"></i> <strong>ปลอดภัยยิ่งขึ้น:</strong> แยกจากเบราว์เซอร์อื่น</p>
+                    </div>
+                `,
+                icon: 'info',
+                background: '#050b14',
+                color: '#fff',
+                confirmButtonColor: '#00f2ff',
+                confirmButtonText: 'ติดตั้งเลย',
+                showCancelButton: true,
+                cancelButtonText: 'ไว้ทีหลัง',
+                cancelButtonColor: '#555',
+                focusCancel: true,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed && deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted install');
+                            // ซ่อนปุ่มหลังจากติดตั้ง (แม้หน้าจะไม่โหลดซ้ำ)
+                            installBtn.style.display = 'none';
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+            });
+        };
+
+        // เมื่อติดตั้งเสร็จ (กรณีแอปถูกเปิดจาก homescreen) ให้ซ่อนปุ่ม
+        window.addEventListener('appinstalled', () => {
+            console.log('App installed');
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        });
 
         // ========== ฟังก์ชันช่วย ==========
         function loadGraphicsLevel() {
@@ -2057,24 +2175,46 @@
         }
         createParticles();
 
-        // 🔥 RANK FUNCTIONS (เหมือนเดิม)
-        function getRank(deals, uid) {
-            if(uid === MY_SPECIAL_UID) return { 
-                name: 'LEGENDARY', 
-                html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
-                class: 'rank-LEGENDARY', 
-                color: '#ff00ff', 
-                border: '#ff00ff',
-                effects: true
+        // ==================== GET RANK (รองรับแอดมินจาก DB) ====================
+        async function getRank(deals, uid) {
+            // ถ้า uid ว่าง ให้คืนค่า default
+            if (!uid) return { 
+                name: 'NEWBIE', 
+                html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', 
+                class: 'rank-NEWBIE', 
+                color: '#b0bec5', 
+                border: '#666666', 
+                effects: false 
             };
-            if(uid === MY_GOD_UID) return { 
-                name: 'CEO', 
-                html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
-                class: 'rank-CEO', 
-                color: '#ff0000', 
-                border: '#ff0000',
-                effects: true 
-            };
+
+            // ตรวจสอบว่าเป็น CEO พิเศษ (คุณ) หรือไม่
+            if (uid === MY_GOD_UID) {
+                return { 
+                    name: 'CEO', 
+                    html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
+                    class: 'rank-CEO', 
+                    color: '#ff0000', 
+                    border: '#ff0000',
+                    effects: true 
+                };
+            }
+
+            // ตรวจสอบว่าเป็นแอดมินทั่วไปหรือไม่ (เรียก RPC)
+            const { data: isAdmin, error } = await supa
+                .rpc('is_admin', { check_user_id: uid });
+
+            if (!error && isAdmin === true) {
+                return { 
+                    name: 'LEGENDARY', 
+                    html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
+                    class: 'rank-LEGENDARY', 
+                    color: '#ff00ff', 
+                    border: '#ff00ff',
+                    effects: true 
+                };
+            }
+
+            // ถ้าไม่ใช่แอดมิน ใช้ระบบยศปกติตามดีล
             const d = parseInt(deals) || 0;
             if (d > 1000) return { name: 'GOD', html: '<span class="rank-badge rb-10"><i class="fas fa-dragon"></i> GOD</span>', class: 'rank-GOD', color: '#ffffff', border: '#ffffff', effects: true };
             if (d > 600) return { name: 'IMMORTAL', html: '<span class="rank-badge rb-9"><i class="fas fa-fire"></i> IMMORTAL</span>', class: 'rank-IMMORTAL', color: '#ff1744', border: '#ff1744', effects: true };
@@ -2168,20 +2308,22 @@
             return diff < 5;
         }
 
-        // 🔥 FETCH USER STATS (deals, cancelled, rating)
+        // 🔥 FETCH USER STATS (deals, cancelled, rating) [แก้ไข: เพิ่ม flagged=false]
         async function fetchUserStats(userId) {
             try {
                 const { count: completed, error: err1 } = await supa
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'received');
+                    .eq('status', 'received')
+                    .eq('flagged', false);
                 
                 const { count: cancelled, error: err2 } = await supa
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'cancelled');
+                    .eq('status', 'cancelled')
+                    .eq('flagged', false);   // เพิ่มบรรทัดนี้
                 
                 if (err1 || err2) throw err1 || err2;
                 
@@ -2217,7 +2359,7 @@
         // 🔥 OPEN PROFILE POPUP
         async function openProfilePopup() {
             if (!currentUserData?.id) return;
-            viewProfile(
+            await viewProfile(
                 currentUserData.id,
                 currentUserData.display_name || currentUserData.username || 'USER',
                 currentUserData.photo_url,
@@ -2257,7 +2399,7 @@
                 const cancelled = stats.cancelled;
                 const score = stats.score;
 
-                const rankInfo = getRank(deals, uid);
+                const rankInfo = await getRank(deals, uid);
                 box.style.borderColor = rankInfo.border;
                 box.style.boxShadow = `0 0 25px ${rankInfo.color}30`;
 
@@ -2306,14 +2448,15 @@
             }
         };
 
-        // ========== ฟังก์ชันดึงจำนวนดีลสำเร็จจากตาราง trades จริง ๆ ==========
+        // ========== ฟังก์ชันดึงจำนวนดีลสำเร็จจากตาราง trades จริง ๆ [แก้ไข: เพิ่ม flagged=false] ==========
         async function fetchUserCompletedDeals(userId) {
             try {
                 const { count, error } = await supa
                     .from('trades')
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'received');
+                    .eq('status', 'received')
+                    .eq('flagged', false);   // <<< เพิ่มบรรทัดนี้
                 if (error) throw error;
                 return count || 0;
             } catch (e) {
@@ -2325,7 +2468,7 @@
         // ========== อัปเดต UI แดชบอร์ด ==========
         async function updateDashboardUIWithRealDeals(data, uid) {
             const realDeals = await fetchUserCompletedDeals(uid);
-            const rankInfo = getRank(realDeals, uid);
+            const rankInfo = await getRank(realDeals, uid);
             
             const nameEl = document.getElementById('userName');
             const displayName = data.display_name || data.username || 'USER';
@@ -2373,7 +2516,7 @@
                 const { data: { session }, error } = await supa.auth.getSession();
                 if (error) throw error;
                 
-                handleAuthChange(session?.user || null);
+                await handleAuthChange(session?.user || null);
 
                 authSubscription = supa.auth.onAuthStateChange((event, session) => {
                     handleAuthChange(session?.user || null);
@@ -2580,7 +2723,7 @@
                 for (let i = 0; i < sorted.length; i++) {
                     const user = sorted[i];
                     const isSpecial = (user.id === MY_GOD_UID || user.id === MY_SPECIAL_UID);
-                    const rankInfo = getRank(user.realDeals || 0, user.id);
+                    const rankInfo = await getRank(user.realDeals || 0, user.id);
                     const online = isOnline(user.last_seen);
                     
                     let verifiedTick = '';
@@ -2756,16 +2899,14 @@
             document.getElementById('reportModal').style.display = 'flex';
         }
 
+        // ========== ฟังก์ชันสำหรับปุ่มตลาด (เปลี่ยนเป็น modal comingSoonModal) ==========
         function marketComingSoon(event) {
             event.preventDefault();
-            Swal.fire({
-                icon: 'info',
-                title: '🚧 กำลังมาเร็วๆ นี้',
-                text: 'โปรดรอติดตามอัปเดตจากทีมงาน',
-                background: '#050b14',
-                color: '#fff',
-                confirmButtonColor: '#00f2ff'
-            });
+            document.getElementById('comingSoonModal').style.display = 'flex';
+        }
+
+        function closeComingSoon() {
+            document.getElementById('comingSoonModal').style.display = 'none';
         }
 
         function confirmEntry(type) { 
@@ -2930,38 +3071,121 @@
         }
         
         function openManual() { 
-            openContent('USER MANUAL', 'fas fa-book', 'var(--warning)', `
-                <h4>1. การโอนเงินหาเพื่อน (P2P Transfer)</h4>
-                <ul>
-                    <li>ใช้เพียง <b>Username</b> หรือ <b>Email</b> ของเพื่อนในระบบ</li>
-                    <li><b>สมาชิกทั่วไป (No KYC):</b> โอนได้สูงสุด <span class="highlight-red">5,000 AGS</span></li>
-                    <li><b>สมาชิกยืนยันตัว (Verified):</b> "VERIFIED LIMIT: สมาชิกที่ผ่านการ KYC จะได้รับสิทธิ์ถอนสูงสุด 50,000 AGS ต่อรายการ เพื่อความรวดเร็วในการประมวลผลผ่านระบบ Auto" </span></li>
-                    <li>ค่าธรรมเนียม: <b>0%</b> ต่อรายการ</li>
-                </ul>
-                <h4>2. การซื้อขายผ่านตัวกลาง (Trade Rooms)</h4>
-                <ul>
-                    <li><b>ห้องเกม:</b> สำหรับไอดีเกม/ไอเทม (ห้ามส่งพัสดุ)</li>
-                    <li><b>ห้องทั่วไป:</b> สำหรับสินค้ามีเลขพัสดุ (Tracking)</li>
-                    <li>ระบบจะล็อกเงินไว้ที่ "ส่วนกลาง" จนกว่าผู้ซื้อจะกดยืนยันรับของ</li>
-                </ul>
-                <h4>3. การถอนเงิน (Withdraw)</h4>
-                <ul>
-                    <li><b>ยอดต่ำกว่า 20,000 AGS:</b> ถอนเข้าธนาคารได้ทันที (รอ 1-5 นาที)</li>
-                    <li><b>ยอดเกิน 20,000 AGS:</b> ระบบจะบังคับให้ทำ <span class="highlight-green">KYC (ยืนยันตัวตน)</span> ก่อนจึงจะถอนได้ (ตามกฎหมาย ปปง.)</li>
-                </ul>
-                <h4>4. ระบบยศและคะแนน (Rank System)</h4>
-                <ul>
-                    <li><b>Newbie → Trainee → Rookie → Expert → Pro → Elite → Veteran → Master → Warlord → Immortal → GOD → LEGENDARY</b></li>
-                    <li>ยศจะเพิ่มขึ้นตามจำนวนดีลที่สำเร็จ</li>
-                    <li>ยศสูงขึ้น = ได้รับความน่าเชื่อถือมากขึ้น + ค่าธรรมเนียมลดลง</li>
-                </ul>
-                <h4>5. เหรียญ AG (Quest Coin)</h4>
-                <ul>
-                    <li>AG คือเหรียญที่ได้จากการทำเควสต่างๆ ในระบบ</li>
-                    <li>สามารถใช้ AG เพื่อ <b>แลกสินค้าในร้านค้า (เร็วๆ นี้)</b> หรือ <b>ลดค่าธรรมเนียมการเทรด</b></li>
-                    <li><b>อัตราแลกเปลี่ยน: 100 AG = 1 AGS</b> (แต่ไม่สามารถแลกเป็นเงินสดได้ ใช้ภายในระบบเท่านั้น)</li>
-                    <li>ร้านค้า AG กำลังจะเปิดเร็วๆ นี้ ติดตามได้ที่เพจ AEGIS NEX</li>
-                </ul>
+            openContent('คู่มือการใช้งาน AEGIS NEX ฉบับสมบูรณ์', 'fas fa-book', 'var(--warning)', `
+                <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px;">
+                    <h4>📌 ภาพรวมระบบ AEGIS NEX</h4>
+                    <p>AEGIS NEX เป็นแพลตฟอร์มการซื้อขายกลาง (Escrow) ที่ปลอดภัยที่สุดสำหรับสินค้าดิจิทัลและสินค้าทั่วไป ระบบของเราทำงานร่วมกับเทคโนโลยีบล็อกเชนและการเข้ารหัส AES-256 เพื่อปกป้องข้อมูลและเงินของคุณ เราให้บริการ:</p>
+                    <ul>
+                        <li><b class="text-primary">✔ ห้องซื้อขายตัวกลาง (Escrow)</b> สำหรับสินค้าดิจิทัล (ไอดีเกม, ไอเทม) และสินค้าทั่วไป (มีพัสดุ)</li>
+                        <li><b class="text-primary">✔ ระบบโอนเงิน P2P</b> ระหว่างผู้ใช้โดยตรง ฟรีค่าธรรมเนียม</li>
+                        <li><b class="text-primary">✔ ระบบเติมเงิน - ถอนเงิน อัตโนมัติ</b> ผ่าน TrueMoney / พร้อมเพย์ (ตรวจสอบสลิปด้วย AI)</li>
+                        <li><b class="text-primary">✔ ระบบยศ (Rank) และเหรียญ AG</b> สำหรับทำเควสและรับสิทธิพิเศษ</li>
+                        <li><b class="text-primary">✔ ระบบแจ้งเตือนแบบ Real-time</b> แม้ปิดแอป (ผ่าน Push Notification)</li>
+                    </ul>
+                    
+                    <h4>🔐 การยืนยันตัวตน (KYC)</h4>
+                    <ul>
+                        <li><b class="text-success">สิทธิประโยชน์เมื่อผ่าน KYC:</b> วงเงินถอนเพิ่มเป็น <span class="highlight-green">50,000 AGS/วัน</span>, ได้เครื่องหมายถูก <i class="fas fa-check-circle" style="color:var(--primary);"></i> ข้างชื่อ, เพิ่มความน่าเชื่อถือ, และรับโบนัสพิเศษ</li>
+                        <li><b class="text-warning">ขั้นตอนการยืนยัน:</b> ไปที่หน้าโปรไฟล์ → คลิก "ยืนยันตัวตน (KYC)" → อัปโหลดรูปบัตรประชาชน (ด้านหน้า-หลัง) และรูปเซลฟี่พร้อมถือบัตร → ตั้งค่ารหัส PIN 6 หลัก → รอ Admin ตรวจสอบ (ปกติภายใน 1-24 ชม.)</li>
+                        <li><b class="text-danger">ข้อสำคัญ:</b> ข้อมูลของคุณจะถูกเก็บเป็นความลับตามนโยบาย PDPA ใช้สำหรับยืนยันตัวตนและปฏิบัติตามกฎหมาย ปปง. เท่านั้น</li>
+                    </ul>
+                    
+                    <h4>💰 กระเป๋าเงิน (AGS และ AG)</h4>
+                    <ul>
+                        <li><b>AGS (1 AGS = 1 บาท):</b> สกุลเงินหลัก ใช้ซื้อขาย โอน ถอน เติมเงิน</li>
+                        <li><b>AG (เหรียญเควส):</b> ได้จาการทำภารกิจรายวันหรือภารกิจผู้บุกเบิก อัตราแลกเปลี่ยน <span class="highlight-green">100 AG = 1 AGS</span> (แต่ไม่สามารถแลกคืนเป็นเงินสดได้โดยตรง) ใช้แลกของรางวัล ลดค่าธรรมเนียม และสิทธิพิเศษต่างๆ</li>
+                    </ul>
+                    
+                    <h4>🛒 การซื้อขายผ่านห้องเทรด (Escrow)</h4>
+                    <ul>
+                        <li><b class="text-primary">📌 เลือกบทบาท:</b> เมื่อคลิกที่ "ห้องกลางไอดีเกม" หรือ "ห้องกลางของทั่วไป" ระบบจะถามว่าคุณเป็นผู้ขายหรือผู้ซื้อ</li>
+                        <li><b class="text-primary">🔗 แชร์ลิงก์ห้อง:</b> หลังสร้างห้อง คุณสามารถคัดลอกลิงก์ส่งให้คู่ค้าเพื่อเข้าร่วมห้องได้</li>
+                        <li><b class="text-warning">⏱️ ขั้นตอนการทำรายการ:</b>
+                            <br/>1. <b>ผู้ซื้อ</b> กด "โอนเงินเข้าระบบ" กรอกราคาสินค้า (ระบบจะคำนวณค่าธรรมเนียมให้)
+                            <br/>2. ระบบหักเงินผู้ซื้อ และแจ้งให้ผู้ขายทราบ
+                            <br/>3. <b>ผู้ขาย</b> กด "ส่งของ" (โหมดทั่วไปกรอกเลขพัสดุ / โหมดเกมกดยืนยันส่ง ID/ไอเทม)
+                            <br/>4. <b>ผู้ซื้อ</b> ตรวจสอบสินค้า แล้วกด "รับของ" หรือ "รับ ID/ไอเทมเรียบร้อย"
+                            <br/>5. ระบบโอนเงินให้ผู้ขาย และให้คะแนนกัน</li>
+                        <li><b class="text-danger">⚠️ การแจ้ง Admin:</b> หากมีปัญหา เช่น โอนเงินแล้วไม่ได้รับสินค้า ให้กดปุ่ม "แจ้ง Admin" ในห้องเทรด (ปุ่มจะเปลี่ยนจาก "โอนเงินเข้าระบบ" เป็น "แจ้ง Admin" หลังจากโอนแล้ว) Admin จะเข้ามาตรวจสอบและดำเนินการให้</li>
+                    </ul>
+                    
+                    <h4>↔️ การโอนเงิน P2P (Peer-to-Peer)</h4>
+                    <ul>
+                        <li><b>วิธีใช้:</b> ไปที่หน้า "โอนเงิน P2P" กรอก <b>username</b> ของผู้รับ, จำนวนเงิน AGS, และรหัส PIN 6 หลัก</li>
+                        <li><b>วงเงินโอน:</b> ผู้ไม่ผ่าน KYC โอนได้สูงสุด <span class="highlight-red">5,000 AGS/วัน</span>, ผู้ผ่าน KYC โอนได้สูงสุด <span class="highlight-green">50,000 AGS/วัน</span></li>
+                        <li><b>ค่าธรรมเนียม:</b> <span class="text-success">ฟรี !</span> ไม่มีค่าธรรมเนียมในการโอน P2P</li>
+                        <li><b>ความเร็ว:</b> เงินเข้าปลายทางทันที ภายใน 10 วินาที</li>
+                    </ul>
+                    
+                    <h4>💳 การเติมเงินและถอนเงิน</h4>
+                    <ul>
+                        <li><b>เติมเงิน:</b> เลือกช่องทาง TrueMoney Wallet หรือ พร้อมเพย์ ระบบจะแสดง QR Code หรือเบอร์โทรร้านค้าให้คุณโอนเงิน (ขั้นต่ำ 20 AGS) หลังจากโอนแล้วให้อัปโหลดสลิป (ไม่จำเป็นแต่แนะนำ) ระบบ AI จะตรวจสอบและเติมเงินให้ภายใน 3-5 นาที</li>
+                        <li><b>ถอนเงิน:</b> เลือกธนาคาร กรอกเลขบัญชี จำนวนเงิน และรหัส PIN 6 หลัก การถอนจะถูกส่งให้ Admin ตรวจสอบและดำเนินการ (ผู้ไม่ผ่าน KYC ถอนสูงสุด 5,000 AGS/วัน, ผู้ผ่าน KYC ถอนสูงสุด 50,000 AGS/วัน) ต้องมีดีลสำเร็จอย่างน้อย 1 ครั้งก่อนถอน</li>
+                    </ul>
+                    
+                    <h4>🏆 ระบบยศ (Rank) และคะแนนความประพฤติ</h4>
+                    <ul>
+                        <li><b>ยศต่างๆ:</b> NEWBIE (0 ดีล) → TRAINEE (1-10) → ROOKIE (11-25) → EXPERT (26-50) → PRO (51-100) → ELITE (101-200) → VETERAN (201-300) → MASTER (301-450) → WARLORD (451-600) → IMMORTAL (601-1000) → GOD (1001+) → LEGENDARY/CEO (เฉพาะ UID พิเศษ)</li>
+                        <li><b>การเลื่อนยศ:</b> เพิ่มขึ้นตามจำนวนดีลที่สำเร็จ (นับจากตาราง trades โดยไม่นับดีลที่ถูก flagged)</li>
+                        <li><b>XP Bar:</b> แสดงความคืบหน้าไปสู่ยศถัดไป</li>
+                        <li><b>คะแนนความประพฤติ (ดาว):</b> ได้รับจากคู่ค้าหลังจบดีล คะแนนสูง (4-5 ดาว) แสดงถึงความน่าเชื่อถือ คะแนนต่ำ (<3 ดาว) อาจถูกจำกัดการใช้งานบางอย่าง</li>
+                    </ul>
+                    
+                    <h4>🎁 ระบบเควส (Quest) และเหรียญ AG</h4>
+                    <ul>
+                        <li><b>📅 เควสรายวัน:</b> เช่น แชท 1 ครั้ง, โอนเงิน 1 ครั้ง, เทรดสำเร็จ 1/3/5 ครั้ง, อ่านประกาศ, เติมเงิน, เข้าสู่ระบบทุกวัน (เช็คอิน) เมื่อทำสำเร็จจะได้รับเหรียญ AG</li>
+                        <li><b>🏆 เควสผู้บุกเบิก (One-time):</b> เช่น เทรดครั้งแรก, ตั้งค่าโปรไฟล์, ทำ KYC เมื่อสำเร็จจะได้รับ AG จำนวนมาก</li>
+                        <li><b>💡 การใช้ AG:</b> อนาคตสามารถใช้แลกของรางวัล, ลดค่าธรรมเนียม, หรือซื้อไอเทมพิเศษในร้านค้า AG (เร็วๆ นี้)</li>
+                    </ul>
+                    
+                    <h4>🔔 ระบบแจ้งเตือนอัจฉริยะ (Real-time Notification)</h4>
+                    <ul>
+                        <li><b>📲 วิธีเปิดรับแจ้งเตือน:</b> เมื่อเข้าใช้งานครั้งแรก เบราว์เซอร์จะถาม "AEGIS NEX ต้องการส่งการแจ้งเตือน" กรุณากด <b class="text-success">"อนุญาต"</b> เสมอ เพื่อรับข้อมูลแบบเรียลไทม์</li>
+                        <li><b>🚚 แจ้งเตือนเมื่อมีการส่งของ:</b> เมื่อคู่ค้ากด "ส่งของ" (โหมดทั่วไป) หรือ "ส่ง ID/ไอเทม" (โหมดเกม) คุณจะได้รับการแจ้งเตือนทันที แม้ปิดเบราว์เซอร์หรือแอป</li>
+                        <li><b>💰 แจ้งเตือนเมื่อรับของ:</b> เมื่อคุณกด "รับสินค้า" หรือ "รับ ID/ไอเทมเรียบร้อย" ผู้ขายจะได้รับแจ้งเตือนพร้อมสรุปยอดเงิน ค่าธรรมเนียม และยอดคงเหลือปัจจุบัน</li>
+                        <li><b>📌 กดที่แจ้งเตือนเพื่อกลับเข้าไป:</b> เมื่อคุณได้รับแจ้งเตือน สามารถกดที่ข้อความเพื่อกลับเข้าไปยังห้องเทรดนั้นๆ ได้ทันที โดยไม่ต้องค้นหา</li>
+                    </ul>
+                    
+                    <h4>🆘 ระบบสนับสนุน (Support)</h4>
+                    <ul>
+                        <li><b>การแจ้งปัญหา:</b> ไปที่หน้า "ศูนย์ช่วยเหลือ" เลือกประเภทปัญหา (เติมเงินไม่เข้า, ถอนเงินไม่สำเร็จ, ปัญหาบัญชี, ปัญหาการใช้งาน) กรอกรายละเอียด และแนบหลักฐาน (สลิป, ภาพหน้าจอ, แชท) สูงสุด 6 ไฟล์</li>
+                        <li><b>การตอบกลับ:</b> ทีมงานจะตอบกลับภายใน 5-15 นาที (ในเวลาทำการ) หรือ 1-2 ชั่วโมง (นอกเวลา) คุณสามารถติดตามสถานะได้ที่หน้า "ประกาศ(รูปกระดิ่ง)" </li>
+                        <li><b>ช่องทางด่วน:</b> Line Official  และ Facebook Page (กดที่ไอคอนในหน้าช่วยเหลือ)</li>
+                    </ul>
+                    
+                    <h4>👑 ระบบ Admin และการตรวจสอบ</h4>
+                    <ul>
+                        <li><b>Admin จะเข้ามาในห้อง:</b> เมื่อมีการแจ้งปัญหาจากปุ่ม "แจ้ง Admin" ในห้องเทรด หรือเมื่อระบบตรวจพบพฤติกรรมต้องสงสัย (เช่น พูดคำต้องห้ามครบ 5 ครั้ง) Admin จะเข้ามาตรวจสอบและดำเนินการ</li>
+                        <li><b>สิทธิ์ของ Admin:</b> Admin สามารถดูประวัติแชท, ดูหลักฐาน, บังคับคืนเงินให้ฝ่ายใดฝ่ายหนึ่ง, หรือระงับบัญชีผู้กระทำผิดได้</li>
+                        <li><b>การแบนอัตโนมัติ:</b> หากผู้ใช้พูดคำต้องห้าม (เช่น ยาเสพติด, อาวุธ, การพนัน) ครบ 5 ครั้งในห้องใดห้องหนึ่ง ระบบจะแบนห้องนั้นโดยอัตโนมัติและแจ้ง Admin ให้ตรวจสอบ</li>
+                        <li><b>การตรวจสอบ IP:</b> ระบบบันทึก IP Address ทุกครั้งที่ทำธุรกรรมหรือส่ง KYC เพื่อป้องกันการทุจริตและใช้เป็นหลักฐานในการดำเนินคดีหากจำเป็น</li>
+                    </ul>
+                    
+                    <h4>⚖️ ข้อควรระวังและกฎหมายที่เกี่ยวข้อง</h4>
+                    <ul>
+                        <li><b>🚫 สิ่งของต้องห้าม:</b> ยาเสพติด, อาวุธปืน, วัตถุระเบิด, สื่อลามก, บัญชีม้า, ของปลอมแบรนด์เนม, การพนันทุกรูปแบบ (รวมถึงเครดิตคาสิโนออนไลน์) <span class="text-danger">ห้ามซื้อขายโดยเด็ดขาด</span></li>
+                        <li><b>⚖️ บทลงโทษ:</b> ระงับบัญชีถาวร, ยึดเงินในระบบ, ส่งข้อมูลให้เจ้าหน้าที่ตำรวจดำเนินคดีตามกฎหมาย, ปรับสูงสุดตาม พ.ร.บ. คอมพิวเตอร์ฯ</li>
+                        <li><b>📋 การคุ้มครองข้อมูลส่วนบุคคล (PDPA):</b> ข้อมูลของคุณถูกเข้ารหัส AES-256 เก็บเป็นความลับ ใช้เฉพาะยืนยันตัวตนและปฏิบัติตามกฎหมายเท่านั้น คุณสามารถขอถอนข้อมูลหรือลบบัญชีได้โดยติดต่อ Admin</li>
+                        <li><b>🛡️ การปฏิบัติตามกฎหมาย ปปง.:</b> ธุรกรรมตั้งแต่ 20,000 AGS ขึ้นไป ระบบจะบันทึกข้อมูลและพร้อมให้ตรวจสอบ การทำ KYC เป็นการยืนยันตัวตนตามมาตรฐานสากล ป้องกันการฟอกเงิน</li>
+                    </ul>
+                    
+                    <h4>📱 การติดตั้งแอปพลิเคชัน (PWA) เพื่อประสบการณ์ที่ดีขึ้น</h4>
+                    <ul>
+                        <li><b>📲 วิธีติดตั้งบนมือถือ:</b>
+                            <br/>- <b>Android (Chrome):</b> กดปุ่ม <i class="fas fa-download" style="color:var(--primary);"></i> ที่มุมขวาบนของหน้าแดชบอร์ด → เลือก "ติดตั้งแอป" หรือ "Add to Home screen"
+                            <br/>- <b>iOS (Safari):</b> กดปุ่ม Share (สี่เหลี่ยมมีลูกศรขึ้น) → เลือก "Add to Home Screen"
+                        </li>
+                        <li><b>💎 ข้อดีเมื่อติดตั้ง:</b>
+                            <br/>- เปิดแอปได้ทันที ไม่ต้องผ่าน browser
+                            <br/>- รับการแจ้งเตือนแบบ Push Notification ทันใจ ไม่พลาดทุกดีล
+                            <br/>- ประสบการณ์เต็มรูปแบบ ไม่มีแถบ地址, เนียนตาเหมือนแอปทั่วไป
+                            <br/>- ปลอดภัยยิ่งขึ้น แยกจากเบราว์เซอร์อื่น
+                        </li>
+                        <li><b>❓ หากปุ่มติดตั้งไม่แสดง:</b> แสดงว่าคุณติดตั้งแอปแล้ว หรือเบราว์เซอร์ของคุณไม่รองรับ PWA (แนะนำ Chrome หรือ Safari ล่าสุด)</li>
+                    </ul>
+                    
+                    <p style="text-align:center; color:var(--primary); margin-top:20px;">✨ AEGIS NEX ขอให้คุณประสบความสำเร็จในการซื้อขายทุกครั้ง ✨</p>
+                </div>
             `); 
         }
         
@@ -3286,5 +3510,19 @@
             }, 2000);
         }
     </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+
 </body>
 </html>
