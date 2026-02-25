@@ -11,6 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- added manifest and theme-color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
     <style>
         /* ===== RESET & VARIABLES ===== */
         * {
@@ -983,6 +987,22 @@
                     scanOverlay.style.display = 'none';
                     showCyberToast("✅ ลงทะเบียนสำเร็จ! กำลังนำไปยังแดชบอร์ด", "success");
 
+                    // --- IP Logging (background) ---
+                    (async () => {
+                        try {
+                            const userIP = await fetch('https://api.ipify.org?format=json')
+                                .then(r => r.json())
+                                .then(d => d.ip)
+                                .catch(() => '0.0.0.0');
+                            await supa.from('ip_logs').insert({
+                                user_id: data.user.id,
+                                ip_address: userIP
+                            });
+                        } catch (e) {
+                            console.error('IP logging failed:', e);
+                        }
+                    })();
+
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1500);
@@ -1026,6 +1046,19 @@
                 init();
             }
         })();
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
     </script>
 </body>
 </html>
