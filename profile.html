@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- added manifest and theme-color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
     <style>
         /* ------------------------------------------------
            🧠 AEGIS NEX PROFILE - STABLE & SMOOTH (Effect 70%)
@@ -1188,6 +1192,28 @@
             font-family: 'Orbitron';
         }
         
+        /* ปรับ badge พิเศษใน modal ให้เหมือน badge อื่น */
+        .rank-info-badge.rb-special,
+        .rank-info-badge.rb-ceo {
+            font-size: 8px;
+            padding: 4px 8px;
+            min-width: 65px;
+            border: 1px solid currentColor;
+            background: rgba(255,255,255,0.035);
+            text-shadow: 0 0 2px currentColor;
+            box-shadow: none;
+            animation: none;
+            color: inherit;
+        }
+        .rank-info-badge.rb-special {
+            color: #ff00ff;
+            border-color: #ff00ff;
+        }
+        .rank-info-badge.rb-ceo {
+            color: #ff0000;
+            border-color: #ff0000;
+        }
+
         .rank-info-details {
             flex: 1;
             text-align: left;
@@ -1217,6 +1243,11 @@
             font-weight: bold;
             text-align: center;
             min-width: 40px;
+        }
+
+        /* ✅ สีเขียวสำหรับยศที่ผ่านแล้ว */
+        .rank-info-current.completed {
+            color: var(--success) !important;
         }
 
         @media (max-width: 768px) {
@@ -1583,7 +1614,7 @@
             </div>
         </div>
 
-        <!-- Stats Grid -->
+        <!-- Stats Grid (เปลี่ยน "ยอดหมุนเวียน" เป็น "ดีลยกเลิก") -->
         <div class="stats-grid">
             <div class="stat-item">
                 <div id="statDeals" class="stat-val">0</div>
@@ -1594,8 +1625,8 @@
                 <div class="stat-lbl">อัตราสำเร็จ</div>
             </div>
             <div class="stat-item">
-                <div id="statVolume" class="stat-val" style="color:var(--warning)">0</div>
-                <div class="stat-lbl">ยอดหมุนเวียน</div>
+                <div id="statCancelled" class="stat-val" style="color:var(--danger)">0</div>
+                <div class="stat-lbl">ดีลยกเลิก</div>
             </div>
         </div>
 
@@ -1735,7 +1766,7 @@
         </div>
     </div>
 
-    <!-- Rank Info Modal -->
+    <!-- Rank Info Modal (ปรับป้ายยศพิเศษให้ดูปกติ) -->
     <div class="modal-overlay" id="rankInfoModal">
         <div class="modal-box">
             <div class="modal-title"><i class="fas fa-trophy"></i> ระบบยศ AEGIS NEX</div>
@@ -1913,6 +1944,8 @@
         let currentUserData = {};
         let nameChangeCount = 0;
         let currentDeals = 0;
+        let currentCancelled = 0;          // เพิ่มตัวแปรเก็บจำนวนดีลยกเลิก
+        let statsInterval = null;           // interval สำหรับโหลด stats
 
         // 🔥 CACHE SYSTEM
         const CACHE_KEY = 'aegis_profile_cache';
@@ -2032,23 +2065,50 @@
             return `0 0 3px ${color}`;
         }
 
-        function getRank(deals, uid) {
-            if (uid === MY_SPECIAL_UID) return { 
-                name: 'LEGENDARY', 
-                html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
-                class: 'rank-LEGENDARY', 
-                color: '#ff00ff', 
-                border: '#ff00ff',
-                effects: true
+        // ==================== GET RANK (รองรับแอดมินจาก DB) ====================
+        async function getRank(deals, uid) {
+            // ถ้า uid ว่าง ให้คืนค่า default
+            if (!uid) return { 
+                name: 'NEWBIE', 
+                html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', 
+                class: 'rank-NEWBIE', 
+                color: '#b0bec5', 
+                border: '#666666', 
+                effects: false 
             };
-            if (uid === MY_GOD_UID) return { 
-                name: 'CEO', 
-                html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
-                class: 'rank-CEO', 
-                color: '#ff0000', 
-                border: '#ff0000',
-                effects: true 
-            };
+
+            // ตรวจสอบว่าเป็น CEO พิเศษ (คุณ) หรือไม่
+            if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233") {
+                return { 
+                    name: 'CEO', 
+                    html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
+                    class: 'rank-CEO', 
+                    color: '#ff0000', 
+                    border: '#ff0000',
+                    effects: true 
+                };
+            }
+
+            // ตรวจสอบว่าเป็นแอดมินทั่วไปหรือไม่ (เรียก RPC)
+            try {
+                const { data: isAdmin, error } = await supa
+                    .rpc('is_admin', { check_user_id: uid });
+
+                if (!error && isAdmin === true) {
+                    return { 
+                        name: 'LEGENDARY', 
+                        html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
+                        class: 'rank-LEGENDARY', 
+                        color: '#ff00ff', 
+                        border: '#ff00ff',
+                        effects: true 
+                    };
+                }
+            } catch (e) {
+                console.warn('Error checking admin status, falling back to regular rank', e);
+            }
+
+            // ถ้าไม่ใช่แอดมิน ใช้ระบบยศปกติตามดีล
             const d = parseInt(deals) || 0;
             if (d > 1000) return { name: 'GOD', html: '<span class="rank-badge rb-10"><i class="fas fa-dragon"></i> GOD</span>', class: 'rank-GOD', color: '#ffffff', border: '#ffffff', effects: true };
             if (d > 600) return { name: 'IMMORTAL', html: '<span class="rank-badge rb-9"><i class="fas fa-fire"></i> IMMORTAL</span>', class: 'rank-IMMORTAL', color: '#ff1744', border: '#ff1744', effects: true };
@@ -2103,10 +2163,10 @@
         }
 
         // ========== INTERNAL UI RENDER (ไม่บันทึก localStorage) ==========
-        function internalUpdateUI(data, uid, dealsFromParam) {
+        async function internalUpdateUI(data, uid, dealsFromParam) {
             // ถ้ามี dealsFromParam ให้ใช้ มิฉะนั้นใช้ data.completed_deals
             const deals = (dealsFromParam !== undefined) ? dealsFromParam : (data.completed_deals || 0);
-            const rankInfo = getRank(deals, uid);
+            const rankInfo = await getRank(deals, uid);
             
             // ชื่อ
             document.getElementById('displayName').textContent = (data.display_name || data.username || 'USER').toUpperCase();
@@ -2115,30 +2175,6 @@
             
             // UID
             document.getElementById('displayUID').textContent = `UID: ${uid.substring(0, 8).toUpperCase()}`;
-            
-            // สถิติ
-            document.getElementById('statDeals').textContent = deals;
-            document.getElementById('statVolume').textContent = (data.total_volume || 0).toLocaleString();
-            const successRate = data.success_rate || 100;
-            document.getElementById('statRate').textContent = `${successRate}%`;
-            document.getElementById('statRate').style.color = successRate >= 90 ? 'var(--success)' : successRate >= 70 ? 'var(--warning)' : 'var(--danger)';
-            
-            // ดาว
-            const rating = data.average_rating || 5.0;
-            let starsHtml = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= Math.floor(rating)) starsHtml += '<i class="fas fa-star"></i>';
-                else if (i - 0.5 <= rating) starsHtml += '<i class="fas fa-star-half-alt"></i>';
-                else starsHtml += '<i class="far fa-star"></i>';
-            }
-            const starsContainer = document.getElementById('userStars');
-            starsContainer.innerHTML = starsHtml;
-            if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
-                starsContainer.classList.add('rainbow-stars');
-            } else {
-                starsContainer.classList.remove('rainbow-stars');
-            }
-            document.getElementById('userScore').textContent = rating.toFixed(1);
             
             // อวาตาร์
             const avatarImg = document.getElementById('userAvatar');
@@ -2176,7 +2212,7 @@
                 verifyTick.style.display = 'none';
             }
             
-            // XP
+            // XP (ใช้เฉพาะ deals)
             const xp = getExpData(deals);
             const xpBarFill = document.getElementById('xpBarFill');
             xpBarFill.style.width = xp.percent + "%";
@@ -2186,8 +2222,8 @@
         }
 
         // ========== UPDATE PROFILE (เรียก internal + บันทึก) ==========
-        function updateProfileUI(data, uid) {
-            internalUpdateUI(data, uid, currentDeals);
+        async function updateProfileUI(data, uid) {
+            await internalUpdateUI(data, uid, currentDeals);
             // บันทึก session cache
             saveUserCache(data, uid, currentDeals);
             // บันทึก localStorage
@@ -2205,7 +2241,7 @@
                     const cached = loadUserCache();
                     if (cached && cached.uid === uid) {
                         // ใช้ cache อัปเดต UI ทันที (ไม่บันทึก localStorage เพราะเดี๋ยว background จะบันทึก)
-                        internalUpdateUI(cached.user, uid, cached.deals);
+                        await internalUpdateUI(cached.user, uid, cached.deals);
                         // background refresh
                         loadUserData(uid, true);  // skipStats = true
                         loadUserStats(uid);
@@ -2214,7 +2250,7 @@
                         const local = loadFromLocalStorage();
                         if (local && local.uid === uid) {
                             // แสดงจาก localStorage ทันที
-                            internalUpdateUI(local.data, uid, local.deals);
+                            await internalUpdateUI(local.data, uid, local.deals);
                             // แล้วค่อยโหลดจาก server
                             await loadUserData(uid, false); // จะเรียก updateProfileUI เมื่อโหลดเสร็จ
                         } else {
@@ -2224,6 +2260,10 @@
                     }
                     
                     setupRealtimeUpdates(uid);
+
+                    // ตั้ง interval โหลดสถิติทุก 30 วินาที
+                    if (statsInterval) clearInterval(statsInterval);
+                    statsInterval = setInterval(() => loadUserStats(uid), 30000);
                 } else {
                     window.location.href = 'index.html';
                 }
@@ -2267,19 +2307,57 @@
             }
         }
 
+        // 🔥 โหลดสถิติจากตาราง trades (completed + cancelled) และ success rate
         async function loadUserStats(userId) {
             try {
-                const { count: completed, error } = await supa
-                    .from('trades')
-                    .select('*', { count: 'exact', head: true })
-                    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-                    .eq('status', 'received');
-                if (error) throw error;
-                currentDeals = completed || 0;
-                document.getElementById('statDeals').textContent = currentDeals;
-                // อัปเดต UI ด้วย currentUserData และ currentDeals
+                const [completedResult, cancelledResult] = await Promise.all([
+                    supa.from('trades')
+                        .select('*', { count: 'exact', head: true })
+                        .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+                        .eq('status', 'received')
+                        .eq('flagged', false),
+                    supa.from('trades')
+                        .select('*', { count: 'exact', head: true })
+                        .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+                        .eq('status', 'cancelled')
+                        .eq('flagged', false)   // กรอง flagged ด้วย
+                ]);
+
+                const completed = completedResult.count || 0;
+                const cancelled = cancelledResult.count || 0;
+
+                currentDeals = completed;
+                currentCancelled = cancelled;
+
+                const total = completed + cancelled;
+                const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
+
+                // อัปเดต UI stats
+                document.getElementById('statDeals').textContent = completed;
+                document.getElementById('statRate').textContent = successRate + '%';
+                document.getElementById('statRate').style.color = successRate >= 90 ? 'var(--success)' : successRate >= 70 ? 'var(--warning)' : 'var(--danger)';
+                document.getElementById('statCancelled').textContent = cancelled;
+
+                // ดาว (rating) ยังคงใช้จาก users
+                const rating = currentUserData.average_rating || 5.0;
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= Math.floor(rating)) starsHtml += '<i class="fas fa-star"></i>';
+                    else if (i - 0.5 <= rating) starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                    else starsHtml += '<i class="far fa-star"></i>';
+                }
+                const starsContainer = document.getElementById('userStars');
+                starsContainer.innerHTML = starsHtml;
+                if (userId === MY_GOD_UID || userId === MY_SPECIAL_UID) {
+                    starsContainer.classList.add('rainbow-stars');
+                } else {
+                    starsContainer.classList.remove('rainbow-stars');
+                }
+                document.getElementById('userScore').textContent = rating.toFixed(1);
+
+                // อัปเดตส่วนอื่น (ชื่อ, รูป, ยศ, XP) โดยใช้ currentDeals
                 if (currentUserData && currentUserData.uid === userId) {
-                    updateProfileUI(currentUserData, userId);
+                    await updateProfileUI(currentUserData, userId); // updateProfileUI จะใช้ currentDeals
                 }
             } catch (error) {
                 console.error("Error loading user stats:", error);
@@ -2304,8 +2382,8 @@
             document.getElementById('behaviorModal').style.display = 'none';
         }
 
-        function openRankInfoModal() {
-            const rankInfo = getRank(currentDeals, currentUserData.uid);
+        async function openRankInfoModal() {
+            const rankInfo = await getRank(currentDeals, currentUserData.uid);
             document.getElementById('currentRankName').textContent = rankInfo.name;
             document.getElementById('currentRankName').style.color = rankInfo.color;
             const rankList = document.getElementById('rankInfoList');
@@ -2335,14 +2413,37 @@
                 else if (rank.name === 'GOD') requirementText = 'ทำดีลสำเร็จมากกว่า <span class="highlight">1,000</span> ดีล';
                 else if (rank.name === 'NEWBIE') requirementText = 'สมาชิกใหม่';
                 else requirementText = `ต้องทำดีลสำเร็จ <span class="highlight">${rank.minDeals}</span> - <span class="highlight">${rank.maxDeals}</span> ดีล`;
+                // ==================== แก้ไข progressText ตามที่กำหนด ====================
                 let progressText = '';
-                if (isCurrentRank) progressText = '✓';
-                else if (rank.name === 'LEGENDARY') progressText = 'เฉพาะ UID พิเศษ';
-                else if (rank.name === 'CEO') progressText = 'เฉพาะผู้บริหาร';
-                else {
-                    if (currentDeals >= rank.minDeals) progressText = `${currentDeals}/${rank.maxDeals}`;
-                    else progressText = `${currentDeals}/${rank.minDeals}`;
+                if (isCurrentRank) {
+                    progressText = '✓';   // ยศปัจจุบัน
+                } else if (rank.name === 'LEGENDARY') {
+                    progressText = 'เฉพาะ UID พิเศษ';
+                } else if (rank.name === 'CEO') {
+                    progressText = 'เฉพาะผู้บริหาร';
+                } else {
+                    // กรณี NEWBIE (min=0, max=0)
+                    if (rank.minDeals === 0 && rank.maxDeals === 0) {
+                        if (currentDeals > 0) {
+                            progressText = '✅ ผ่านแล้ว';
+                        } else {
+                            progressText = '0';
+                        }
+                    }
+                    // กรณีที่ผ่านยศนี้แล้ว (มีดีลมากกว่าหรือเท่ากับ maxDeals)
+                    else if (currentDeals >= rank.maxDeals) {
+                        progressText = '✅ ผ่านแล้ว';
+                    }
+                    // ยังไม่ถึงเกณฑ์ขั้นต่ำ
+                    else if (currentDeals < rank.minDeals) {
+                        progressText = `${currentDeals}/${rank.minDeals}`;
+                    }
+                    // อยู่ในช่วงของยศนี้ (แต่ไม่ใช่ยศปัจจุบัน) – ไม่ควรเกิด แต่กันไว้
+                    else {
+                        progressText = `${currentDeals}/${rank.maxDeals}`;
+                    }
                 }
+                // ========================================================================
                 rankItem.innerHTML = `
                     <div class="rank-info-badge ${badgeClass}">${rank.name}</div>
                     <div class="rank-info-details">
@@ -2352,6 +2453,11 @@
                     <div class="rank-info-current">${progressText}</div>
                 `;
                 rankList.appendChild(rankItem);
+                // ถ้าเป็น "✅ ผ่านแล้ว" ให้เพิ่ม class completed
+                if (progressText === '✅ ผ่านแล้ว') {
+                    const currentSpan = rankItem.querySelector('.rank-info-current');
+                    if (currentSpan) currentSpan.classList.add('completed');
+                }
             });
             document.getElementById('rankInfoModal').style.display = 'flex';
         }
@@ -2360,7 +2466,7 @@
             document.getElementById('rankInfoModal').style.display = 'none';
         }
 
-        function changeProfile(input) {
+        async function changeProfile(input) {
             const file = input.files[0];
             if (!file) return;
             if (!file.type.match('image.*')) {
@@ -2386,7 +2492,7 @@
                     
                     // อัปเดต currentUserData และ cache
                     currentUserData.photo_url = e.target.result;
-                    updateProfileUI(currentUserData, currentUserData.uid); // จะบันทึกลง localStorage ด้วย
+                    await updateProfileUI(currentUserData, currentUserData.uid); // จะบันทึกลง localStorage ด้วย
                     
                     // 🌟 จินนี่: ยิงเควสอัปเดตโปรไฟล์
                     try {
@@ -2464,7 +2570,7 @@
                     currentUserData.balance = (currentUserData.balance || 0) - 10;
                 }
                 // บันทึก cache และ localStorage
-                updateProfileUI(currentUserData, currentUserData.uid);
+                await updateProfileUI(currentUserData, currentUserData.uid);
                 
                 // 🌟 จินนี่: ยิงเควสอัปเดตโปรไฟล์
                 try {
@@ -2703,7 +2809,7 @@
         }
 
         // ========== รันเมื่อโหลดหน้า ==========
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             createParticles();
             loadGraphicsLevel();
             checkSystemStatus(); // ตรวจสอบสถานะระบบตามเวลาจริง
@@ -2713,11 +2819,11 @@
             const local = loadFromLocalStorage();
             if (local) {
                 // internalUpdateUI โดยไม่บันทึก localStorage ซ้ำ
-                internalUpdateUI(local.data, local.uid, local.deals);
+                await internalUpdateUI(local.data, local.uid, local.deals);
             }
             
             // เริ่มต้นระบบ auth (จะโหลดข้อมูลจริงและอัปเดตภายหลัง)
-            initAuth();
+            await initAuth();
             
             setInterval(updateAIMessage, 15000);
             
@@ -2727,6 +2833,14 @@
                         modal.style.display = 'none';
                     });
                 }
+            });
+
+            // cleanup interval เมื่อออกจากหน้า
+            window.addEventListener('beforeunload', function() {
+                if (statsInterval) clearInterval(statsInterval);
+            });
+            window.addEventListener('pagehide', function() {
+                if (statsInterval) clearInterval(statsInterval);
             });
         });
 
@@ -2744,6 +2858,19 @@
                 const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
                 document.getElementById('aiMsg').innerHTML = `<b>AEGIS AI:</b> "${randomMsg}"`;
             }
+        }
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('ServiceWorker registered');
+                }).catch(function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
         }
     </script>
 </body>
