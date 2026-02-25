@@ -2090,9 +2090,12 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            showWarningOnScreen('✅ beforeinstallprompt event เกิดขึ้นแล้ว!');
             // แสดงปุ่มเฉพาะเมื่อยังไม่ได้ติดตั้ง
             if (!isAppInstalled()) {
                 installBtn.style.display = 'flex';
+            } else {
+                showWarningOnScreen('ℹ️ ติดตั้งแอปแล้ว (isAppInstalled = true) ซ่อนปุ่ม');
             }
         });
 
@@ -3417,12 +3420,38 @@
                 .subscribe();
         }
 
+        // ตรวจสอบ manifest.json และ service worker
+        async function checkPwaStatus() {
+            // ตรวจสอบว่า service worker support
+            if ('serviceWorker' in navigator) {
+                showWarningOnScreen('✅ Browser รองรับ Service Worker');
+            } else {
+                showWarningOnScreen('❌ Browser ไม่รองรับ Service Worker');
+            }
+
+            // ตรวจสอบ manifest.json
+            try {
+                const res = await fetch('/manifest.json');
+                if (res.ok) {
+                    showWarningOnScreen('✅ manifest.json โหลดได้');
+                } else {
+                    showWarningOnScreen('❌ manifest.json ไม่พบ (status ' + res.status + ')');
+                }
+            } catch (e) {
+                showWarningOnScreen('❌ manifest.json error: ' + e.message);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('scanOverlay').style.display = 'flex';
             loadGraphicsLevel();
             setTimeout(() => { initAuth(); }, 1000);
             checkSystemStatus();
             setInterval(checkSystemStatus, 3600000);
+            
+            // ตรวจสอบ PWA ทันที
+            checkPwaStatus();
+            
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay[style*="flex"]').forEach(modal => modal.style.display = 'none');
