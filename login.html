@@ -1098,10 +1098,14 @@
                     if (error) throw error;
 
                     if (data?.user) {
-                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำไปยังแดชบอร์ด", "success");
+                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำไปยังห้องเดิม", "success");
                         if (isRemembered) {
                             localStorage.setItem('aegis_remember_username', loginVal);
                         }
+
+                        // --- ดึง returnUrl จาก URL ---
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const returnUrl = urlParams.get('returnUrl') || 'dashboard.html';
 
                         // --- IP Logging (background) ---
                         (async () => {
@@ -1120,7 +1124,7 @@
                         })();
 
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        window.location.href = 'dashboard.html';
+                        window.location.href = decodeURIComponent(returnUrl); // ✅ กลับไปห้องเดิม
                     } else {
                         throw new Error('ไม่สามารถเข้าสู่ระบบได้');
                     }
