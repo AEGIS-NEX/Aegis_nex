@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- เพิ่ม Manifest และ Theme Color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
     <style>
         /* ===== RESET & VARIABLES ===== */
         * {
@@ -1098,6 +1102,23 @@
                         if (isRemembered) {
                             localStorage.setItem('aegis_remember_username', loginVal);
                         }
+
+                        // --- IP Logging (background) ---
+                        (async () => {
+                            try {
+                                const userIP = await fetch('https://api.ipify.org?format=json')
+                                    .then(r => r.json())
+                                    .then(d => d.ip)
+                                    .catch(() => '0.0.0.0');
+                                await supa.from('ip_logs').insert({
+                                    user_id: data.user.id,
+                                    ip_address: userIP
+                                });
+                            } catch (e) {
+                                console.error('IP logging failed:', e);
+                            }
+                        })();
+
                         await new Promise(resolve => setTimeout(resolve, 1500));
                         window.location.href = 'dashboard.html';
                     } else {
@@ -1162,6 +1183,19 @@
                 init();
             }
         })();
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
     </script>
 </body>
 </html>
