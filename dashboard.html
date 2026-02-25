@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">   <!-- แก้ตรงนี้: จาก "/manifest.json" เป็น "manifest.json" -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00f2ff">
     <title>แดชบอร์ด | AEGIS NEX</title>
     
@@ -636,6 +636,10 @@
             filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
             margin: 0;
             line-height: 1.2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
         
         .quick-actions { 
@@ -1594,6 +1598,42 @@
             50% { background-position: 100% 50%; opacity: 1; transform: scale(1.1); }
             100% { background-position: 0% 50%; opacity: 0.6; transform: scale(0.9); }
         }
+
+        /* Modal styles เหมือนใน topup.html */
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--primary);
+        }
+        .modal-message {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00b8cc);
+            color: #000;
+            box-shadow: 0 3px 12px rgba(0, 242, 255, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -2038,13 +2078,13 @@
         </div>
     </div>
 
-    <!-- Coming Soon Modal (เพิ่มใหม่ ให้เหมือน profile.html) -->
+    <!-- Coming Soon Modal (ใหม่ สไตล์เหมือน topup.html) -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal-box">
-            <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
+            <i class="fas fa-clock modal-icon" style="color: var(--primary);"></i>
             <div class="modal-title">กำลังมาเร็วๆ นี้</div>
             <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
-            <button class="modal-btn btn-primary" onclick="closeComingSoon()">OK</button>
+            <button class="modal-btn btn-primary" onclick="closeComingSoon()">ตกลง</button>
         </div>
     </div>
 
@@ -3449,8 +3489,8 @@
             checkSystemStatus();
             setInterval(checkSystemStatus, 3600000);
             
-            // ตรวจสอบ PWA ทันที
-            checkPwaStatus();
+            // ตรวจสอบ PWA ทันที (คอมเมนต์ไว้เพื่อไม่ให้แสดง toast)
+            // checkPwaStatus();
             
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
