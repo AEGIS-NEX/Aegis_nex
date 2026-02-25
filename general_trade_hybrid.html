@@ -23,6 +23,24 @@
     
     <!-- Anti‑debug: disable F12, right‑click and common devtools shortcuts -->
     <script>
+        async function insertPartnerJoinedMessage() {
+    if (!roomId || !partnerId) return;
+    try {
+        const partnerData = await fetchUserPublic(partnerId);
+        const partnerDisplayName = partnerData?.display_name || partnerData?.username || 'คู่ค้า';
+        await supabaseClient
+            .from('messages')
+            .insert([{
+                room_id: roomId,
+                user_id: 'system',
+                content: `👤 ${partnerDisplayName} ได้เข้ามาในห้องแล้ว`,
+                type: 'admin'
+            }]);
+    } catch (e) {
+        console.error('insertPartnerJoinedMessage error:', e);
+    }
+}
+        
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' ||
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
@@ -4560,45 +4578,45 @@ async function ส่งแจ้งเตือน(ผู้รับไอด�
     // 🔄 REALTIME SUBSCRIPTIONS (optimized) – UPDATED with auto‑reconnect
     // ============================================
     function setupRealtime() {
-        if (!currentUser) return;
-        if (window.roomChannel) supabaseClient.removeChannel(window.roomChannel);
+    if (!currentUser) return;
+    if (window.roomChannel) supabaseClient.removeChannel(window.roomChannel);
 
-        const maxRetries = 5;
-        let retryCount = 0;
+    const maxRetries = 5;
+    let retryCount = 0;
 
-        function connect() {
-            window.roomChannel = supabaseClient.channel(`room:${roomId}`, {
-                config: { broadcast: { self: true } }
-            });
+    function connect() {
+        window.roomChannel = supabaseClient.channel(`room:${roomId}`, {
+            config: { broadcast: { self: true } }
+        });
 
-            window.roomChannel
-                .on('postgres_changes', 
-                    { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
-                    handleNewMessage)
-                .on('postgres_changes',
-                    { event: 'UPDATE', schema: 'public', table: 'trades', filter: `room_id=eq.${roomId}` },
-                    handleTradeUpdate)
-                .subscribe((status) => {
-                    console.log('Realtime subscription status:', status);
-                    if (status === 'SUBSCRIBED') {
-                        console.log('✅ Subscribed to room', roomId);
-                        retryCount = 0; // reset
-                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-                        console.error(`❌ Subscription failed: ${status}`);
-                        if (retryCount < maxRetries) {
-                            retryCount++;
-                            console.log(`🔄 Retrying connection (${retryCount}/${maxRetries})...`);
-                            setTimeout(connect, 3000 * retryCount); // exponential backoff
-                        } else {
-                            console.error('❌ Max retries reached. Realtime disabled.');
-                            addAiAlertMessage('⚠️ ไม่สามารถเชื่อมต่อเรียลไทม์ได้ กรุณารีเฟรชหน้า');
-                        }
+        window.roomChannel
+            .on('postgres_changes', 
+                { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
+                handleNewMessage)
+            .on('postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'trades', filter: `room_id=eq.${roomId}` },
+                handleTradeUpdate)
+            .subscribe((status) => {
+                console.log('Realtime subscription status:', status);
+                if (status === 'SUBSCRIBED') {
+                    console.log('✅ Subscribed to room', roomId);
+                    retryCount = 0;
+                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                    console.error(`❌ Subscription failed: ${status}`);
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        console.log(`🔄 Retrying connection (${retryCount}/${maxRetries})...`);
+                        setTimeout(connect, 3000 * retryCount);
+                    } else {
+                        console.error('❌ Max retries reached. Realtime disabled.');
+                        addAiAlertMessage('⚠️ ไม่สามารถเชื่อมต่อเรียลไทม์ได้ กรุณารีเฟรชหน้า');
                     }
-                });
-        }
+                }
+            });
+    }
 
-        connect();
-
+    connect();
+}
         // subscription สำหรับ sidebar (ถ้าจำเป็น ควรแยก channel หรือใช้ broadcast)
         supabaseClient
             .channel('sidebar-updates')
@@ -4639,34 +4657,32 @@ async function ส่งแจ้งเตือน(ผู้รับไอด�
     }
 
     // ฟังก์ชันจัดการ trade update – wrapped with try‑catch
-    async function handleTradeUpdate(payload) {
-        try {
-            console.log('🔥 Trade updated:', payload.new);
-            tradeData = payload.new;
-            tradeStatus = tradeData.status;
-            productPrice = tradeData.product_price || 0;
+    function handleTradeUpdate(payload) {
+    console.log('🔥 Trade updated:', payload.new);
+    tradeData = payload.new;
+    tradeStatus = tradeData.status;
+    productPrice = tradeData.product_price || 0;
 
-            if (tradeStatus === 'shipped') {
-                await loadShippingData();
-            }
+    if (tradeStatus === 'shipped') {
+        loadShippingData();
+    }
 
-            const newPartnerId = (tradeData.buyer_id === currentUser?.id) ? tradeData.seller_id : tradeData.buyer_id;
-            if (newPartnerId !== partnerId) {
-                partnerId = newPartnerId;
-                await loadPartnerInfo();
-                if (partnerId) {
-                    insertPartnerJoinedMessage();
-                }
-            }
+    const newPartnerId = (tradeData.buyer_id === currentUser?.id) ? tradeData.seller_id : tradeData.buyer_id;
+    console.log('   newPartnerId:', newPartnerId, 'old partnerId:', partnerId);
 
-            updateUIByStatus();
-            if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
-                loadRooms();
-            }
-        } catch (err) {
-            console.error('❌ handleTradeUpdate error:', err);
+    if (newPartnerId !== partnerId) {
+        partnerId = newPartnerId;
+        loadPartnerInfo();
+        if (partnerId) {
+            insertPartnerJoinedMessage();
         }
     }
+
+    updateUIByStatus();
+    if (tradeStatus === 'cancelled' || tradeStatus === 'received') {
+        loadRooms();
+    }
+}
 
     // เพิ่มฟังก์ชัน insertPartnerJoinedMessage
     async function insertPartnerJoinedMessage() {
@@ -5947,27 +5963,18 @@ async function ส่งแจ้งเตือน(ผู้รับไอด�
     // 🔗 ฟังก์ชันคัดลอกลิงก์ห้อง (แก้ครั้งสุดท้าย)
     // ============================================
     window.openCopyLinkModal = function() {
-        // ดึง origin (เช่น https://aegis-nex.github.io)
-        const origin = window.location.origin;
-        
-        // ดึง path ของไฟล์ปัจจุบัน (เช่น /Aegis_nex/general_trade_hybrid.html)
-        const currentPath = window.location.pathname;
-        
-        // หาชื่อไฟล์ เพื่อตัดออกให้เหลือแค่ path ของโฟลเดอร์
-        // เช่น /Aegis_nex/general_trade_hybrid.html -> /Aegis_nex/
-        const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-        
-        // ใช้ role ปัจจุบัน
-        const currentRole = role; // role ถูกกำหนดไว้แล้วตอนต้น
-        
-        // รวมเป็นลิงก์ที่ถูกต้อง
-        const link = `${origin}${basePath}general_trade_hybrid.html?mode=${encodeURIComponent(mode)}&id=${encodeURIComponent(roomId)}&role=${encodeURIComponent(currentRole)}`;
-        
-        // เอาไปใส่ใน modal
-        document.getElementById('roomLinkDisplay').textContent = link;
-        document.getElementById('copyLinkModal').classList.add('active');
-    };
-
+    const origin = window.location.origin;
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+    
+    const myRole = urlParams.get('role') || role;
+    const partnerRole = myRole === 'buyer' ? 'seller' : 'buyer';
+    
+    const link = `${origin}${basePath}general_trade_hybrid.html?mode=${encodeURIComponent(mode)}&id=${encodeURIComponent(roomId)}&role=${encodeURIComponent(partnerRole)}`;
+    
+    document.getElementById('roomLinkDisplay').textContent = link;
+    document.getElementById('copyLinkModal').classList.add('active');
+};
     function closeCopyLinkModal() {
         document.getElementById('copyLinkModal').classList.remove('active');
         document.getElementById('copySuccessMessage').style.display = 'none';
