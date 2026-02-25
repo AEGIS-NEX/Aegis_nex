@@ -2493,6 +2493,8 @@
                 nameEl.innerHTML = nameHtml + tickHtml;
                 nameEl.style.color = rankInfo.color;
                 nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
+            } else {
+                showWarningOnScreen('⚠️ Element #userName not found');
             }
             
             const avatarFrame = document.getElementById('headerAvatarFrame');
@@ -2502,37 +2504,126 @@
                 avatarFrame.style.borderWidth = glowStyle.borderWidth;
                 avatarFrame.style.boxShadow = glowStyle.boxShadow;
                 avatarFrame.style.animation = glowStyle.animation;
+            } else {
+                showWarningOnScreen('⚠️ Element #headerAvatarFrame not found');
             }
             
             const userRankEl = document.getElementById('userRank');
-            if (userRankEl) userRankEl.innerHTML = rankInfo.html;
+            if (userRankEl) {
+                userRankEl.innerHTML = rankInfo.html;
+            } else {
+                showWarningOnScreen('⚠️ Element #userRank not found');
+            }
             
             const userBalanceEl = document.getElementById('userBalance');
-            if (userBalanceEl) userBalanceEl.innerHTML = (data.balance || 0).toLocaleString();
+            if (userBalanceEl) {
+                userBalanceEl.innerHTML = (data.balance || 0).toLocaleString();
+            } else {
+                showWarningOnScreen('⚠️ Element #userBalance not found');
+            }
             
             const userBalanceAGEl = document.getElementById('userBalanceAG');
-            if (userBalanceAGEl) userBalanceAGEl.innerHTML = (data.balance_ag || 0).toLocaleString();
+            if (userBalanceAGEl) {
+                userBalanceAGEl.innerHTML = (data.balance_ag || 0).toLocaleString();
+            } else {
+                showWarningOnScreen('⚠️ Element #userBalanceAG not found');
+            }
             
             const userImgEl = document.getElementById('userImg');
-            if (userImgEl) userImgEl.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
+            if (userImgEl) {
+                userImgEl.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
+            } else {
+                showWarningOnScreen('⚠️ Element #userImg not found');
+            }
 
             const xp = getExpData(realDeals);
             const xpBarFill = document.getElementById('xpBarFill');
             if (xpBarFill) {
                 xpBarFill.style.width = xp.percent + "%";
                 xpBarFill.style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
+            } else {
+                showWarningOnScreen('⚠️ Element #xpBarFill not found');
             }
+            
             const xpCurrentEl = document.getElementById('xpCurrent');
-            if (xpCurrentEl) xpCurrentEl.innerText = xp.current + " XP";
+            if (xpCurrentEl) {
+                xpCurrentEl.innerText = xp.current + " XP";
+            } else {
+                showWarningOnScreen('⚠️ Element #xpCurrent not found');
+            }
+            
             const xpTargetEl = document.getElementById('xpTarget');
-            if (xpTargetEl) xpTargetEl.innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
+            if (xpTargetEl) {
+                xpTargetEl.innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
+            } else {
+                showWarningOnScreen('⚠️ Element #xpTarget not found');
+            }
             
             const onlineDot = document.getElementById('onlineDot');
-            if (onlineDot) onlineDot.style.background = 'var(--success)';
+            if (onlineDot) {
+                onlineDot.style.background = 'var(--success)';
+            } else {
+                showWarningOnScreen('⚠️ Element #onlineDot not found');
+            }
             
             const scanOverlay = document.getElementById('scanOverlay');
-            if (scanOverlay) scanOverlay.style.display = 'none';
+            if (scanOverlay) {
+                scanOverlay.style.display = 'none';
+            } else {
+                showWarningOnScreen('⚠️ Element #scanOverlay not found');
+            }
         }
+
+        // ========== ฟังก์ชันแสดง warning บนหน้าจอ (เพิ่มใหม่) ==========
+        function showWarningOnScreen(message) {
+            // ตรวจสอบว่าเคยมี toast อยู่แล้วหรือไม่ ถ้ามีให้ลบก่อน
+            const existingToast = document.getElementById('warning-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'warning-toast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '10px';
+            toast.style.right = '10px';
+            toast.style.backgroundColor = '#ffaa00';
+            toast.style.color = '#000';
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '999999';
+            toast.style.fontSize = '13px';
+            toast.style.fontWeight = 'bold';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            toast.style.borderLeft = '5px solid #ff6600';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.justifyContent = 'space-between';
+            toast.style.gap = '10px';
+            toast.style.backdropFilter = 'blur(5px)';
+            toast.style.animation = 'slideUp 0.3s ease';
+
+            toast.innerHTML = `
+                <span><i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i> ${message}</span>
+                <span onclick="this.parentElement.remove()" style="cursor:pointer; font-size:18px;">&times;</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            // ให้หายไปอัตโนมัติหลังจาก 4 วินาที
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 4000);
+        }
+
+        // เพิ่ม animation เล็กน้อย (ใส่ใน <style> ของคุณ หรือจะเพิ่มในฟังก์ชันก็ได้)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
 
         // 🔥 INIT AUTH (แก้ไขตามที่คุณต้องการ)
         async function initAuth() {
