@@ -64,20 +64,24 @@
             font-family: 'Chakra Petch', sans-serif;
         }
         
-        body {
+        /* 🔧 ปรับ html, body ให้เต็มพื้นที่และไม่เลื่อน */
+        html, body {
+            height: 100%;
+            overflow: hidden;
             background-color: var(--dark-bg);
             color: #fff;
-            height: 100dvh; /* ใช้ dvh เพื่อให้พอดีกับ viewport จริงของมือถือ */
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
+        }
+        
+        body {
+            /* ลบ position: fixed; ออก */
+            margin: 0;
             -webkit-overflow-scrolling: touch;
         }
 
         .trade-container {
             display: flex;
             flex-direction: column;
-            height: 100dvh; /* ใช้ dvh เช่นกัน */
+            height: 100%;          /* เปลี่ยนจาก 100dvh เป็น 100% */
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
@@ -94,7 +98,7 @@
             justify-content: space-between;
             backdrop-filter: blur(var(--glass-blur));
             z-index: 100;
-            flex-shrink: 0; /* ห้ามหด */
+            flex-shrink: 0;
             gap: 10px;
         }
         
@@ -242,7 +246,7 @@
             background: rgba(5, 11, 20, 0.8);
             border-bottom: 1px solid rgba(0, 242, 255, 0.1);
             backdrop-filter: blur(var(--glass-blur));
-            flex-shrink: 0; /* ห้ามหด */
+            flex-shrink: 0;
         }
         
         .status-steps {
@@ -461,15 +465,17 @@
         }
 
         .chat-area {
-            flex: 1;
+            flex: 1 1 0;          /* ยืดหยุ่น เติมพื้นที่ว่าง */
             display: flex;
             flex-direction: column;
+            min-height: 0;         /* สำคัญ: ให้ flex child หดได้ */
             overflow: hidden;
             background: rgba(5, 11, 20, 0.6);
         }
         
         .messages-container {
-            flex: 1;
+            flex: 1 1 0;
+            min-height: 0;
             padding: 15px;
             overflow-y: auto;
             display: flex;
