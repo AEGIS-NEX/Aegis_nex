@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-   <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json">   <!-- แก้ตรงนี้: จาก "/manifest.json" เป็น "manifest.json" -->
     <meta name="theme-color" content="#00f2ff">
     <title>แดชบอร์ด | AEGIS NEX</title>
     
@@ -3431,7 +3431,7 @@
 
             // ตรวจสอบ manifest.json
             try {
-                const res = await fetch('/manifest.json');
+                const res = await fetch('manifest.json');   // <-- แก้เป็น relative path
                 if (res.ok) {
                     showWarningOnScreen('✅ manifest.json โหลดได้');
                 } else {
@@ -3671,11 +3671,11 @@
         }
     </script>
 
-    <!-- 👇 เพิ่ม Service Worker registration -->
+    <!-- 👇 เพิ่ม Service Worker registration (แก้เป็น relative path) -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+          navigator.serviceWorker.register('service-worker.js').then(function(registration) {  // <-- แก้ตรงนี้
             console.log('ServiceWorker registered');
           }).catch(function(err) {
             console.log('ServiceWorker registration failed: ', err);
