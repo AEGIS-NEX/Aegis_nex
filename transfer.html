@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    <title>โอนเงิน P2P | AEGIS NEX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS เดิมทั้งหมดคงเดิม ไม่มีการเปลี่ยนแปลง */
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bc13fe;
+            --accent: #ff0080;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --dark-bg: #050b14;
+            --card-bg: rgba(20, 30, 50, 0.7);
+            --border: 1px solid rgba(0, 242, 255, 0.3);
+            --glass: rgba(5, 10, 20, 0.85);
+            --glow-primary: 0 0 20px rgba(0, 242, 255, 0.7);
+            --glow-secondary: 0 0 20px rgba(188, 19, 254, 0.7);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            margin: 0; 
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(135deg, #050b14 0%, #0a1528 50%, #050b14 100%);
+            position: relative;
+            min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f2ff' fill-opacity='0.02'%3E%3Cpath d='M50 50v-6h-4v6h-6v4h6v6h4v-6h6v-4h-6zm0-40V0h-4v10h-6v4h6v6h4V14h6v-4h-6zM10 50v-6H6v6H0v4h6v6h4v-6h6v-4h-6zM10 10V0H6v10H0v4h6v6h4V14h6v-4h-6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ------------------------------------------------
+           📢 NEWS TICKER (เพิ่ม id="tickerText")
+           ------------------------------------------------ */
+        .news-ticker {
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0, 242, 255, 0.15) 10%, 
+                rgba(0, 242, 255, 0.25) 50%, 
+                rgba(0, 242, 255, 0.15) 90%, 
+                rgba(0,0,0,0) 100%);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+            height: 38px; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center;
+            position: relative; 
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transform: translateZ(0);
+        }
+        
+        .ticker-content {
+            white-space: nowrap;
+            animation: ticker 30s linear infinite;
+            font-size: 13px; 
+            color: var(--primary);
+            font-family: 'Orbitron'; 
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+            padding: 5px 0;
+        }
+        
+        @keyframes ticker { 
+            0% { transform: translateX(100vw); } 
+            100% { transform: translateX(-100%); } 
+        }
+
+        /* ------------------------------------------------
+           🏰 ENHANCED APP CONTAINER
+           ------------------------------------------------ */
+        .app-container {
+            width: 100%; 
+            max-width: 600px; 
+            background: var(--dark-bg);
+            min-height: 100vh; 
+            position: relative; 
+            padding-bottom: 100px;
+            margin: 0 auto;
+            z-index: 1;
+            border-left: 1px solid rgba(0, 242, 255, 0.1);
+            border-right: 1px solid rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0);
+        }
+
+        /* เส้นแสงเคลื่อนที่ */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 5px var(--primary);
+            z-index: 0;
+            animation: scanMove 10s linear infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* อนุภาคพื้นหลัง */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: floatParticle linear infinite;
+            will-change: transform;
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-100vh) rotate(180deg); opacity: 0; }
+        }
+
+        /* ------------------------------------------------
+           👤 DASHBOARD HEADER
+           ------------------------------------------------ */
+        .dash-header {
+            padding: 20px 20px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            z-index: 10;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            background: rgba(5, 11, 20, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-title { 
+            font-family: 'Orbitron'; 
+            font-size: 18px; 
+            color: var(--primary); 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            letter-spacing: 1px;
+        }
+        
+        .header-actions { 
+            display: flex; 
+            gap: 15px; 
+        }
+        
+        .icon-btn { 
+            font-size: 20px; 
+            color: #fff; 
+            position: relative; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .icon-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+
+        /* ------------------------------------------------
+           🎵 MINI JUKEBOX (เพิ่มจาก Dashboard)
+           ------------------------------------------------ */
+        .mini-juke-container {
+            width: calc(100% - 40px);
+            max-width: 560px;
+            margin: 10px auto 10px auto;
+            background: rgba(10, 15, 25, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s;
+        }
+
+        .mini-juke-container:hover {
+            background: rgba(10, 15, 25, 0.95);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .juke-disk {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #000;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            transition: transform 0.2s;
+        }
+
+        .juke-disk.spinning {
+            animation: spinDisk 4s linear infinite;
+        }
+
+        @keyframes spinDisk {
+            100% { transform: rotate(360deg); }
+        }
+
+        .juke-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .juke-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .juke-credit {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            height: 14px;
+        }
+
+        .juke-credit span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .juke-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+            align-items: center;
+        }
+
+        .juke-btn {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .juke-btn:hover { color: var(--primary); transform: scale(1.2); }
+
+        /* ------------------------------------------------
+           🧠 AI SECTION (id="aiMsg" มีอยู่แล้ว)
+           ------------------------------------------------ */
+        .ai-section { 
+            margin: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            background: rgba(0, 242, 255, 0.05); 
+            padding: 15px; 
+            border-radius: 15px; 
+            border-left: 4px solid var(--primary); 
+            transition: all 0.3s ease; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .ai-face { 
+            width: 45px; 
+            height: 45px;
+            animation: float 4s infinite ease-in-out; 
+            filter: drop-shadow(0 0 5px var(--primary));
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .ai-msg { 
+            font-size: 11px; 
+            color: #cbd5e1; 
+            line-height: 1.5; 
+            transition: 0.3s; 
+            flex: 1;
+        }
+        
+        .ai-msg b {
+            color: var(--primary);
+            font-family: 'Orbitron';
+            font-size: 12px;
+        }
+        
+        @keyframes float { 
+            0% { transform: translateY(0px); } 
+            50% { transform: translateY(-5px); } 
+            100% { transform: translateY(0px); } 
+        }
+
+        /* ------------------------------------------------
+           💰 TRANSFER CARD
+           ------------------------------------------------ */
+        .transfer-card {
+            margin: 15px 20px; 
+            padding: 25px; 
+            border-radius: 20px; 
+            background: linear-gradient(135deg, rgba(188, 19, 254, 0.15), rgba(0, 242, 255, 0.08));
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(10px); 
+            text-align: center; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transform: translateZ(0);
+        }
+        
+        .transfer-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
+        }
+        
+        .transfer-title { 
+            font-family: 'Orbitron'; 
+            font-size: 22px; 
+            font-weight: 900; 
+            margin: 10px 0; 
+            text-shadow: 0 0 15px var(--primary);
+            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
+            letter-spacing: 1.5px;
+        }
+        
+        .transfer-subtitle {
+            font-size: 11px; 
+            color: #cbd5e1; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            font-family: 'Orbitron';
+            margin-bottom: 8px;
+        }
+        
+        .kyc-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            font-family: 'Rajdhani';
+        }
+        
+        .kyc-verified {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .kyc-unverified {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .daily-limit {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #cbd5e1;
+        }
+        
+        .daily-limit span {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* ------------------------------------------------
+           📝 TRANSFER FORM
+           ------------------------------------------------ */
+        .transfer-section {
+            margin: 0 20px 20px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+        }
+        
+        .transfer-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 8px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            font-family: 'Rajdhani';
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Chakra Petch';
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 2px rgba(255, 0, 85, 0.1);
+        }
+        
+        .form-input.success {
+            border-color: var(--success);
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.1);
+        }
+        
+        /* PIN Input Container */
+        .pin-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .pin-input {
+            width: 100%;
+            padding: 16px 16px 16px 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Chakra Petch';
+            font-size: 20px;
+            letter-spacing: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .pin-input:focus {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.1);
+        }
+        
+        .pin-input-icon {
+            position: absolute;
+            left: 15px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .pin-input-btn {
+            position: absolute;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .pin-input-btn:hover {
+            color: var(--primary);
+        }
+        
+        /* 🔥 Quick Amount Buttons - ปรับเป็น Grid 2 คอลัมน์ */
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .amount-btn {
+            padding: 12px 5px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 8px;
+            color: #ccc;
+            font-family: 'Rajdhani';
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .amount-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .amount-btn.active {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+        
+        /* Balance Info */
+        .balance-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #aaa;
+        }
+        
+        .balance-info span {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* ------------------------------------------------
+           🚀 ACTION BUTTONS
+           ------------------------------------------------ */
+        .action-buttons {
+            margin: 0 20px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .transfer-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: #fff;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(188, 19, 254, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .transfer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(188, 19, 254, 0.4);
+        }
+        
+        .transfer-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .transfer-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Scan Animation Effect */
+        .transfer-btn.scanning::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: scanning 1.5s infinite;
+            z-index: -1;
+        }
+        
+        @keyframes scanning {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .cancel-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #aaa;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ------------------------------------------------
+           📱 BOTTOM NAVIGATION (เพิ่มปุ่ม ตลาด)
+           ------------------------------------------------ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 600px;
+            height: 80px;
+            background: rgba(10, 15, 25, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid var(--primary);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            padding: 0 10px;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        
+        .nav-link i {
+            font-size: 20px;
+            transition: 0.3s;
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary);
+            transform: translateY(-5px);
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+        }
+
+        /* ------------------------------------------------
+           🪟 MODAL STYLES
+           ------------------------------------------------ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 11, 20, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            padding: 15px;
+        }
+        
+        .modal-box {
+            width: 90%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0);
+            text-align: center;
+        }
+        
+        .modal-success {
+            border-color: var(--success);
+            box-shadow: 0 15px 30px -8px rgba(0, 255, 136, 0.3);
+        }
+        
+        .modal-error {
+            border-color: var(--danger);
+            box-shadow: 0 15px 30px -8px rgba(255, 0, 85, 0.3);
+        }
+        
+        .modal-processing {
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px -8px rgba(0, 242, 255, 0.3);
+        }
+        
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .modal-title {
+            font-family: 'Orbitron';
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+        }
+        
+        .modal-message {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Chakra Petch';
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00b8cc);
+            color: #000;
+            box-shadow: 0 3px 12px rgba(0, 242, 255, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #cc0044);
+            color: white;
+            box-shadow: 0 3px 12px rgba(255, 0, 85, 0.4);
+        }
+        
+        /* Transfer Details */
+        .transfer-details {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .detail-label {
+            color: #aaa;
+        }
+        
+        .detail-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 242, 255, 0.3);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.9) translateY(15px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* ------------------------------------------------
+           📱 MOBILE RESPONSIVE
+           ------------------------------------------------ */
+        @media (max-width: 768px) {
+            .app-container {
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+                box-shadow: none;
+            }
+            
+            .pin-input {
+                font-size: 18px;
+                letter-spacing: 8px;
+                padding: 14px 14px 14px 40px;
+            }
+            
+            .transfer-title {
+                font-size: 20px;
+            }
+            
+            .bottom-nav {
+                height: 75px;
+            }
+            
+            .nav-link {
+                font-size: 9px;
+                padding: 6px 8px;
+                min-width: 55px;
+            }
+            
+            .nav-link i {
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pin-input {
+                font-size: 16px;
+                letter-spacing: 6px;
+                padding: 12px 12px 12px 35px;
+            }
+            
+            .dash-header {
+                padding: 15px 15px 12px;
+            }
+            
+            .transfer-title {
+                font-size: 18px;
+            }
+            
+            .quick-amounts {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .amount-btn {
+                min-width: 0;
+                padding: 10px 3px;
+                font-size: 11px;
+            }
+        }
+
+        /* เพิ่ม smooth transition สำหรับการคลิก */
+        .transfer-btn:active, .cancel-btn:active, .icon-btn:active, .amount-btn:active {
+            transform: scale(0.97);
+            transition: transform 0.1s ease;
+        }
+        
+        /* เพิ่ม performance optimization */
+        .transfer-btn, .modal-box {
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- เส้นแสงเคลื่อนที่ -->
+    <div class="scan-line"></div>
+    
+    <!-- อนุภาคพื้นหลัง -->
+    <div class="particles" id="particles"></div>
+
+    <div class="app-container">
+        
+        <!-- News Ticker (เพิ่ม id="tickerText") -->
+        <div class="news-ticker" id="topTicker">
+            <div class="ticker-content" id="tickerText">
+                🔄 [P2P Transfer] โอนเหรียญ AGS ระหว่างผู้ใช้ได้ทันที | ⚡ [Speed] โอนเงินเสร็จภายใน 10 วินาที | 🔒 [Security] ระบบเข้ารหัส AES-256 | 📊 [Limit] KYC Verified: 50,000 AGS/วัน, Unverified: 5,000 AGS/วัน
+            </div>
+        </div>
+        
+        <!-- Dashboard Header -->
+        <div class="dash-header">
+            <div class="header-title">
+                <i class="fas fa-chevron-left" onclick="location.href='dashboard.html'" style="cursor:pointer"></i>
+                <span>โอนเงิน P2P</span>
+            </div>
+            <div class="header-actions">
+                <div class="icon-btn" onclick="showHelp()">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="icon-btn" onclick="location.href='dashboard.html'">
+                    <i class="fas fa-home"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- ███████████████████████████████████████████████████████ -->
+        <!-- 🎵 Mini Jukebox (เพิ่มจาก Dashboard) วางไว้เหนือ AI Section -->
+        <!-- ███████████████████████████████████████████████████████ -->
+        <div class="mini-juke-container" id="miniJukebox">
+            <div class="juke-disk" id="jukeToggleBtn" onclick="toggleGlobalMusic(event)">
+                <i class="fas fa-play" id="jukeIcon"></i>
+            </div>
+            <div class="juke-controls">
+                <div class="juke-title" id="jukeTitle">NCS Music</div>
+                <div class="juke-credit"><span id="jukeCredit">Music by NoCopyrightSounds</span></div>
+                <div class="juke-btns">
+                    <i class="fas fa-step-backward juke-btn" onclick="prevSong(event)"></i>
+                    <i class="fas fa-pause juke-btn" id="jukePlayPause" onclick="toggleGlobalMusic(event)"></i>
+                    <i class="fas fa-step-forward juke-btn" onclick="nextSong(event)"></i>
+                </div>
+            </div>
+        </div>
+        <audio id="globalAudioPlayer" preload="auto"></audio>
+        <!-- ███████████████████████████████████████████████████████ -->
+
+        <!-- AI Section (id="aiMsg" มีอยู่แล้ว) -->
+        <div class="ai-section">
+            <div class="ai-face">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-msg" id="aiMsg">
+                <b>AEGIS AI:</b> "ระบบโอนเงิน P2P พร้อมใช้งาน | ตรวจสอบยอดคงเหลือและวงเงินโอนรายวันของคุณ"
+            </div>
+        </div>
+
+        <!-- Transfer Card -->
+        <div class="transfer-card">
+            <div class="transfer-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="transfer-subtitle">ระบบโอนเงินแบบ Peer-to-Peer</div>
+            <div class="transfer-title">โอนเหรียญ AGS</div>
+            <div class="kyc-status" id="kycStatus">
+                <!-- KYC status will be shown here -->
+            </div>
+            <div class="daily-limit" id="dailyLimit">
+                <!-- Daily limit will be shown here -->
+            </div>
+        </div>
+
+        <!-- Transfer Form -->
+        <div class="transfer-section">
+            <div class="transfer-form">
+                <!-- Recipient -->
+                <div class="form-group">
+                    <label class="form-label">ผู้รับเงิน (Username)</label>
+                    <input type="text" id="recipientInput" class="form-input" placeholder="กรอก username ผู้รับ">
+                    <div style="font-size: 10px; color: #888; margin-top: 5px;">สามารถค้นหาผู้รับด้วย username เท่านั้น</div>
+                </div>
+                
+                <!-- Amount -->
+                <div class="form-group">
+                    <label class="form-label">จำนวนเงินที่ต้องการโอน (AGS)</label>
+                    <input type="number" id="amountInput" class="form-input" placeholder="100" min="1" step="1">
+                    
+                    <!-- 🔥 Quick Amount Buttons (Grid 2 คอลัมน์) -->
+                    <div class="quick-amounts">
+                        <button class="amount-btn" onclick="setAmount(100)">100 AGS</button>
+                        <button class="amount-btn" onclick="setAmount(500)">500 AGS</button>
+                        <button class="amount-btn" onclick="setAmount(1000)">1,000 AGS</button>
+                        <button class="amount-btn" onclick="setAmount(5000)">5,000 AGS</button>
+                        <button class="amount-btn" onclick="setAmount(10000)">10,000 AGS</button>
+                    </div>
+                    
+                    <!-- Balance Info -->
+                    <div class="balance-info">
+                        <div>ยอดเงินคงเหลือ: <span id="currentBalance">0</span> AGS</div>
+                        <div>โอนได้สูงสุดวันนี้: <span id="remainingLimit">0</span> AGS</div>
+                    </div>
+                </div>
+                
+                <!-- PIN -->
+                <div class="form-group">
+                    <label class="form-label">รหัส PIN 6 หลัก (เพื่อยืนยันตัวตน)</label>
+                    <div class="pin-input-container">
+                        <i class="fas fa-key pin-input-icon"></i>
+                        <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••••" inputmode="numeric">
+                        <button class="pin-input-btn" id="togglePinBtn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="transfer-btn" id="transferBtn" onclick="processTransfer()">
+                <i class="fas fa-bolt"></i> ยืนยันการโอนเงิน
+            </button>
+            <button class="cancel-btn" onclick="location.href='dashboard.html'">
+                <i class="fas fa-times"></i> ยกเลิก
+            </button>
+        </div>
+
+        <!-- Bottom Navigation (เพิ่มปุ่ม ตลาด) -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>หน้าหลัก</span>
+            </a>
+            <!-- แก้ไขปุ่มตลาดให้เรียก modal แทนการไปหน้า market.html -->
+            <a href="javascript:void(0)" class="nav-link" onclick="showComingSoon()">
+                <i class="fas fa-store"></i>
+                <span>ตลาด</span>
+            </a>
+            <a href="topup.html" class="nav-link">
+                <i class="fas fa-bolt"></i>
+                <span>เติมเงิน</span>
+            </a>
+            <a href="withdraw.html" class="nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>ถอนเงิน</span>
+            </a>
+            <a href="#" class="nav-link active">
+                <i class="fas fa-exchange-alt"></i>
+                <span>โอนเงิน</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Processing Modal -->
+    <div class="modal-overlay" id="processingModal">
+        <div class="modal-box modal-processing">
+            <div class="spinner"></div>
+            <div class="modal-title">กำลังประมวลผล</div>
+            <div class="modal-message" id="processingMessage">ระบบกำลังตรวจสอบข้อมูลและดำเนินการโอนเงิน...</div>
+        </div>
+    </div>
+
+    <!-- Confirm Transfer Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <i class="fas fa-exchange-alt" style="color: var(--primary);"></i>
+            </div>
+            <div class="modal-title">ยืนยันการโอนเงิน</div>
+            
+            <div class="transfer-details">
+                <div class="detail-item">
+                    <span class="detail-label">ผู้รับ:</span>
+                    <span class="detail-value" id="confirmRecipient">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">จำนวนเงิน:</span>
+                    <span class="detail-value" id="confirmAmount">0 AGS</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">ค่าธรรมเนียม:</span>
+                    <span class="detail-value">0 AGS</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">รวมทั้งสิ้น:</span>
+                    <span class="detail-value" id="confirmTotal">0 AGS</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">รหัสอ้างอิง:</span>
+                    <span class="detail-value" id="confirmRef">TRF-XXXXXX</span>
+                </div>
+            </div>
+            
+            <div class="modal-message">
+                โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน การโอนเงินไม่สามารถยกเลิกได้หลังยืนยัน
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="modal-btn btn-danger" onclick="closeConfirmModal()" style="flex: 1;">
+                    <i class="fas fa-times"></i> ยกเลิก
+                </button>
+                <button class="modal-btn btn-primary" onclick="confirmTransfer()" style="flex: 1;">
+                    <i class="fas fa-check"></i> ยืนยัน
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-box modal-success">
+            <i class="fas fa-check-circle modal-icon" style="color: var(--success);"></i>
+            <div class="modal-title">โอนเงินสำเร็จ!</div>
+            <div class="modal-message" id="successMessage">
+                ระบบได้ทำการโอนเงินเรียบร้อยแล้ว เงินจะเข้าบัญชีผู้รับภายใน 10 วินาที
+            </div>
+            <button class="modal-btn btn-primary" onclick="closeSuccessModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-box modal-error">
+            <i class="fas fa-exclamation-triangle modal-icon" style="color: var(--danger);"></i>
+            <div class="modal-title" id="errorTitle">เกิดข้อผิดพลาด</div>
+            <div class="modal-message" id="errorMessage">กรุณาตรวจสอบข้อมูลอีกครั้ง</div>
+            <button class="modal-btn btn-danger" onclick="closeErrorModal()">ลองอีกครั้ง</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <div class="modal-title"><i class="fas fa-question-circle"></i> คำแนะนำการโอนเงิน P2P</div>
+            <div class="modal-message">
+                <p><strong>เงื่อนไขการโอนเงิน:</strong></p>
+                <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li><strong>ผู้ที่ผ่าน KYC:</strong> โอนได้สูงสุด 50,000 AGS ต่อวัน</li>
+                    <li><strong>ผู้ที่ยังไม่ผ่าน KYC:</strong> โอนได้สูงสุด 5,000 AGS ต่อวัน</li>
+                    <li><strong>ขั้นต่ำการโอน:</strong> 1 AGS</li>
+                    <li><strong>ค่าธรรมเนียม:</strong> 0 AGS (ฟรี)</li>
+                </ul>
+                <p><strong>ขั้นตอนการโอนเงิน:</strong></p>
+                <ol style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li>กรอก username ของผู้รับ (ใช้ username เท่านั้น)</li>
+                    <li>กรอกจำนวนเงิน AGS ที่ต้องการโอน</li>
+                    <li>กรอกรหัส PIN 6 หลักเพื่อยืนยันตัวตน</li>
+                    <li>ตรวจสอบข้อมูลในหน้าต่างยืนยัน</li>
+                    <li>กดปุ่มยืนยันการโอนเงิน</li>
+                </ol>
+                <p><strong>คำแนะนำด้านความปลอดภัย:</strong></p>
+                <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li>ตรวจสอบ username ของผู้รับให้ถูกต้อง</li>
+                    <li>อย่าโอนเงินให้กับบุคคลที่ไม่รู้จัก</li>
+                    <li>บันทึกรหัสอ้างอิงไว้สำหรับติดตามการโอน</li>
+                    <li>หากพบการโอนเงินโดยมิชอบ ให้ติดต่อแอดมินทันที</li>
+                </ul>
+                <p><strong>หมายเหตุ:</strong> การโอนเงินจะเสร็จสมบูรณ์ภายใน 10 วินาที</p>
+            </div>
+            <button class="modal-btn btn-primary" onclick="closeHelpModal()">เข้าใจแล้ว</button>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal-box">
+            <i class="fas fa-clock modal-icon" style="color: var(--primary); font-size: 60px; margin-bottom: 20px; display: block;"></i>
+            <div class="modal-title">กำลังมาเร็วๆ นี้</div>
+            <div class="modal-message">โปรดรอติดตามอัปเดตจากทีมงาน</div>
+            <button class="modal-btn btn-primary" onclick="closeComingSoon()">OK</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // 🔥 AEGIS CONFIG - ใช้ Supabase Project เดียวกัน
+        const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ========== เพิ่มฟังก์ชัน hashPIN สำหรับเข้ารหัส PIN ==========
+        async function hashPIN(pin) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(pin);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        // ============================================================
+
+        // ตัวแปร global
+        let currentUserId = '';
+        let currentUserPin = '';      // ✅ เก็บ hashed PIN จากคอลัมน์ pin
+        let userBalance = 0;
+        let userKYC = false;
+        let dailyTransferLimit = 0;
+        let dailyTransferred = 0;
+        let recipientUser = null;
+
+        // สร้างอนุภาคพื้นหลัง
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                const colors = ['#00f2ff', '#bc13fe', '#ff0080'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                
+                const duration = Math.random() * 30 + 20;
+                const delay = Math.random() * 5;
+                particle.style.animation = `floatParticle ${duration}s linear ${delay}s infinite`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // เริ่มต้นอนุภาค
+        createParticles();
+
+        // 🔥 INITIALIZE AUTHENTICATION
+        async function initAuth() {
+            try {
+                const { data: { session }, error } = await supa.auth.getSession();
+                if (error) throw error;
+                
+                if (session) {
+                    currentUserId = session.user.id;
+                    await loadUserData();
+                } else {
+                    window.location.href = 'index.html';
+                }
+
+                supa.auth.onAuthStateChange((event, session) => {
+                    if (session) {
+                        currentUserId = session.user.id;
+                        loadUserData();
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                });
+            } catch (error) {
+                console.error("Auth initialization error:", error);
+                showError('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // 🔥 LOAD USER DATA
+        async function loadUserData() {
+            try {
+                const { data: userData, error } = await supa
+                    .from('users')
+                    .select('balance, pin, kyc_verified, username, email')
+                    .eq('id', currentUserId)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    userBalance = userData.balance || 0;
+                    currentUserPin = userData.pin;   // ✅ เก็บ hashed PIN
+                    userKYC = userData.kyc_verified || false;
+                    
+                    // Update UI
+                    document.getElementById('currentBalance').textContent = 
+                        userBalance.toLocaleString('th-TH');
+                    
+                    // Set daily limit based on KYC status
+                    dailyTransferLimit = userKYC ? 50000 : 5000;
+                    
+                    // Load today's transferred amount
+                    await loadTodayTransfers();
+                    
+                    // Update KYC status display
+                    updateKYCStatus();
+                    
+                    // Update daily limit display
+                    updateDailyLimit();
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+            }
+        }
+
+        // 🔥 LOAD TODAY'S TRANSFERS
+        async function loadTodayTransfers() {
+            try {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayISO = today.toISOString();
+                
+                const { data: transfers, error } = await supa
+                    .from('transactions')
+                    .select('amount')
+                    .eq('user_id', currentUserId)
+                    .eq('type', 'transfer')
+                    .eq('status', 'completed')
+                    .gte('created_at', todayISO);
+                
+                if (error) throw error;
+                
+                dailyTransferred = transfers.reduce((sum, transfer) => sum + (transfer.amount || 0), 0);
+                
+                // Update remaining limit
+                updateDailyLimit();
+                
+            } catch (error) {
+                console.error("Error loading today's transfers:", error);
+            }
+        }
+
+        // 🔥 UPDATE KYC STATUS DISPLAY
+        function updateKYCStatus() {
+            const kycStatus = document.getElementById('kycStatus');
+            
+            if (userKYC) {
+                kycStatus.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <span>KYC Verified</span>
+                `;
+                kycStatus.className = 'kyc-status kyc-verified';
+            } else {
+                kycStatus.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>KYC Unverified</span>
+                `;
+                kycStatus.className = 'kyc-status kyc-unverified';
+            }
+        }
+
+        // 🔥 UPDATE DAILY LIMIT DISPLAY
+        function updateDailyLimit() {
+            const dailyLimitElement = document.getElementById('dailyLimit');
+            const remaining = dailyTransferLimit - dailyTransferred;
+            
+            dailyLimitElement.innerHTML = `
+                วงเงินโอนรายวัน: <span>${dailyTransferLimit.toLocaleString('th-TH')} AGS</span> | 
+                โอนแล้ววันนี้: <span>${dailyTransferred.toLocaleString('th-TH')} AGS</span>
+            `;
+            
+            document.getElementById('remainingLimit').textContent = 
+                remaining > 0 ? remaining.toLocaleString('th-TH') : '0';
+        }
+
+        // 🔥 UPDATE AI MESSAGE
+        function updateAIMessage(message) {
+            const aiMsg = document.getElementById('aiMsg');
+            aiMsg.innerHTML = `<b>AEGIS AI:</b> "${message}"`;
+        }
+
+        // 🔥 SET QUICK AMOUNT
+        function setAmount(amount) {
+            document.getElementById('amountInput').value = amount;
+            
+            // Update active button
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the clicked button
+            const buttons = document.querySelectorAll('.amount-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(`${amount.toLocaleString('th-TH')} AGS`)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // 🔥 VALIDATE TRANSFER
+        async function validateTransfer() {
+            const recipient = document.getElementById('recipientInput').value.trim();
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const pin = document.getElementById('pinInput').value;
+            
+            // Check recipient
+            if (!recipient) {
+                return { valid: false, message: 'กรุณากรอก username ของผู้รับ' };
+            }
+            
+            // Check if recipient is not yourself (ใช้ users_public และ username เท่านั้น)
+            try {
+                const { data: userData, error } = await supa
+                    .from('users_public')
+                    .select('id, username, display_name')
+                    .eq('username', recipient)
+                    .neq('id', currentUserId)
+                    .single();
+                
+                if (error || !userData) {
+                    return { valid: false, message: 'ไม่พบผู้รับ กรุณาตรวจสอบ username อีกครั้ง' };
+                }
+                
+                recipientUser = userData;
+            } catch (error) {
+                return { valid: false, message: 'ไม่สามารถตรวจสอบข้อมูลผู้รับได้' };
+            }
+            
+            // Check amount
+            if (!amount || amount < 1) {
+                return { valid: false, message: 'จำนวนเงินไม่ถูกต้อง (ขั้นต่ำ 1 AGS)' };
+            }
+            
+            if (amount > userBalance) {
+                return { valid: false, message: 'ยอดเงินคงเหลือไม่เพียงพอ' };
+            }
+            
+            const remainingLimit = dailyTransferLimit - dailyTransferred;
+            if (amount > remainingLimit) {
+                const limitMsg = userKYC ? '50,000 AGS' : '5,000 AGS';
+                return { valid: false, message: `จำนวนเงินเกินวงเงินโอนรายวัน (เหลือโอนได้ ${remainingLimit.toLocaleString('th-TH')} AGS, วงเงินสูงสุด ${limitMsg})` };
+            }
+            
+            // ✅ ตรวจสอบ PIN โดยใช้ hash
+            if (pin.length !== 6) {
+                return { valid: false, message: 'รหัส PIN ต้องมี 6 หลักเท่านั้น' };
+            }
+            
+            if (!/^\d+$/.test(pin)) {
+                return { valid: false, message: 'รหัส PIN ต้องเป็นตัวเลขเท่านั้น' };
+            }
+            
+            const hashedPin = await hashPIN(pin);
+            if (hashedPin !== currentUserPin) {
+                return { valid: false, message: 'รหัส PIN ไม่ถูกต้อง' };
+            }
+            
+            return { 
+                valid: true, 
+                message: 'ข้อมูลผ่านการตรวจสอบ',
+                recipient: recipientUser,
+                amount: amount
+            };
+        }
+
+        // 🔥 PROCESS TRANSFER (Step 1: Show confirmation)
+        async function processTransfer() {
+            const transferBtn = document.getElementById('transferBtn');
+            
+            transferBtn.disabled = true;
+            transferBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
+            
+            const validation = await validateTransfer();
+            
+            if (!validation.valid) {
+                showError('ข้อมูลไม่ถูกต้อง', validation.message);
+                transferBtn.disabled = false;
+                transferBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการโอนเงิน';
+                return;
+            }
+            
+            const referenceId = 'TRF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            const recipientDisplay = validation.recipient.display_name || 
+                                     validation.recipient.username;
+            
+            document.getElementById('confirmRecipient').textContent = recipientDisplay;
+            document.getElementById('confirmAmount').textContent = 
+                validation.amount.toLocaleString('th-TH') + ' AGS';
+            document.getElementById('confirmTotal').textContent = 
+                validation.amount.toLocaleString('th-TH') + ' AGS';
+            document.getElementById('confirmRef').textContent = referenceId;
+            
+            document.getElementById('confirmModal').style.display = 'flex';
+            
+            transferBtn.disabled = false;
+            transferBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการโอนเงิน';
+        }
+
+        // 🔥 CONFIRM TRANSFER (Step 2: Execute transfer)
+        async function confirmTransfer() {
+            const transferBtn = document.getElementById('transferBtn');
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const referenceId = 'TRF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            closeConfirmModal();
+            document.getElementById('processingModal').style.display = 'flex';
+            transferBtn.classList.add('scanning');
+            transferBtn.disabled = true;
+            transferBtn.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> กำลังโอนเงิน...';
+
+            try {
+                const { data, error } = await supa.rpc('transfer_funds', {
+                    sender_id: currentUserId,
+                    recipient_id: recipientUser.id,
+                    transfer_amount: amount,
+                    ref_id: referenceId
+                });
+
+                if (error) throw error;
+                if (!data.success) throw new Error(data.error);
+
+                // ===== 🚀 เพิ่ม logging เพื่อดีบัก =====
+                console.log('🟢 currentUserId =', currentUserId);
+                console.log('🟢 recipientUser =', recipientUser);
+                console.log('🟢 about to call process_quest_action with slug daily_p2p');
+
+                // 🌟 จินนี่: ยิงเควสโอนเงิน
+                try {
+                    const questResult = await supa.rpc('process_quest_action', { 
+                        p_user_id: currentUserId, 
+                        p_slug: 'daily_p2p' 
+                    });
+                    console.log('✅ Quest update success:', questResult);
+                } catch (questErr) {
+                    console.error('❌ Quest update failed:', questErr);
+                }
+                // =====================================
+
+                // อัปเดตยอดเงินในเครื่อง
+                userBalance -= amount;
+                dailyTransferred += amount;
+
+                document.getElementById('processingModal').style.display = 'none';
+                
+                const recipientDisplay = recipientUser.display_name || 
+                                         recipientUser.username;
+                
+                document.getElementById('successMessage').textContent = 
+                    `โอนเงิน ${amount.toLocaleString('th-TH')} AGS ให้ ${recipientDisplay} สำเร็จ! รหัสอ้างอิง: ${referenceId}`;
+                document.getElementById('successModal').style.display = 'flex';
+
+                document.getElementById('currentBalance').textContent = userBalance.toLocaleString('th-TH');
+                updateDailyLimit();
+
+                // รีเซ็ตฟอร์ม
+                document.getElementById('recipientInput').value = '';
+                document.getElementById('amountInput').value = '';
+                document.getElementById('pinInput').value = '';
+                document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+
+                updateAIMessage(`โอนเงินสำเร็จ! ยอดคงเหลือ: ${userBalance.toLocaleString('th-TH')} AGS`);
+
+            } catch (err) {
+                console.error('Transfer error:', err);
+                document.getElementById('processingModal').style.display = 'none';
+                showError('การโอนล้มเหลว', err.message);
+            } finally {
+                transferBtn.classList.remove('scanning');
+                transferBtn.disabled = false;
+                transferBtn.innerHTML = '<i class="fas fa-bolt"></i> ยืนยันการโอนเงิน';
+            }
+        }
+
+        // 🔥 SHOW ERROR MODAL
+        function showError(title, message) {
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+
+        // 🔥 CLOSE MODALS
+        function closeProcessingModal() {
+            document.getElementById('processingModal').style.display = 'none';
+        }
+        
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+        
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+        
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+        
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'flex';
+        }
+        
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        // 🔥 ฟังก์ชันสำหรับ Modal "กำลังมาเร็วๆ นี้"
+        function showComingSoon() {
+            document.getElementById('comingSoonModal').style.display = 'flex';
+        }
+
+        function closeComingSoon() {
+            document.getElementById('comingSoonModal').style.display = 'none';
+        }
+
+        // ========== ฟังก์ชัน checkSystemStatus (เพิ่มตาม Dashboard) ==========
+        function checkSystemStatus() {
+            const ticker = document.getElementById('topTicker');
+            const tickerText = document.getElementById('tickerText');
+            const aiMsg = document.getElementById('aiMsg');
+            const hour = new Date().getHours();
+            
+            if (hour >= 3 && hour < 10) {
+                // ช่วงพัก 03:00 - 10:00 น.
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(255,215,0,0.15) 10%, rgba(255,215,0,0.25) 50%, rgba(255,215,0,0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
+                tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) การโอนเงินอาจล่าช้ากว่าปกติเล็กน้อย';
+                tickerText.style.color = 'var(--warning)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
+                }
+            } else {
+                // ช่วงเวลาปกติ
+                ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
+                ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
+                tickerText.innerHTML = '🔄 [P2P Transfer] โอนเหรียญ AGS ระหว่างผู้ใช้ได้ทันที | ⚡ [Speed] โอนเงินเสร็จภายใน 10 วินาที | 🔒 [Security] ระบบเข้ารหัส AES-256 | 📊 [Limit] KYC Verified: 50,000 AGS/วัน, Unverified: 5,000 AGS/วัน';
+                tickerText.style.color = 'var(--primary)';
+                if (aiMsg) {
+                    aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบโอนเงิน P2P พร้อมใช้งาน | ตรวจสอบยอดคงเหลือและวงเงินโอนรายวันของคุณ"`;
+                }
+            }
+        }
+
+        // ==================== JUKEBOX (ต่อเนื่องจาก dashboard) ====================
+        const globalPlaylist = [
+            { 
+                title: "Cartoon - On & On", 
+                file: "./music/on_and_on.mp3", 
+                credit: "🎵 Cartoon - On & On (feat. Daniel Levi) [NCS Release] Music provided by NoCopyrightSounds" 
+            },
+            { 
+                title: "Warriyo - Mortals", 
+                file: "./music/mortals.mp3", 
+                credit: "🎵 Warriyo - Mortals (feat. Laura Brehm) [NCS Release] Music provided by NoCopyrightSounds" 
+            }
+        ];
+
+        const audioPlayer = document.getElementById('globalAudioPlayer');
+        const jukeIcon = document.getElementById('jukeIcon');
+        const jukePlayPause = document.getElementById('jukePlayPause');
+        const jukeDisk = document.getElementById('jukeToggleBtn');
+        const jukeTitle = document.getElementById('jukeTitle');
+        const jukeCredit = document.getElementById('jukeCredit');
+
+        let currentSongIdx = parseInt(localStorage.getItem('aegis_music_idx')) || 0;
+        let savedTime = parseFloat(localStorage.getItem('aegis_music_time')) || 0;
+        let isMusicPlaying = localStorage.getItem('aegis_music_playing') === 'true';
+
+        function loadGlobalSong(index, setTime = 0) {
+            if (index >= globalPlaylist.length) index = 0;
+            if (index < 0) index = globalPlaylist.length - 1;
+            
+            currentSongIdx = index;
+            audioPlayer.src = globalPlaylist[currentSongIdx].file;
+            audioPlayer.currentTime = setTime;
+            
+            jukeTitle.innerText = globalPlaylist[currentSongIdx].title;
+            jukeCredit.innerText = globalPlaylist[currentSongIdx].credit;
+            localStorage.setItem('aegis_music_idx', currentSongIdx);
+        }
+
+        function updateMusicUI() {
+            if (isMusicPlaying) {
+                jukeIcon.className = 'fas fa-music';
+                jukePlayPause.className = 'fas fa-pause juke-btn';
+                jukeDisk.classList.add('spinning');
+            } else {
+                jukeIcon.className = 'fas fa-play';
+                jukePlayPause.className = 'fas fa-play juke-btn';
+                jukeDisk.classList.remove('spinning');
+            }
+        }
+
+        window.toggleGlobalMusic = function(event) {
+            event.stopPropagation();
+            if (audioPlayer.paused) {
+                audioPlayer.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicUI();
+                    localStorage.setItem('aegis_music_playing', 'true');
+                }).catch(e => console.log('Autoplay blocked by browser'));
+            } else {
+                audioPlayer.pause();
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            }
+        };
+
+        window.nextSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx + 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        window.prevSong = function(event) {
+            event.stopPropagation();
+            loadGlobalSong(currentSongIdx - 1, 0);
+            if(isMusicPlaying) audioPlayer.play();
+        };
+
+        audioPlayer.addEventListener('ended', () => {
+            window.nextSong(new Event('ended'));
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if(!audioPlayer.paused) {
+                localStorage.setItem('aegis_music_time', audioPlayer.currentTime);
+            }
+        });
+
+        loadGlobalSong(currentSongIdx, savedTime);
+        updateMusicUI();
+
+        if (isMusicPlaying) {
+            audioPlayer.play().catch(e => {
+                console.log('Browser blocked auto-resume, user needs to interact first.');
+                isMusicPlaying = false;
+                updateMusicUI();
+                localStorage.setItem('aegis_music_playing', 'false');
+            });
+        }
+
+        // 🔥 INITIALIZE ON LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            initAuth();
+            checkSystemStatus(); // ตรวจสอบสถานะระบบตามเวลาจริง
+            setInterval(checkSystemStatus, 3600000); // ตรวจสอบทุก 1 ชั่วโมง
+            
+            // Set up PIN visibility toggle
+            const togglePinBtn = document.getElementById('togglePinBtn');
+            const pinInput = document.getElementById('pinInput');
+            
+            togglePinBtn.addEventListener('click', function() {
+                const type = pinInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                pinInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Allow only numbers in PIN input
+            pinInput.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Prevent paste non-numeric values in PIN input
+            pinInput.addEventListener('paste', function(e) {
+                const pastedData = e.clipboardData.getData('text');
+                if (!/^\d+$/.test(pastedData)) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Validate amount input
+            const amountInput = document.getElementById('amountInput');
+            amountInput.addEventListener('input', function() {
+                document.querySelectorAll('.amount-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if (this.value < 0) {
+                    this.value = Math.abs(this.value);
+                }
+            });
+            
+            // Random AI messages (เฉพาะเมื่อไม่อยู่ในช่วงพัก)
+            const aiMessages = [
+                "ระบบโอนเงิน P2P: พร้อมใช้งาน | ตรวจสอบยอดเงินและวงเงินโอนรายวัน",
+                "คุณสามารถโอนเงินให้เพื่อนหรือสมาชิกคนอื่นได้ทันทีผ่านระบบนี้",
+                "ระบบเข้ารหัส: AES-256 เปิดใช้งาน | การตรวจสอบความปลอดภัย: ระดับสูง",
+                "ตรวจสอบ username ของผู้รับให้ดีก่อนกดยืนยันการโอน",
+                `วงเงินโอนรายวัน: ${userKYC ? '50,000 AGS (KYC Verified)' : '5,000 AGS (Unverified)'}`
+            ];
+            
+            setInterval(() => {
+                const hour = new Date().getHours();
+                if (hour < 3 || hour >= 10) {
+                    const randomMsg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+                    updateAIMessage(randomMsg);
+                }
+            }, 15000);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal-overlay[style*="flex"]');
+                    modals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    processTransfer();
+                }
+            });
+            
+            setTimeout(() => {
+                document.getElementById('recipientInput').focus();
+            }, 500);
+        });
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+</body>
+</html>

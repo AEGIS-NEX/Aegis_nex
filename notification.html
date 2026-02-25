@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ประกาศ | AEGIS NEX</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Added manifest and theme-color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
+    <style>
+        /* ===== IMPORT FONTS (เพิ่ม Mitr) ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&family=Orbitron:wght@700&display=swap');
+
+        /* ===== GLOBAL STYLE (เหมือน dashboard) ===== */
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bc13fe;
+            --accent: #ff0080;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --dark-bg: #050b14;
+            --card-bg: rgba(20, 30, 50, 0.7);
+            --border: 1px solid rgba(0, 242, 255, 0.3);
+            --glass: rgba(5, 10, 20, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            background-image: linear-gradient(135deg, #050b14 0%, #0a1528 50%, #050b14 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300f2ff' fill-opacity='0.02'%3E%3Cpath d='M50 50v-6h-4v6h-6v4h6v6h4v-6h6v-4h-6zm0-40V0h-4v10h-6v4h6v6h4V14h6v-4h-6zM10 50v-6H6v6H0v4h6v6h4v-6h6v-4h-6zM10 10V0H6v10H0v4h6v6h4V14h6v-4h-6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            position: relative;
+            padding: 20px;
+            margin: 0 auto;
+            z-index: 1;
+            border-left: 1px solid rgba(0, 242, 255, 0.1);
+            border-right: 1px solid rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0 20px;
+            border-bottom: 1px solid rgba(0,242,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            margin: 0;
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(0,242,255,0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(0,242,255,0.3);
+        }
+
+        /* notification list */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* ===== ปรับแต่งการ์ดประกาศตามที่ต้องการ ===== */
+        .notification-card {
+            border-left: 5px solid var(--primary);
+            background: rgba(20, 30, 50, 0.8);
+            backdrop-filter: blur(10px);
+            border: var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(0,242,255,0.15);
+        }
+
+        .notification-title {
+            font-family: 'Orbitron', 'Mitr', sans-serif;
+            font-size: 1.1rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0,242,255,0.6);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notification-title i {
+            font-size: 14px;
+            color: var(--warning);
+        }
+
+        .notification-message {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #8b9bb4;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 12px;
+        }
+
+        .notification-date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .notification-expires {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--warning);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8b9bb4;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: rgba(255,255,255,0.05);
+            margin-bottom: 15px;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .app-container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- header มีแค่ปุ่มกลับและหัวข้อ -->
+        <div class="page-header">
+            <div class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h1>
+                <i class="fas fa-bullhorn"></i> ประกาศทั้งหมด
+            </h1>
+            <div style="width:36px;"></div> <!-- dummy เพื่อให้ header สมดุล -->
+        </div>
+
+        <!-- notification list -->
+        <div id="notificationsContainer" class="notifications-list">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 🔥 AEGIS CONFIG (ต้องตรงกับ project ของคุณ)
+        const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+        const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ตัวแปร global
+        let currentUser = null;
+        let notificationChannel = null;
+
+        // ตรวจสอบ session
+        async function checkSession() {
+            const { data: { session }, error } = await supa.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = session.user;
+            loadNotifications();
+            setupRealtime();
+        }
+
+        // โหลดประกาศ
+        async function loadNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
+
+            try {
+                // ดึงประกาศที่ target = 'all' และ is_active = true
+                let query = supa
+                    .from('notifications')
+                    .select('*')
+                    .eq('target', 'all')
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false });
+
+                const { data, error } = await query;
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>ยังไม่มีประกาศ</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                data.forEach(notif => {
+                    const created = new Date(notif.created_at).toLocaleString('th-TH', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    let expiresHtml = '';
+                    if (notif.expires_at) {
+                        const expires = new Date(notif.expires_at).toLocaleString('th-TH', {
+                            year: 'numeric', month: 'short', day: 'numeric'
+                        });
+                        expiresHtml = `<span class="notification-expires"><i class="fas fa-hourglass-end"></i> หมดอายุ: ${expires}</span>`;
+                    }
+                    html += `
+                        <div class="notification-card">
+                            <div class="notification-title">
+                                <i class="fas fa-bullhorn"></i> ${escapeHTML(notif.title)}
+                            </div>
+                            <div class="notification-message">
+                                ${escapeHTML(notif.message).replace(/\n/g, '<br>')}
+                            </div>
+                            <div class="notification-meta">
+                                <span class="notification-date"><i class="fas fa-calendar-alt"></i> ${created}</span>
+                                ${expiresHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+
+                // 🌟 จินนี่: ยิงเควสอ่านประกาศ (daily_read_noti)
+                if (currentUser?.id) {
+                    try {
+                        await supa.rpc('process_quest_action', { 
+                            p_user_id: currentUser.id, 
+                            p_slug: 'daily_read_noti' 
+                        });
+                        console.log('Daily read noti quest updated');
+                    } catch (questErr) {
+                        console.error('Failed to update quest:', questErr);
+                    }
+                }
+
+            } catch (err) {
+                console.error('loadNotifications error:', err);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i>
+                        <p>ไม่สามารถโหลดประกาศได้</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ป้องกัน XSS
+        function escapeHTML(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>"]/g, function(c) {
+                if (c === '&') return '&amp;';
+                if (c === '<') return '&lt;';
+                if (c === '>') return '&gt;';
+                if (c === '"') return '&quot;';
+                return c;
+            });
+        }
+
+        // ตั้งค่า Realtime subscription เพื่ออัปเดตทันทีเมื่อมีประกาศใหม่
+        function setupRealtime() {
+            if (notificationChannel) supa.removeChannel(notificationChannel);
+            notificationChannel = supa.channel('notifications-public')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: 'target=eq.all'
+                }, () => {
+                    console.log('📢 Notifications changed, reloading...');
+                    loadNotifications();
+                })
+                .subscribe();
+        }
+
+        // กลับไป dashboard
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // เริ่มต้น
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+        });
+
+        // ล้าง subscription เมื่อออก
+        window.addEventListener('beforeunload', () => {
+            if (notificationChannel) supa.removeChannel(notificationChannel);
+        });
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>AEGIS NEX · สมัครสมาชิก</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;600;700&family=Rajdhani:wght@500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- added manifest and theme-color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        :root {
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.6);
+            --secondary: #bc13fe;
+            --secondary-glow: rgba(188, 19, 254, 0.6);
+            --accent: #ff0080;
+            --danger: #ff0055;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --dark-bg: #03050b;
+            --text: #ffffff;
+            --text-muted: #a0a8b5;
+            --card-bg: rgba(10, 18, 28, 0.5);
+            --border: 1px solid rgba(0, 242, 255, 0.1);
+            --toast-z: 99999;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text);
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ===== พื้นหลังอวกาศ ===== */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(0, 150, 255, 0.15) 0%, transparent 40%),
+                        radial-gradient(ellipse at 70% 60%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
+                        linear-gradient(145deg, #03050b, #0a0f1f);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 15px 60px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 72px 430px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 550px 210px, #aaf0ff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 890px 620px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 120px 950px, #bc13fe, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 700px 800px, #00f2ff, rgba(0,0,0,0)),
+                radial-gradient(4px 4px at 300px 400px, #ff0080, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.5;
+            animation: twinkle 4s infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 20px var(--primary);
+            z-index: 10;
+            animation: scan 12s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            margin-bottom: 20px;
+            background: rgba(3, 5, 11, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 30px 30px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(24px, 5vw, 30px);
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .logo .aegis {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .logo .nex {
+            color: #00f2ff;
+            text-shadow: 0 0 20px #00f2ff;
+        }
+
+        .live-badge {
+            background: rgba(255, 0, 0, 0.08);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 12px;
+            color: #ff8888;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            white-space: nowrap;
+        }
+
+        .live-badge i {
+            color: #ff0000;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+            50% { opacity: 0.4; text-shadow: 0 0 15px #ff0000; }
+            100% { opacity: 1; text-shadow: 0 0 5px #ff0000; }
+        }
+
+        /* ===== NEWS TICKER ===== */
+        .news-ticker {
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0) 0%, 
+                rgba(0, 242, 255, 0.15) 10%, 
+                rgba(0, 242, 255, 0.25) 50%, 
+                rgba(0, 242, 255, 0.15) 90%, 
+                rgba(0,0,0,0) 100%);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.4);
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .news-ticker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(188, 19, 254, 0) 0%, 
+                rgba(188, 19, 254, 0.2) 50%, 
+                rgba(188, 19, 254, 0) 100%);
+            animation: scanline 3s linear infinite;
+        }
+
+        .ticker-content {
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+            font-size: 13px;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
+            padding: 5px 0;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ===== HERO SECTION (REGISTER) ===== */
+        .hero-section {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hero-badge {
+            background: linear-gradient(45deg, rgba(188, 19, 254, 0.2), rgba(0, 242, 255, 0.2));
+            border: 1px solid var(--secondary);
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+            animation: pulse 2s infinite ease-in-out;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-align: center;
+        }
+
+        .hero-badge i {
+            margin-right: 8px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.4); transform: scale(1); }
+            50% { transform: scale(1.02); }
+            70% { box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); transform: scale(1); }
+        }
+
+        /* ===== GLASS CARD ===== */
+        .glass-box {
+            width: 95%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 28px;
+            padding: 40px 35px;
+            backdrop-filter: blur(25px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            z-index: 10;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+
+        .glass-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(188, 19, 254, 0.05));
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 38px;
+            margin: 0 0 10px 0;
+            letter-spacing: 4px;
+            background: linear-gradient(180deg, #ffffff 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.6));
+        }
+
+        .logo-area p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        /* ===== SECURITY NOTICE ===== */
+        .security-notice {
+            background: rgba(255, 0, 85, 0.08);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--danger);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-notice::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 85, 0.05), transparent);
+            animation: scanline 4s linear infinite;
+        }
+
+        .security-notice h4 {
+            color: var(--danger);
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+        }
+
+        .security-notice p {
+            font-size: 13px;
+            color: #ccc;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .security-notice b {
+            color: #fff;
+            border-bottom: 1px dashed var(--danger);
+            font-weight: 600;
+        }
+
+        /* ===== FORM FIELD ===== */
+        .field-box {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .field-label {
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 18px 18px 18px 55px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: #fff;
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+
+        .field-input:focus {
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.08);
+            box-shadow: var(--primary-glow);
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 20px;
+            top: 42px;
+            color: #64748b;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        .field-input:focus + .field-icon {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
+        }
+
+        /* ===== PIN FIELD ===== */
+        .pin-field {
+            text-align: center;
+            letter-spacing: 10px;
+            font-size: 24px;
+            font-weight: 600;
+            border-color: rgba(188, 19, 254, 0.4);
+            background: rgba(188, 19, 254, 0.05);
+            padding-left: 30px !important;
+            padding-right: 30px !important;
+            text-indent: 0;
+        }
+
+        .pin-field:focus {
+            border-color: var(--secondary);
+            box-shadow: var(--secondary-glow);
+        }
+
+        .pin-field + .field-icon {
+            left: auto !important;
+            right: 20px;
+            pointer-events: none;
+        }
+
+        /* ===== SUBMIT BUTTON ===== */
+        .btn-submit {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(188, 19, 254, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.6s;
+            z-index: -1;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-submit:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 5px 15px rgba(188, 19, 254, 0.2);
+        }
+
+        /* ===== LOGIN LINK ===== */
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 300;
+        }
+
+        .login-link span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 700;
+            border-bottom: 1px dashed var(--primary);
+            transition: 0.3s;
+        }
+
+        .login-link span:hover {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        /* ===== SCAN OVERLAY ===== */
+        .scan-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 11, 20, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .scan-animation {
+            width: 300px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 30px var(--primary);
+            animation: scanning 2s infinite linear;
+        }
+
+        @keyframes scanning {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .scan-text {
+            margin-top: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.7);
+            letter-spacing: 2px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* ===== CYBER TOAST ===== */
+        #cyberAlert {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: var(--toast-z);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: none;
+            font-weight: 600;
+            font-size: 14px;
+            backdrop-filter: blur(20px);
+            border: 1px solid;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Chakra Petch', sans-serif;
+            text-align: center;
+            min-width: 300px;
+            max-width: 90%;
+            word-break: break-word;
+        }
+
+        @keyframes toastIn {
+            from { top: -100px; opacity: 0; }
+            to { top: 70px; opacity: 1; }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: linear-gradient(to top, #020408, #050b14);
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            width: 100%;
+            z-index: 5;
+            margin-top: 60px;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            color: #777;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        .footer-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+
+        .footer-links {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .glass-box {
+                padding: 30px 25px;
+                border-radius: 22px;
+                width: 92%;
+            }
+
+            .hero-section {
+                min-height: calc(100vh - 150px);
+            }
+
+            .logo-area h1 {
+                font-size: 32px;
+            }
+
+            .field-input {
+                padding: 16px 16px 16px 50px;
+            }
+
+            .field-icon {
+                top: 40px;
+                left: 18px;
+            }
+
+            .hero-badge {
+                font-size: 13px;
+                padding: 10px 25px;
+            }
+
+            .btn-submit {
+                padding: 18px;
+            }
+
+            #cyberAlert {
+                min-width: 280px;
+                font-size: 13px;
+                top: 60px;
+            }
+
+            @keyframes toastIn {
+                from { top: -100px; }
+                to { top: 60px; }
+            }
+
+            .pin-field {
+                font-size: 22px;
+                letter-spacing: 8px;
+                padding-left: 25px !important;
+                padding-right: 25px !important;
+            }
+
+            .scan-text {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-box {
+                padding: 25px 20px;
+            }
+
+            .logo-area h1 {
+                font-size: 28px;
+            }
+
+            .hero-badge {
+                font-size: 12px;
+                padding: 8px 20px;
+            }
+
+            .pin-field {
+                font-size: 20px;
+                letter-spacing: 6px;
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+            }
+
+            .scan-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- พื้นหลัง -->
+    <div class="space-bg"></div>
+    <div class="stars"></div>
+    <div class="scan-line"></div>
+
+    <!-- สแกนโอเวอร์เลย์ -->
+    <div class="scan-overlay" id="scanOverlay">
+        <div class="scan-animation"></div>
+        <div class="scan-text">AEGIS AI กำลังสร้างบัญชีผู้ใช้...</div>
+    </div>
+
+    <!-- Cyber Toast -->
+    <div id="cyberAlert"></div>
+
+    <!-- News Ticker -->
+    <div class="news-ticker">
+        <div class="ticker-content">
+            ★ AEGIS NEX · ระบบสมัครสมาชิก ★ PIN 6 หลักใช้สำหรับ: โอน AGS, ถอนเงิน, ยืนยันตัวตน ★ ปลอดภัย 100% ด้วย AEGIS AI ★
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="logo">
+                <span class="aegis">AEGIS</span> <span class="nex">NEX</span>
+            </div>
+            <div class="live-badge"><i class="fas fa-circle"></i> AEGIS AI · ACTIVE</div>
+        </div>
+
+        <!-- Hero Section Register -->
+        <section class="hero-section">
+            <div class="hero-badge"><i class="fa-solid fa-user-plus"></i> ลงทะเบียน · AEGIS AI</div>
+            
+            <div class="glass-box">
+                <div class="logo-area">
+                    <h1>AEGIS <span>NEX</span></h1>
+                    <p>สร้างบัญชีผู้ใช้ในเครือข่ายความปลอดภัยสูงสุด</p>
+                </div>
+
+                <!-- ประกาศความปลอดภัย -->
+                <div class="security-notice">
+                    <h4><i class="fa-solid fa-shield-halved"></i> ประกาศความปลอดภัย</h4>
+                    <p>
+                        <b>PIN 6 หลัก</b> คือกุญแจสำคัญสำหรับการ <b>โอนเหรียญ AGS</b>, <b>ถอนเงิน</b> 
+                        และการ<b>ยืนยันตัวตน</b> ระบบเข้ารหัสอย่างปลอดภัย ห้ามเปิดเผยแก่ผู้อื่น
+                    </p>
+                </div>
+
+                <!-- ฟอร์มสมัคร -->
+                <div class="field-box">
+                    <label class="field-label">ชื่อผู้ใช้ (USERNAME)</label>
+                    <input type="text" id="username" class="field-input" placeholder="ชื่อผู้ใช้ 3-20 ตัว (a-z, 0-9, _)" autocomplete="off">
+                    <i class="fa-solid fa-user-astronaut field-icon"></i>
+                </div>
+
+                <div class="field-box">
+                    <label class="field-label">อีเมล (EMAIL)</label>
+                    <input type="email" id="email" class="field-input" placeholder="example@email.com" autocomplete="off">
+                    <i class="fa-solid fa-envelope-open-text field-icon"></i>
+                </div>
+
+                <div class="field-box">
+                    <label class="field-label">รหัสผ่าน (PASSWORD)</label>
+                    <input type="password" id="password" class="field-input" placeholder="••••••••" autocomplete="new-password">
+                    <i class="fa-solid fa-fingerprint field-icon"></i>
+                </div>
+
+                <!-- ช่องยืนยันรหัสผ่าน (ไม่มีไอคอนแล้ว) -->
+                <div class="field-box">
+                    <label class="field-label">ยืนยันรหัสผ่าน (CONFIRM PASSWORD)</label>
+                    <input type="password" id="confirmPassword" class="field-input" placeholder="ยืนยันรหัสผ่าน" autocomplete="off">
+                    <!-- ลบไอคอนติ๊กถูกออก -->
+                </div>
+
+                <div class="field-box">
+                    <label class="field-label" style="color:var(--secondary);">รหัส PIN 6 หลัก (สำหรับธุรกรรม)</label>
+                    <input type="password" id="pin" class="field-input pin-field" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="off">
+                    <i class="fa-solid fa-lock-keyhole field-icon" style="left: auto; right: 20px;"></i>
+                </div>
+
+                <button class="btn-submit" onclick="processRegister()" id="submitBtn">
+                    <i class="fa-solid fa-user-plus"></i> ยืนยันการลงทะเบียน
+                </button>
+
+                <div class="login-link">
+                    มีบัญชีอยู่แล้ว? <span onclick="window.location.href='login.html'">เข้าสู่ระบบ</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-logo">AEGIS <span>NEX</span></div>
+            <div class="footer-links">
+                ข้อกำหนดการใช้งาน • นโยบายความเป็นส่วนตัว • ติดต่อเรา<br><br>
+                © 2026 AEGIS NEX · AEGIS AI SECURITY
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        (function() {
+            "use strict";
+
+            const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
+            const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                auth: { persistSession: true, autoRefreshToken: true }
+            });
+
+            let isProcessing = false;
+
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const pinInput = document.getElementById('pin');
+            const submitBtn = document.getElementById('submitBtn');
+            const scanOverlay = document.getElementById('scanOverlay');
+
+            async function hashPIN(pin) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(pin);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+            function isValidUsername(username) {
+                return /^[a-zA-Z0-9_]{3,20}$/.test(username);
+            }
+            function isValidPassword(password) {
+                return password.length >= 6;
+            }
+            function isValidPIN(pin) {
+                return /^\d{6}$/.test(pin);
+            }
+
+            function showCyberToast(text, status = 'error') {
+                const oldToast = document.getElementById('cyberAlert');
+                if (oldToast && oldToast.parentNode) oldToast.parentNode.removeChild(oldToast);
+
+                const toast = document.createElement('div');
+                toast.id = 'cyberAlert';
+                toast.innerText = text;
+                toast.style.display = 'block';
+
+                let bgColor, borderColor, textColor;
+                if (status === 'success') {
+                    bgColor = 'rgba(0, 255, 136, 0.15)';
+                    borderColor = 'var(--success)';
+                    textColor = 'var(--success)';
+                } else if (status === 'warning') {
+                    bgColor = 'rgba(255, 215, 0, 0.15)';
+                    borderColor = 'var(--warning)';
+                    textColor = 'var(--warning)';
+                } else {
+                    bgColor = 'rgba(255, 0, 85, 0.15)';
+                    borderColor = 'var(--danger)';
+                    textColor = 'var(--danger)';
+                }
+
+                toast.style.backgroundColor = bgColor;
+                toast.style.borderColor = borderColor;
+                toast.style.color = textColor;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 4000);
+            }
+
+            window.processRegister = async function() {
+                if (isProcessing) return;
+
+                const username = usernameInput.value.trim();
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const pin = pinInput.value.trim();
+
+                if (!username || !email || !password || !confirmPassword || !pin) {
+                    showCyberToast("⚠️ กรุณากรอกข้อมูลให้ครบทุกช่อง");
+                    return;
+                }
+                if (!isValidUsername(username)) {
+                    showCyberToast("⚠️ ชื่อผู้ใช้ต้องเป็น 3-20 ตัว (a-z, 0-9, _) เท่านั้น");
+                    return;
+                }
+                if (!isValidEmail(email)) {
+                    showCyberToast("⚠️ รูปแบบอีเมลไม่ถูกต้อง");
+                    return;
+                }
+                if (!isValidPassword(password)) {
+                    showCyberToast("⚠️ รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    showCyberToast("⚠️ รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
+                    return;
+                }
+                if (!isValidPIN(pin)) {
+                    showCyberToast("⚠️ PIN ต้องเป็นตัวเลข 6 หลักเท่านั้น");
+                    return;
+                }
+
+                isProcessing = true;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังดำเนินการ...';
+                scanOverlay.style.display = 'flex';
+
+                try {
+                    const cleanUsername = username.toLowerCase();
+                    const { data: existingUser, error: checkError } = await supa
+                        .from('users')
+                        .select('id')
+                        .eq('username', cleanUsername)
+                        .maybeSingle();
+
+                    if (checkError) throw new Error('ระบบขัดข้อง กรุณาลองใหม่');
+                    if (existingUser) throw new Error('ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาใช้ชื่ออื่น');
+
+                    const { data, error } = await supa.auth.signUp({
+                        email,
+                        password,
+                        options: { data: { username } }
+                    });
+
+                    if (error) throw error;
+                    if (!data.user) throw new Error('ไม่สามารถสร้างบัญชีผู้ใช้ได้');
+
+                    const hashedPin = await hashPIN(pin);
+
+                    const now = new Date().toISOString();
+                    const userRecord = {
+                        id: data.user.id,
+                        username: cleanUsername,
+                        display_name: username,
+                        email,
+                        pin: hashedPin,
+                        balance: 0,
+                        kyc_verified: false,
+                        daily_p2p_limit: 5000,
+                        photo_url: null,
+                        completed_deals: 0,
+                        total_volume: 0,
+                        average_rating: 5.0,
+                        success_rate: 100,
+                        name_change_count: 0,
+                        created_at: now,
+                        updated_at: now
+                    };
+
+                    const { error: upsertError } = await supa
+                        .from('users')
+                        .upsert(userRecord, { onConflict: 'id' });
+
+                    if (upsertError) throw upsertError;
+
+                    scanOverlay.style.display = 'none';
+                    showCyberToast("✅ ลงทะเบียนสำเร็จ! กำลังนำไปยังแดชบอร์ด", "success");
+
+                    // --- IP Logging (background) ---
+                    (async () => {
+                        try {
+                            const userIP = await fetch('https://api.ipify.org?format=json')
+                                .then(r => r.json())
+                                .then(d => d.ip)
+                                .catch(() => '0.0.0.0');
+                            await supa.from('ip_logs').insert({
+                                user_id: data.user.id,
+                                ip_address: userIP
+                            });
+                        } catch (e) {
+                            console.error('IP logging failed:', e);
+                        }
+                    })();
+
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+
+                } catch (err) {
+                    scanOverlay.style.display = 'none';
+                    console.error(err);
+
+                    let errorMsg = err.message || 'เกิดข้อผิดพลาด';
+                    if (errorMsg.includes('User already registered')) {
+                        errorMsg = '❌ อีเมลนี้มีผู้ใช้งานในระบบแล้ว';
+                    } else if (errorMsg.includes('duplicate key')) {
+                        errorMsg = '❌ ข้อมูลนี้มีในระบบแล้ว';
+                    }
+                    showCyberToast(errorMsg);
+
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> ยืนยันการลงทะเบียน';
+                } finally {
+                    isProcessing = false;
+                }
+            };
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !isProcessing) {
+                    const active = document.activeElement;
+                    if (active && active.tagName !== 'BUTTON') {
+                        e.preventDefault();
+                        processRegister();
+                    }
+                }
+            });
+
+            function init() {
+                scanOverlay.style.display = 'none';
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+
+    <!-- 👇 เพิ่ม Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            console.log('ServiceWorker registered');
+          }).catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+</body>
+</html>
