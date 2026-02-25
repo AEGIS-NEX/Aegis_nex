@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
     
     <style>
-        /* ===== CSS เดิมทั้งหมดคงเดิม (ไม่ได้ตัดทอน) ===== */
+        /* ===== CSS เดิมทั้งหมดคงเดิม ===== */
         :root {
             --primary: #00f2ff;
             --secondary: #bc13fe;
@@ -292,7 +292,7 @@
             border-radius: 50%; 
             border: 2px solid var(--dark-bg);
             animation: blink 1.5s infinite;
-            display: none; /* ซ่อนไว้ก่อน ถ้ามีประกาศจะแสดง */
+            display: none;
         }
 
         @keyframes blink {
@@ -585,6 +585,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* ===== WALLET HUB - ปรับให้ตัวเลขเสมอกัน ===== */
         .wallet-hub { 
             margin: 15px 20px; 
             padding: 25px; 
@@ -614,16 +615,20 @@
             justify-content: space-around;
             gap: 10px;
             margin-bottom: 15px;
+            align-items: stretch;
         }
         .balance-item {
             text-align: center;
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         .balance-item .balance-label-small {
             font-size: 11px;
             color: #cbd5e1;
             letter-spacing: 1px;
             margin-bottom: 4px;
+            line-height: 1.2;
         }
         .balance-item .balance-amount {
             font-family: 'Orbitron';
@@ -634,12 +639,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4));
-            margin: 0;
-            line-height: 1.2;
+            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100%;
+            flex: 1;
+            margin: 0;
+            padding: 5px 0;
         }
         
         .quick-actions { 
@@ -840,7 +846,7 @@
             border: 1px solid rgba(0, 242, 255, 0.3);
         }
 
-        /* ===== Genie FAB ใหม่ (สำหรับเปิดเควส) ===== */
+        /* ===== Genie FAB (สำหรับเปิดเควส) ===== */
         .genie-fab {
             position: fixed; 
             top: 20px;
@@ -867,7 +873,7 @@
             line-height: 1;
             user-select: none;
             transition: transform 0.2s;
-            touch-action: none; /* ป้องกันการเลื่อนหน้าเว็บขณะลาก */
+            touch-action: none;
         }
         
         .genie-fab:active {
@@ -1524,7 +1530,7 @@
             box-shadow: none !important;
         }
 
-        /* สไตล์สำหรับเควสใหม่ (ตัวหนังสือเล็ก) */
+        /* สไตล์สำหรับเควสใหม่ */
         .quest-mini-item {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(0,242,255,0.1);
@@ -1569,7 +1575,7 @@
             color: #aaa;
         }
 
-        /* ===== ปุ่มติดตั้งแอป (Install PWA) แบบมีแสงกระพริบ ===== */
+        /* ===== ปุ่มติดตั้งแอป (Install PWA) ===== */
         .install-pwa-btn {
             position: relative;
             overflow: visible;
@@ -1577,7 +1583,6 @@
         .install-pwa-btn i {
             font-size: 18px;
         }
-        /* เอฟเฟกต์แสงกระพริบรอบปุ่ม */
         .install-pwa-btn::after {
             content: '';
             position: absolute;
@@ -1599,7 +1604,7 @@
             100% { background-position: 0% 50%; opacity: 0.6; transform: scale(0.9); }
         }
 
-        /* Modal styles เหมือนใน topup.html */
+        /* ===== Modal Styles คัดลอกจาก topup.html ===== */
         .modal-icon {
             font-size: 60px;
             margin-bottom: 20px;
@@ -1674,17 +1679,15 @@
                 </div>
             </div>
             <div class="header-actions">
-                <!-- ปุ่มร้านค้า (เร็วๆนี้) -->
+                <!-- ปุ่มร้านค้า -->
                 <div class="icon-btn" onclick="marketComingSoon(event)">
                     <i class="fas fa-store"></i>
                 </div>
-                <!-- ███████████████████████████████████████████████████████ -->
-                <!-- ปุ่มติดตั้งแอป PWA (แสดงเฉพาะเมื่อยังไม่ได้ติดตั้ง)        -->
-                <!-- ███████████████████████████████████████████████████████ -->
+                <!-- ปุ่มติดตั้งแอป PWA -->
                 <div class="icon-btn install-pwa-btn" id="installPwaBtn" onclick="showInstallPopup()" style="display: none;">
                     <i class="fas fa-download"></i>
                 </div>
-                <!-- ปุ่มกระดิ่ง (แจ้งเตือน) -->
+                <!-- ปุ่มกระดิ่ง -->
                 <div class="icon-btn" onclick="openInbox()">
                     <i class="fas fa-bell"></i>
                     <div class="noti-badge" id="notificationDot"></div>
@@ -1693,14 +1696,13 @@
         </div>
 
         <!-- ███████████████████████████████████████████████████████ -->
-        <!-- 🎵 Mini Jukebox (ย้ายมาวางตรงนี้ หลัง XP bar ก่อน Wallet) -->
+        <!-- 🎵 Mini Jukebox -->
         <!-- ███████████████████████████████████████████████████████ -->
         <style>
-            /* Mini Jukebox แบบ Capsule วางใน flow ของหน้า */
             .mini-juke-container {
                 width: calc(100% - 40px);
                 max-width: 560px;
-                margin: 10px auto 10px auto; /* ระยะห่างจาก XP bar และ Wallet Hub */
+                margin: 10px auto 10px auto;
                 background: rgba(10, 15, 25, 0.85);
                 border: 1px solid rgba(0, 242, 255, 0.3);
                 border-radius: 50px;
@@ -1747,7 +1749,7 @@
                 flex: 1;
                 display: flex;
                 flex-direction: column;
-                min-width: 0; /* ป้องกันล้น */
+                min-width: 0;
             }
 
             .juke-title {
@@ -1997,7 +1999,7 @@
         </div>
     </div>
 
-    <!-- Profile Modal (แก้ไข label เป็น "อัตราความสำเร็จ") -->
+    <!-- Profile Modal -->
     <div class="modal-overlay" id="pfModal">
         <div class="modal-box" id="pfBox">
             <i class="fas fa-times close-modal" onclick="closeModal('pfModal')"></i>
@@ -2020,7 +2022,7 @@
                 </div>
                 <div class="pf-stat-box">
                     <div class="pf-val" id="pfScore">100%</div>
-                    <div class="pf-lbl">อัตราความสำเร็จ</div>   <!-- เปลี่ยนจาก "คะแนน" เป็น "อัตราความสำเร็จ" -->
+                    <div class="pf-lbl">อัตราความสำเร็จ</div>
                 </div>
                 <div class="pf-stat-box">
                     <div class="pf-val" id="pfStarCount">5</div>
@@ -2043,7 +2045,7 @@
         </div>
     </div>
 
-    <!-- QUEST MODAL ใหม่ (แบบเรียบง่าย) -->
+    <!-- QUEST MODAL ใหม่ -->
     <div class="modal-overlay" id="questModalNew">
         <div class="modal-box" style="max-width: 450px;">
             <i class="fas fa-times close-modal" onclick="closeModal('questModalNew')"></i>
@@ -2078,7 +2080,7 @@
         </div>
     </div>
 
-    <!-- Coming Soon Modal (ใหม่ สไตล์เหมือน topup.html) -->
+    <!-- Coming Soon Modal (คัดลอกมาจาก topup.html ทุกประการ) -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal-box">
             <i class="fas fa-clock modal-icon" style="color: var(--primary);"></i>
@@ -2130,12 +2132,9 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            showWarningOnScreen('✅ beforeinstallprompt event เกิดขึ้นแล้ว!');
             // แสดงปุ่มเฉพาะเมื่อยังไม่ได้ติดตั้ง
             if (!isAppInstalled()) {
                 installBtn.style.display = 'flex';
-            } else {
-                showWarningOnScreen('ℹ️ ติดตั้งแอปแล้ว (isAppInstalled = true) ซ่อนปุ่ม');
             }
         });
 
@@ -2172,7 +2171,6 @@
                     deferredPrompt.userChoice.then((choiceResult) => {
                         if (choiceResult.outcome === 'accepted') {
                             console.log('User accepted install');
-                            // ซ่อนปุ่มหลังจากติดตั้ง (แม้หน้าจะไม่โหลดซ้ำ)
                             installBtn.style.display = 'none';
                         }
                         deferredPrompt = null;
@@ -2351,7 +2349,7 @@
             return diff < 5;
         }
 
-        // 🔥 FETCH USER STATS (deals, cancelled, rating) [แก้ไข: เพิ่ม flagged=false]
+        // 🔥 FETCH USER STATS (deals, cancelled, rating)
         async function fetchUserStats(userId) {
             try {
                 const { count: completed, error: err1 } = await supa
@@ -2410,7 +2408,7 @@
             );
         }
 
-        // 🔥 VIEW PROFILE (แก้ไขใหม่: ไม่รับ deals, ดึงจากฐานข้อมูลเอง)
+        // 🔥 VIEW PROFILE
         window.viewProfile = async function(uid, name = '', img = '', kyc = 'unverified') {
             try {
                 const box = document.getElementById('pfBox');
@@ -2498,7 +2496,7 @@
             }
         };
 
-        // ========== ฟังก์ชันดึงจำนวนดีลสำเร็จจากตาราง trades จริง ๆ [แก้ไข: เพิ่ม flagged=false] ==========
+        // ========== ฟังก์ชันดึงจำนวนดีลสำเร็จจากตาราง trades จริง ๆ ==========
         async function fetchUserCompletedDeals(userId) {
             try {
                 const { count, error } = await supa
@@ -2506,7 +2504,7 @@
                     .select('*', { count: 'exact', head: true })
                     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
                     .eq('status', 'received')
-                    .eq('flagged', false);   // <<< เพิ่มบรรทัดนี้
+                    .eq('flagged', false);
                 if (error) throw error;
                 return count || 0;
             } catch (e) {
@@ -2536,8 +2534,6 @@
                 nameEl.innerHTML = nameHtml + tickHtml;
                 nameEl.style.color = rankInfo.color;
                 nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
-            } else {
-                showWarningOnScreen('⚠️ Element #userName not found');
             }
             
             const avatarFrame = document.getElementById('headerAvatarFrame');
@@ -2547,36 +2543,26 @@
                 avatarFrame.style.borderWidth = glowStyle.borderWidth;
                 avatarFrame.style.boxShadow = glowStyle.boxShadow;
                 avatarFrame.style.animation = glowStyle.animation;
-            } else {
-                showWarningOnScreen('⚠️ Element #headerAvatarFrame not found');
             }
             
             const userRankEl = document.getElementById('userRank');
             if (userRankEl) {
                 userRankEl.innerHTML = rankInfo.html;
-            } else {
-                showWarningOnScreen('⚠️ Element #userRank not found');
             }
             
             const userBalanceEl = document.getElementById('userBalance');
             if (userBalanceEl) {
                 userBalanceEl.innerHTML = (data.balance || 0).toLocaleString();
-            } else {
-                showWarningOnScreen('⚠️ Element #userBalance not found');
             }
             
             const userBalanceAGEl = document.getElementById('userBalanceAG');
             if (userBalanceAGEl) {
                 userBalanceAGEl.innerHTML = (data.balance_ag || 0).toLocaleString();
-            } else {
-                showWarningOnScreen('⚠️ Element #userBalanceAG not found');
             }
             
             const userImgEl = document.getElementById('userImg');
             if (userImgEl) {
                 userImgEl.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
-            } else {
-                showWarningOnScreen('⚠️ Element #userImg not found');
             }
 
             const xp = getExpData(realDeals);
@@ -2584,42 +2570,31 @@
             if (xpBarFill) {
                 xpBarFill.style.width = xp.percent + "%";
                 xpBarFill.style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
-            } else {
-                showWarningOnScreen('⚠️ Element #xpBarFill not found');
             }
             
             const xpCurrentEl = document.getElementById('xpCurrent');
             if (xpCurrentEl) {
                 xpCurrentEl.innerText = xp.current + " XP";
-            } else {
-                showWarningOnScreen('⚠️ Element #xpCurrent not found');
             }
             
             const xpTargetEl = document.getElementById('xpTarget');
             if (xpTargetEl) {
                 xpTargetEl.innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
-            } else {
-                showWarningOnScreen('⚠️ Element #xpTarget not found');
             }
             
             const onlineDot = document.getElementById('onlineDot');
             if (onlineDot) {
                 onlineDot.style.background = 'var(--success)';
-            } else {
-                showWarningOnScreen('⚠️ Element #onlineDot not found');
             }
             
             const scanOverlay = document.getElementById('scanOverlay');
             if (scanOverlay) {
                 scanOverlay.style.display = 'none';
-            } else {
-                showWarningOnScreen('⚠️ Element #scanOverlay not found');
             }
         }
 
-        // ========== ฟังก์ชันแสดง warning บนหน้าจอ (เพิ่มใหม่) ==========
+        // ========== ฟังก์ชันแสดง warning บนหน้าจอ ==========
         function showWarningOnScreen(message) {
-            // ตรวจสอบว่าเคยมี toast อยู่แล้วหรือไม่ ถ้ามีให้ลบก่อน
             const existingToast = document.getElementById('warning-toast');
             if (existingToast) existingToast.remove();
 
@@ -2652,13 +2627,11 @@
 
             document.body.appendChild(toast);
 
-            // ให้หายไปอัตโนมัติหลังจาก 4 วินาที
             setTimeout(() => {
                 if (toast.parentNode) toast.remove();
             }, 4000);
         }
 
-        // เพิ่ม animation เล็กน้อย (ใส่ใน <style> ของคุณ หรือจะเพิ่มในฟังก์ชันก็ได้)
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes slideUp {
@@ -2668,7 +2641,7 @@
         `;
         document.head.appendChild(style);
 
-        // 🔥 INIT AUTH (แก้ไขตามที่คุณต้องการ)
+        // 🔥 INIT AUTH
         async function initAuth() {
             try {
                 const { data: { session }, error } = await supa.auth.getSession();
@@ -2681,7 +2654,6 @@
 
                 await handleAuthChange(session.user);
 
-                // ดักไว้เผื่อฟังก์ชันข้างบนทำงานช้าเกินไป ให้ปิดหน้าโหลดหลังผ่านไป 3 วินาที (เซฟไว้ก่อน)
                 setTimeout(() => {
                     const loader = document.querySelector('.loading-screen') || document.getElementById('scanOverlay');
                     if (loader) loader.style.display = 'none';
@@ -2696,7 +2668,6 @@
                     background: '#050b14',
                     color: '#fff'
                 });
-                // ไม่ redirect ทันทีเพื่อให้เห็น error
             }
         }
 
@@ -2716,19 +2687,17 @@
                 .subscribe();
         }
 
-        // *** ฟังก์ชันใหม่: สมัครสมาชิก Realtime สำหรับตาราง user_quests ***
         function setupQuestRealtime(userId) {
             if (questChannel) supa.removeChannel(questChannel);
             questChannel = supa.channel('quest-updates')
                 .on('postgres_changes', {
-                    event: '*',               // ฟัง INSERT, UPDATE, DELETE
+                    event: '*',
                     schema: 'public',
                     table: 'user_quests',
                     filter: `user_id=eq.${userId}`
                 }, (payload) => {
                     console.log('📋 Quest data changed, reloading quests...', payload);
-                    loadQuests();              // โหลดข้อมูลเควสใหม่
-                    // (การอัปเดต balance_ag จะถูกจัดการโดย users channel)
+                    loadQuests();
                 })
                 .subscribe();
         }
@@ -2781,7 +2750,7 @@
                         currentUserData = newProfile;
                         await updateDashboardUIWithRealDeals(currentUserData, user.id);
                         setupUserRealtime(user.id);
-                        setupQuestRealtime(user.id);   // *** เรียกใช้ตรงนี้ ***
+                        setupQuestRealtime(user.id);
                         startHeartbeat();
                         updateNotificationBadge();
                         setupNotificationsRealtime();
@@ -2793,7 +2762,7 @@
                     currentUserData = profile;
                     await updateDashboardUIWithRealDeals(currentUserData, user.id);
                     setupUserRealtime(user.id);
-                    setupQuestRealtime(user.id);       // *** เรียกใช้ตรงนี้ ***
+                    setupQuestRealtime(user.id);
                     startHeartbeat();
                     updateNotificationBadge();
                     setupNotificationsRealtime();
@@ -2808,15 +2777,13 @@
                         .order('updated_at', { ascending: false });
                     
                     if (!error && data && data.length > 0) {
-                        // บันทึกห้องล่าสุด (ห้องแรกที่ได้จากการเรียง updated_at ล่าสุด)
                         const latest = data[0];
-                        // กำหนด role โดยเปรียบเทียบกับ user.id
                         let role = 'buyer';
                         if (latest.seller_id === user.id) role = 'seller';
                         
                         localStorage.setItem('last_room', JSON.stringify({
                             id: latest.room_id,
-                            mode: latest.mode || 'general', // fallback
+                            mode: latest.mode || 'general',
                             role: role
                         }));
                         return true;
@@ -2955,7 +2922,6 @@
             hallInterval = setInterval(loadHallOfFame, 10000);
         }
 
-        // ฟังก์ชัน closeModal (ประกาศเป็น function declaration เพื่อให้ hoist)
         function closeModal(id) {
             if (id === 'hallModal' && hallInterval) {
                 clearInterval(hallInterval);
@@ -3073,7 +3039,6 @@
             document.getElementById('reportModal').style.display = 'flex';
         }
 
-        // ========== ฟังก์ชันสำหรับปุ่มตลาด (เปลี่ยนเป็น modal comingSoonModal) ==========
         function marketComingSoon(event) {
             event.preventDefault();
             document.getElementById('comingSoonModal').style.display = 'flex';
@@ -3101,7 +3066,6 @@
                 const mode = isGameMode ? 'game' : 'general';
                 const finalUrl = `${baseUrl}?mode=${mode}&id=${roomID}&role=${role}`;
                 
-                // บันทึกห้องล่าสุดลง localStorage
                 const urlParams = new URLSearchParams(finalUrl.split('?')[1]);
                 localStorage.setItem('last_room', JSON.stringify({
                     id: urlParams.get('id'),
@@ -3142,7 +3106,6 @@
                 return;
             }
             
-            // ตรวจสอบว่าห้องยัง active อยู่ไหม
             const { data: trade, error } = await supa
                 .from('trades')
                 .select('status')
@@ -3173,7 +3136,6 @@
                 return;
             }
             
-            // สร้าง URL จากข้อมูลที่บันทึกไว้
             const url = `general_trade_hybrid.html?mode=${lastRoom.mode}&id=${lastRoom.id}&role=${lastRoom.role}`;
             location.href = url;
         }
@@ -3199,7 +3161,6 @@
             }
         }
 
-        // ฟังก์ชัน toggleAudio สำหรับ ticker
         function toggleAudio() {
             const tickerSound = document.getElementById('tickerSound');
             if (tickerSound.paused) {
@@ -3211,7 +3172,6 @@
             }
         }
 
-        // ฟังก์ชันเปิดเควส modal ใหม่ (แก้ไขให้แสดง Modal ก่อน แล้วค่อยโหลดข้อมูล)
         window.openQuestModalNew = function() {
             document.getElementById('questModalNew').style.display = 'flex';
             setTimeout(() => {
@@ -3223,7 +3183,7 @@
             if (userChannel) supa.removeChannel(userChannel);
             if (blacklistChannel) supa.removeChannel(blacklistChannel);
             if (notificationChannel) supa.removeChannel(notificationChannel);
-            if (questChannel) supa.removeChannel(questChannel);   // *** เพิ่ม cleanup ***
+            if (questChannel) supa.removeChannel(questChannel);
             if (authSubscription && typeof authSubscription.unsubscribe === 'function') {
                 authSubscription.unsubscribe();
             }
@@ -3238,9 +3198,8 @@
         }
         
         function openInbox() { 
-            // เมื่อเปิดหน้าแจ้งเตือน ให้บันทึก timestamp ปัจจุบัน เพื่อให้จุดแดงหายไป
             localStorage.setItem('lastNotiCheck', Date.now().toString());
-            updateNotificationBadge(); // อัปเดตจุดให้หายไปทันที (หรือเมื่อกลับมาหน้านี้)
+            updateNotificationBadge();
             window.location.href = 'notification.html';
         }
         
@@ -3395,7 +3354,6 @@
             `); 
         }
 
-        // NEW: อัปเดตจุดแจ้งเตือน (ให้กระพริบถ้ามีประกาศใหม่ที่ยังไม่ได้อ่าน)
         async function updateNotificationBadge() {
             if (!currentUserData?.id) return;
             try {
@@ -3419,7 +3377,7 @@
                 const lastCheck = parseInt(localStorage.getItem('lastNotiCheck') || 0);
 
                 if (latestNotiTime > lastCheck) {
-                    dot.style.display = 'block'; // มีประกาศใหม่ จุดกระพริบ
+                    dot.style.display = 'block';
                 } else {
                     dot.style.display = 'none';
                 }
@@ -3460,37 +3418,12 @@
                 .subscribe();
         }
 
-        // ตรวจสอบ manifest.json และ service worker
-        async function checkPwaStatus() {
-            // ตรวจสอบว่า service worker support
-            if ('serviceWorker' in navigator) {
-                showWarningOnScreen('✅ Browser รองรับ Service Worker');
-            } else {
-                showWarningOnScreen('❌ Browser ไม่รองรับ Service Worker');
-            }
-
-            // ตรวจสอบ manifest.json
-            try {
-                const res = await fetch('manifest.json');   // <-- แก้เป็น relative path
-                if (res.ok) {
-                    showWarningOnScreen('✅ manifest.json โหลดได้');
-                } else {
-                    showWarningOnScreen('❌ manifest.json ไม่พบ (status ' + res.status + ')');
-                }
-            } catch (e) {
-                showWarningOnScreen('❌ manifest.json error: ' + e.message);
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('scanOverlay').style.display = 'flex';
             loadGraphicsLevel();
             setTimeout(() => { initAuth(); }, 1000);
             checkSystemStatus();
             setInterval(checkSystemStatus, 3600000);
-            
-            // ตรวจสอบ PWA ทันที (คอมเมนต์ไว้เพื่อไม่ให้แสดง toast)
-            // checkPwaStatus();
             
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
@@ -3504,7 +3437,7 @@
             });
         });
 
-        // 🎵 ระบบ Mini Jukebox (ปรับปรุง: มีเครดิตทั้ง 2 เพลง)
+        // 🎵 ระบบ Mini Jukebox
         const globalPlaylist = [
             { 
                 title: "Cartoon - On & On", 
@@ -3605,22 +3538,19 @@
         }
 
         // ==========================================
-        // 🌟 AEGIS NEX QUEST SYSTEM V3.0 (BY JEANNY)
+        // 🌟 AEGIS NEX QUEST SYSTEM V3.0
         // ==========================================
 
         const FB_LINK = "https://www.facebook.com/share/17EYiESGzn/";
 
-        // โหลดรายชื่อเควสทั้งหมด
         async function loadQuests() {
             if (!currentUserData?.id) return;
             
             document.getElementById('questModalAgBalance').innerText = (currentUserData.balance_ag || 0).toLocaleString();
 
             try {
-                // 1. ดึง Master Quests ทั้งหมด
                 const { data: quests, error: qErr } = await supa.from('quests').select('*').eq('is_active', true).order('reward_ag', {ascending: true});
                 
-                // 2. ดึง Progress ของ User 
                 const today = new Date().toISOString().split('T')[0];
                 const { data: userQuests, error: uqErr } = await supa.from('user_quests')
                     .select('*')
@@ -3631,7 +3561,6 @@
                 let pioneerHtml = '';
 
                 quests.forEach(q => {
-                    // หา progress
                     const progressRecord = userQuests?.find(uq => uq.quest_id === q.id);
                     const currentVal = progressRecord ? progressRecord.progress : 0;
                     const isCompleted = progressRecord ? progressRecord.is_claimed : false;
@@ -3641,7 +3570,6 @@
                     if (isCompleted) {
                         btnHtml = `<button class="quest-mini-btn" style="background:rgba(0,255,136,0.1); border-color:var(--success); color:var(--success); cursor:default;"><i class="fas fa-check"></i> สำเร็จ</button>`;
                     } else {
-                        // จัดการปุ่มตามประเภทเควส
                         if (q.slug === 'daily_login') {
                             btnHtml = `<button class="quest-mini-btn quest-mini-checkin" onclick="triggerQuest('${q.slug}')">เช็คอิน</button>`;
                         } else if (q.slug === 'daily_like_fb' || q.slug === 'daily_share_fb') {
@@ -3651,7 +3579,6 @@
                         } else if (q.slug === 'pioneer_setup') {
                             btnHtml = `<button class="quest-mini-btn" onclick="location.href='profile.html'"><i class="fas fa-user-edit"></i> ไปโปรไฟล์</button>`;
                         } else {
-                            // เควสที่ต้องทำในระบบ (เทรด, เติม, ถอน)
                             btnHtml = `<div style="font-size:10px; color:#888; text-align:right;">${currentVal}/${q.target_amount}</div>`;
                         }
                     }
@@ -3681,7 +3608,6 @@
             }
         }
 
-        // ยิงเพื่ออัปเดตเควส
         async function triggerQuest(slug) {
             Swal.fire({ title: 'กำลังประมวลผล...', background: '#050b14', color: '#fff', didOpen: () => Swal.showLoading() });
             try {
@@ -3695,27 +3621,25 @@
                 } else {
                     Swal.fire({ icon: 'info', title: 'อัปเดตแล้ว', text: `ความคืบหน้า: ${data.current}/${data.target}`, background: '#050b14', color: '#fff', timer:1500 });
                 }
-                loadQuests(); // โหลดหน้าจอใหม่
+                loadQuests();
             } catch (e) {
                 Swal.fire({ icon: 'error', title: 'Error', text: e.message, background: '#050b14', color: '#fff' });
             }
         }
 
-        // เควส Social (เปิดแท็บใหม่ แล้วให้รางวัล)
         function triggerSocialQuest(slug, link) {
-            window.open(link, '_blank'); // เปิดเฟสบุ๊ค
+            window.open(link, '_blank');
             setTimeout(() => {
-                // หน่วงเวลา 2 วินาทีเพื่อให้รางวัล (ตามสไตล์ระบบเว็บทั่วไป)
                 triggerQuest(slug);
             }, 2000);
         }
     </script>
 
-    <!-- 👇 เพิ่ม Service Worker registration (แก้เป็น relative path) -->
+    <!-- 👇 Service Worker registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('service-worker.js').then(function(registration) {  // <-- แก้ตรงนี้
+          navigator.serviceWorker.register('service-worker.js').then(function(registration) {
             console.log('ServiceWorker registered');
           }).catch(function(err) {
             console.log('ServiceWorker registration failed: ', err);
