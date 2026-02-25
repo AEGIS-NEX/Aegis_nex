@@ -2381,8 +2381,8 @@
                 const starsEl = document.getElementById('pfStars');
 
                 // ตั้งค่ารูปและชื่อเบื้องต้น
-                pfImgEl.style.backgroundImage = img ? `url('${img}')` : 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
-                pName.innerHTML = name ? name.toUpperCase() : 'USER';
+                if (pfImgEl) pfImgEl.style.backgroundImage = img ? `url('${img}')` : 'url("https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop")';
+                if (pName) pName.innerHTML = name ? name.toUpperCase() : 'USER';
 
                 // ดึงข้อมูลจาก users_public และ trades
                 const [userResult, stats] = await Promise.all([
@@ -2400,15 +2400,17 @@
                 const score = stats.score;
 
                 const rankInfo = await getRank(deals, uid);
-                box.style.borderColor = rankInfo.border;
-                box.style.boxShadow = `0 0 25px ${rankInfo.color}30`;
+                if (box) box.style.borderColor = rankInfo.border;
+                if (box) box.style.boxShadow = `0 0 25px ${rankInfo.color}30`;
 
-                pfImgEl.style.backgroundImage = `url('${photoUrl}')`;
-                const avatarGlow = getAvatarGlowStyle(rankInfo, uid);
-                pfImgEl.style.borderColor = rankInfo.border;
-                pfImgEl.style.boxShadow = avatarGlow.boxShadow;
-                pfImgEl.style.animation = avatarGlow.animation;
-                pfImgEl.style.borderWidth = '3px';
+                if (pfImgEl) {
+                    pfImgEl.style.backgroundImage = `url('${photoUrl}')`;
+                    const avatarGlow = getAvatarGlowStyle(rankInfo, uid);
+                    pfImgEl.style.borderColor = rankInfo.border;
+                    pfImgEl.style.boxShadow = avatarGlow.boxShadow;
+                    pfImgEl.style.animation = avatarGlow.animation;
+                    pfImgEl.style.borderWidth = '3px';
+                }
 
                 let tick = '';
                 if (uid === MY_GOD_UID || uid === MY_SPECIAL_UID) {
@@ -2417,25 +2419,30 @@
                     tick = ` <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:20px;"></i>`;
                 }
 
-                pName.innerHTML = displayName.toUpperCase() + tick;
-                pName.style.color = rankInfo.color;
-                pName.style.textShadow = getTextShadowStyle(rankInfo, uid);
+                if (pName) {
+                    pName.innerHTML = displayName.toUpperCase() + tick;
+                    pName.style.color = rankInfo.color;
+                    pName.style.textShadow = getTextShadowStyle(rankInfo, uid);
+                }
 
-                rankContainer.innerHTML = rankInfo.html;
-                dealsEl.innerText = deals;
-                cancelEl.innerText = cancelled;
-                scoreEl.innerText = score + '%';
-                starCountEl.innerText = Math.round(rating);
-                starsEl.innerHTML = getStarRating(rating, uid);
+                if (rankContainer) rankContainer.innerHTML = rankInfo.html;
+                if (dealsEl) dealsEl.innerText = deals;
+                if (cancelEl) cancelEl.innerText = cancelled;
+                if (scoreEl) scoreEl.innerText = score + '%';
+                if (starCountEl) starCountEl.innerText = Math.round(rating);
+                if (starsEl) starsEl.innerHTML = getStarRating(rating, uid);
 
                 // อัปเดต online dot
                 const { data: userWithSeen } = await supa.from('users_public').select('last_seen').eq('id', uid).single();
                 const online = userWithSeen && isOnline(userWithSeen.last_seen);
                 const dot = document.getElementById('pfOnlineDot');
-                dot.style.background = online ? 'var(--success)' : '#666';
-                dot.style.boxShadow = online ? '0 0 5px var(--success)' : 'none';
+                if (dot) {
+                    dot.style.background = online ? 'var(--success)' : '#666';
+                    dot.style.boxShadow = online ? '0 0 5px var(--success)' : 'none';
+                }
 
-                document.getElementById('pfModal').style.display = 'flex';
+                const modal = document.getElementById('pfModal');
+                if (modal) modal.style.display = 'flex';
 
             } catch (error) {
                 console.error('viewProfile error:', error);
@@ -2482,49 +2489,80 @@
                 tickHtml = ' <i class="fas fa-check-circle" style="display:inline-block; color:var(--primary); text-shadow:0 0 8px var(--primary); margin-left:5px;"></i>';
             }
             
-            nameEl.innerHTML = nameHtml + tickHtml;
-            nameEl.style.color = rankInfo.color;
-            nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
+            if (nameEl) {
+                nameEl.innerHTML = nameHtml + tickHtml;
+                nameEl.style.color = rankInfo.color;
+                nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
+            }
             
             const avatarFrame = document.getElementById('headerAvatarFrame');
-            const glowStyle = getAvatarGlowStyle(rankInfo, uid);
-            avatarFrame.style.borderColor = rankInfo.border;
-            avatarFrame.style.borderWidth = glowStyle.borderWidth;
-            avatarFrame.style.boxShadow = glowStyle.boxShadow;
-            avatarFrame.style.animation = glowStyle.animation;
+            if (avatarFrame) {
+                const glowStyle = getAvatarGlowStyle(rankInfo, uid);
+                avatarFrame.style.borderColor = rankInfo.border;
+                avatarFrame.style.borderWidth = glowStyle.borderWidth;
+                avatarFrame.style.boxShadow = glowStyle.boxShadow;
+                avatarFrame.style.animation = glowStyle.animation;
+            }
             
-            document.getElementById('userRank').innerHTML = rankInfo.html;
-            document.getElementById('userBalance').innerHTML = (data.balance || 0).toLocaleString();
-            document.getElementById('userBalanceAG').innerHTML = (data.balance_ag || 0).toLocaleString();
+            const userRankEl = document.getElementById('userRank');
+            if (userRankEl) userRankEl.innerHTML = rankInfo.html;
             
-            const userImg = document.getElementById('userImg');
-            userImg.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
+            const userBalanceEl = document.getElementById('userBalance');
+            if (userBalanceEl) userBalanceEl.innerHTML = (data.balance || 0).toLocaleString();
+            
+            const userBalanceAGEl = document.getElementById('userBalanceAG');
+            if (userBalanceAGEl) userBalanceAGEl.innerHTML = (data.balance_ag || 0).toLocaleString();
+            
+            const userImgEl = document.getElementById('userImg');
+            if (userImgEl) userImgEl.src = data.photo_url || 'https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=400&h=400&fit=crop';
 
             const xp = getExpData(realDeals);
-            document.getElementById('xpBarFill').style.width = xp.percent + "%";
-            document.getElementById('xpBarFill').style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
-            document.getElementById('xpCurrent').innerText = xp.current + " XP";
-            document.getElementById('xpTarget').innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
+            const xpBarFill = document.getElementById('xpBarFill');
+            if (xpBarFill) {
+                xpBarFill.style.width = xp.percent + "%";
+                xpBarFill.style.background = `linear-gradient(90deg, ${rankInfo.color}, ${rankInfo.border})`;
+            }
+            const xpCurrentEl = document.getElementById('xpCurrent');
+            if (xpCurrentEl) xpCurrentEl.innerText = xp.current + " XP";
+            const xpTargetEl = document.getElementById('xpTarget');
+            if (xpTargetEl) xpTargetEl.innerText = (xp.next === 'MAX') ? "MAX LEVEL" : "NEXT: " + xp.next;
             
-            document.getElementById('onlineDot').style.background = 'var(--success)';
-            document.getElementById('scanOverlay').style.display = 'none';
+            const onlineDot = document.getElementById('onlineDot');
+            if (onlineDot) onlineDot.style.background = 'var(--success)';
+            
+            const scanOverlay = document.getElementById('scanOverlay');
+            if (scanOverlay) scanOverlay.style.display = 'none';
         }
 
-        // 🔥 INIT AUTH
+        // 🔥 INIT AUTH (แก้ไขตามที่คุณต้องการ)
         async function initAuth() {
             try {
                 const { data: { session }, error } = await supa.auth.getSession();
                 if (error) throw error;
                 
-                await handleAuthChange(session?.user || null);
+                if (!session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
 
-                authSubscription = supa.auth.onAuthStateChange((event, session) => {
-                    handleAuthChange(session?.user || null);
-                });
+                await handleAuthChange(session.user);
+
+                // ดักไว้เผื่อฟังก์ชันข้างบนทำงานช้าเกินไป ให้ปิดหน้าโหลดหลังผ่านไป 3 วินาที (เซฟไว้ก่อน)
+                setTimeout(() => {
+                    const loader = document.querySelector('.loading-screen') || document.getElementById('scanOverlay');
+                    if (loader) loader.style.display = 'none';
+                }, 3000);
 
             } catch (error) {
                 console.error("Auth initialization error:", error);
-                window.location.href = 'index.html';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาดในการโหลด',
+                    text: error.message,
+                    background: '#050b14',
+                    color: '#fff'
+                });
+                // ไม่ redirect ทันทีเพื่อให้เห็น error
             }
         }
 
@@ -2564,7 +2602,8 @@
         async function handleAuthChange(user) {
             if (user) {
                 if (user.id === MY_GOD_UID) { 
-                    document.getElementById('adminSecretBtn').style.display = 'flex'; 
+                    const adminBtn = document.getElementById('adminSecretBtn');
+                    if (adminBtn) adminBtn.style.display = 'flex'; 
                 }
                 
                 const { data: profile, error: profileError } = await supa
@@ -2653,7 +2692,8 @@
 
                 async function updateBackRoomButton() {
                     const hasActive = await checkActiveRooms();
-                    document.getElementById('btnBackRoom').style.display = hasActive ? 'flex' : 'none';
+                    const btnBackRoom = document.getElementById('btnBackRoom');
+                    if (btnBackRoom) btnBackRoom.style.display = hasActive ? 'flex' : 'none';
                 }
 
                 await updateBackRoomButton();
@@ -3015,13 +3055,13 @@
                 ticker.style.borderBottom = '1px solid rgba(255,215,0,0.4)';
                 tickerText.innerHTML = '💤 ขณะนี้ระบบอยู่ในโหมดพักผ่อน (03:00 - 10:00 น.) ระบบห้องเทรดทำงานปกติ แต่การเติม/ถอนอาจล่าช้ากว่าปกติเล็กน้อย';
                 tickerText.style.color = 'var(--warning)';
-                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
+                if (aiMsg) aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบอยู่ในโหมดพักผ่อน แต่ระบบตรวจสอบความปลอดภัยยังทำงานเต็มประสิทธิภาพ 100%"`;
             } else {
                 ticker.style.background = 'linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0, 242, 255, 0.15) 10%, rgba(0, 242, 255, 0.25) 50%, rgba(0, 242, 255, 0.15) 90%, rgba(0,0,0,0) 100%)';
                 ticker.style.borderBottom = '1px solid rgba(0, 242, 255, 0.4)';
                 tickerText.innerHTML = '✅ [System] ยินดีต้อนรับสู่ AEGIS NEX V.3.0 (Ultimate Edition) | ⚠️ [Admin] ห้ามซื้อขายของผิดกฎหมายทุกชนิด ตรวจพบแบนทันที! | 🚀 [Update] ระบบปลอดภัยอัปเกรดใหม่ 100%';
                 tickerText.style.color = 'var(--primary)';
-                aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง"`;
+                if (aiMsg) aiMsg.innerHTML = `<b>AEGIS AI:</b> "ระบบตรวจสอบความปลอดภัย: 100% พร้อมใช้งาน | สถานะ: โหมดเฝ้าระวังระดับสูง"`;
             }
         }
 
