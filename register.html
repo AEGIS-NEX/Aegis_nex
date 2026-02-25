@@ -938,14 +938,25 @@
 
                 try {
                     const cleanUsername = username.toLowerCase();
+
+                    // ตรวจสอบ username ซ้ำในตาราง users
                     const { data: existingUser, error: checkError } = await supa
                         .from('users')
                         .select('id')
                         .eq('username', cleanUsername)
                         .maybeSingle();
 
-                    if (checkError) throw new Error('ระบบขัดข้อง กรุณาลองใหม่');
+                    if (checkError) throw checkError; // <<< แก้ให้ส่ง error จริง
                     if (existingUser) throw new Error('ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาใช้ชื่ออื่น');
+
+                    // ตรวจสอบ email ซ้ำในตาราง users (เผื่อกรณี)
+                    const { data: existingEmail, error: emailCheckError } = await supa
+                        .from('users')
+                        .select('id')
+                        .eq('email', email)
+                        .maybeSingle();
+                    if (emailCheckError) throw emailCheckError;
+                    if (existingEmail) throw new Error('อีเมลนี้มีในระบบแล้ว');
 
                     const { data, error } = await supa.auth.signUp({
                         email,
@@ -1011,13 +1022,29 @@
                     scanOverlay.style.display = 'none';
                     console.error(err);
 
-                    let errorMsg = err.message || 'เกิดข้อผิดพลาด';
+                    // แสดง error จริง ๆ
+                    let errorMsg = err.message || err.error_description || 'เกิดข้อผิดพลาด (ไม่ทราบสาเหตุ)';
+                    
+                    // ถ้า error เป็น object (เช่น จาก Supabase) ลองแปลงเป็น string
+                    if (typeof err === 'object' && Object.keys(err).length) {
+                        try {
+                            errorMsg = JSON.stringify(err);
+                        } catch (e) {}
+                    }
+
+                    // ตัดถ้ายาวเกินไป
+                    if (errorMsg.length > 200) errorMsg = errorMsg.substring(0, 200) + '…';
+
+                    // ปรับข้อความบางอย่างให้สั้นลง (optional)
                     if (errorMsg.includes('User already registered')) {
                         errorMsg = '❌ อีเมลนี้มีผู้ใช้งานในระบบแล้ว';
-                    } else if (errorMsg.includes('duplicate key')) {
-                        errorMsg = '❌ ข้อมูลนี้มีในระบบแล้ว';
+                    } else if (errorMsg.includes('duplicate key value violates unique constraint')) {
+                        if (errorMsg.includes('users_username_key')) errorMsg = '❌ ชื่อผู้ใช้นี้มีในระบบแล้ว';
+                        else if (errorMsg.includes('users_email_key')) errorMsg = '❌ อีเมลนี้มีในระบบแล้ว';
+                        else errorMsg = '❌ ข้อมูลซ้ำในระบบ';
                     }
-                    showCyberToast(errorMsg);
+
+                    showCyberToast("❌ " + errorMsg);
 
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> ยืนยันการลงทะเบียน';
