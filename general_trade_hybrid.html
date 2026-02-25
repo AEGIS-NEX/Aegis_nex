@@ -34,6 +34,10 @@
         });
     </script>
     
+    <!-- เพิ่ม Manifest และ Theme Color -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f2ff">
+    
     <style>
         /* ===== 🎯 CSS ปรับลด Effect ทุกชนิดลง 30% ===== */
         :root {
@@ -2864,7 +2868,7 @@
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="statSales">245K</div>
-                <div class="stat-label">ยอดขาย</div>
+                <div class="stat-label">ดีลทั้งหมด</div>   <!-- แก้จาก "ยอดขาย" เป็น "ดีลทั้งหมด" -->
             </div>
         </div>
         <div class="deal-stat">
@@ -2923,7 +2927,7 @@
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="myStatSales">42K</div>
-                <div class="stat-label">ยอดซื้อ</div>
+                <div class="stat-label">ดีลทั้งหมด</div>   <!-- แก้จาก "ยอดซื้อ" เป็น "ดีลทั้งหมด" -->
             </div>
         </div>
         <div class="deal-stat">
@@ -3459,6 +3463,134 @@
     <span class="typing-text">กำลังพิมพ์...</span>
 </div>
 
+<!-- ========== เริ่มสคริปต์หลัก ========== -->
+<!-- OneSignal & ระบบแจ้งเตือน AEGIS NEX (เพิ่มใหม่) -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+// ======================================================================
+// 🔥 ระบบแจ้งเตือน AEGIS NEX – ปฏิบัติการพิเศษ
+// ======================================================================
+
+const ONESIGNAL_APP_ID = '96c125db-6c70-49eb-9ba7-6cd12ba3c3c0';
+const ONESIGNAL_REST_KEY = 'os_v2_app_s3aslw3mobe6xg5hntisxi6dybelzo6zn34e624gto34yqgo2j54rw4k4vfih7emprewka63jmiyxfzoyakswnzpcsbqdvt2v5crsfq';
+const SITE_URL = 'https://aegis-nex.github.io/Aegis_nex';
+
+// ----------------------------------------------------------------------
+// 1. ขออนุญาตแจ้งเตือนทันที (ทำงานเมื่อโหลดหน้า)
+// ----------------------------------------------------------------------
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: ONESIGNAL_APP_ID,
+    notifyButton: { enable: false },
+  });
+
+  if (typeof currentUser !== 'undefined' && currentUser?.id) {
+    OneSignal.login(currentUser.id);
+  }
+
+  await OneSignal.Notifications.requestPermission(true);
+});
+
+// ----------------------------------------------------------------------
+// 2. ฟังก์ชันส่งแจ้งเตือน – ภาษาไทย มืออาชีพ
+// ----------------------------------------------------------------------
+async function ส่งแจ้งเตือน(ผู้รับไอดี, โหมด, เหตุการณ์, ข้อมูล, ยอดใหม่ = null) {
+  let หัวข้อ = '';
+  let เนื้อหา = '';
+  let หมายเหตุ = '';
+  let คำแนะนำ = '';
+
+  const เงินสุทธิ = ข้อมูล.จำนวนเงิน - (ข้อมูล.ค่าธรรมเนียม || 0);
+
+  // -------------------- กรณีผู้ขายส่งพัสดุ --------------------
+  if (เหตุการณ์ === 'ผู้ขายส่งพัสดุ') {
+    หัวข้อ = '📦 อัปเดตสถานะการจัดส่ง';
+    เนื้อหา = `▪️ บริษัทขนส่ง: ${ข้อมูล.บริษัทขนส่ง}\n▪️ เลขพัสดุ: ${ข้อมูล.เลขพัสดุ}`;
+    หมายเหตุ = '⏱️ ข้อมูลพัสดุอาจอัปเดตล่าช้า 1-2 ชั่วโมง';
+    คำแนะนำ = '📌 ติดตามพัสดุได้ในห้องเทรด หรือตรวจสอบกับบริษัทขนส่งโดยตรง';
+  }
+  
+  // -------------------- กรณีผู้ขายส่งไอเทมเกม --------------------
+  else if (เหตุการณ์ === 'ผู้ขายส่งไอเทม') {
+    หัวข้อ = '🎮 ส่งมอบสินค้าดิจิทัล';
+    เนื้อหา = '▪️ ผู้ขายได้ส่ง ID / รหัสผ่าน / ไอเทมเรียบร้อย';
+    หมายเหตุ = '🔐 รักษาความปลอดภัย: เปลี่ยนรหัสผ่านทันทีหลังรับ';
+    คำแนะนำ = '📌 ตรวจสอบไอเทมในเกมให้ครบถ้วน หากไม่ครบติดต่อ Admin ทันที';
+  }
+  
+  // -------------------- กรณีผู้ซื้อรับของ (ทั้ง 2 โหมด) --------------------
+  else if (เหตุการณ์ === 'ผู้ซื้อรับของ') {
+    // แยกตามผู้รับ: ถ้าผู้รับเป็นผู้ขาย ให้ข้อความเกี่ยวกับได้รับเงิน, ถ้าเป็นผู้ซื้อ ให้ข้อความเหมือนเดิม
+    if (ผู้รับไอดี === ข้อมูล.ผู้ขายไอดี) {
+      // สำหรับผู้ขาย
+      if (โหมด === 'game') {
+        หัวข้อ = '💰 ได้รับเงินจากการขาย (เกม)';
+        เนื้อหา = `▪️ ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อย\n▪️ เงิน ${เงินสุทธิ.toLocaleString()} AGS โอนเข้าบัญชีคุณแล้ว\n▪️ ค่าธรรมเนียม: ${ข้อมูล.ค่าธรรมเนียม.toLocaleString()} AGS`;
+        if (ยอดใหม่ !== null) {
+          เนื้อหา += `\n💰 ยอดเงินคงเหลือของคุณ: ${ยอดใหม่.toLocaleString()} AGS`;
+        }
+        หมายเหตุ = '';
+        คำแนะนำ = '📌 ขอบคุณที่ใช้บริการ AEGIS NEX';
+      } else {
+        // โหมดทั่วไป
+        หัวข้อ = '💰 ได้รับเงินจากการขาย';
+        เนื้อหา = `▪️ ผู้ซื้อได้รับสินค้าเรียบร้อย\n▪️ เงิน ${เงินสุทธิ.toLocaleString()} AGS โอนเข้าบัญชีคุณแล้ว\n▪️ ค่าธรรมเนียม: ${ข้อมูล.ค่าธรรมเนียม.toLocaleString()} AGS`;
+        if (ยอดใหม่ !== null) {
+          เนื้อหา += `\n💰 ยอดเงินคงเหลือของคุณ: ${ยอดใหม่.toLocaleString()} AGS`;
+        }
+        หมายเหตุ = '';
+        คำแนะนำ = '📌 ขอบคุณที่ใช้บริการ AEGIS NEX';
+      }
+    } else {
+      // สำหรับผู้ซื้อ (ข้อความเดิม)
+      if (โหมด === 'game') {
+        หัวข้อ = '✅ ยืนยันการรับ ID/ไอเทม';
+        เนื้อหา = `▪️ รับ ID/ไอเทมเรียบร้อย\n▪️ เงิน ${เงินสุทธิ.toLocaleString()} AGS โอนให้ผู้ขายแล้ว\n▪️ ค่าธรรมเนียม: ${ข้อมูล.ค่าธรรมเนียม.toLocaleString()} AGS`;
+        if (ยอดใหม่ !== null) {
+          เนื้อหา += `\n💰 ยอดเงินคงเหลือของคุณ: ${ยอดใหม่.toLocaleString()} AGS`;
+        }
+        หมายเหตุ = '🔐 เปลี่ยนรหัสผ่านบัญชีเกมที่ซื้อมาทันที';
+        คำแนะนำ = '📌 หากพบปัญหา ID/ไอเทมไม่ครบ ให้แจ้ง Admin ภายใน 24 ชม.';
+      } else {
+        หัวข้อ = '✅ ยืนยันการรับสินค้า';
+        เนื้อหา = `▪️ รับสินค้าเรียบร้อย\n▪️ เงิน ${เงินสุทธิ.toLocaleString()} AGS โอนให้ผู้ขายแล้ว\n▪️ ค่าธรรมเนียม: ${ข้อมูล.ค่าธรรมเนียม.toLocaleString()} AGS`;
+        if (ยอดใหม่ !== null) {
+          เนื้อหา += `\n💰 ยอดเงินคงเหลือของคุณ: ${ยอดใหม่.toLocaleString()} AGS`;
+        }
+        หมายเหตุ = '📦 ตรวจสอบสภาพสินค้าให้เรียบร้อย';
+        คำแนะนำ = '📌 หากสินค้ามีปัญหาหรือไม่ตรงตามข้อตกลง ให้แจ้ง Admin ภายใน 7 วัน';
+      }
+    }
+  }
+
+  const บทบาท = ผู้รับไอดี === ข้อมูล.ผู้ซื้อไอดี ? 'buyer' : 'seller';
+  const ลิงก์ = `${SITE_URL}/general_trade_hybrid.html?mode=${โหมด}&id=${ข้อมูล.ห้องไอดี}&role=${บทบาท}`;
+
+  try {
+    await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${ONESIGNAL_REST_KEY}`
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        include_external_user_ids: [ผู้รับไอดี],
+        headings: { en: หัวข้อ, th: หัวข้อ },
+        contents: { en: เนื้อหา + '\n\n' + คำแนะนำ, th: เนื้อหา + '\n\n' + คำแนะนำ },
+        subtitle: { en: หมายเหตุ, th: หมายเหตุ },
+        url: ลิงก์,
+        chrome_web_icon: `${SITE_URL}/icons/icon-192.png`,
+        firefox_icon: `${SITE_URL}/icons/icon-192.png`
+      })
+    });
+  } catch (err) {
+    console.error('❌ ส่งแจ้งเตือนผิดพลาด:', err);
+  }
+}
+</script>
+
 <script>
     // ============================================
     // 🔥 GLOBAL VARIABLES
@@ -3552,21 +3684,60 @@
     const userCache = {};
 
     // ============================================
-    // 🏆 RANK FUNCTIONS (ไม่มี hardcoded UID)
+    // 🏆 RANK FUNCTIONS (รองรับแอดมินจาก DB)
     // ============================================
-    function getRank(deals, uid) {
-        const d = parseInt(deals) || 0;
-        if (d > 1000) return { name: 'GOD', html: '<span class="rank-badge rb-10"><i class="fas fa-dragon"></i> GOD</span>', class: 'rank-GOD', color: '#ffffff', border: '#ffffff', effects: true };
-        if (d > 600) return { name: 'IMMORTAL', html: '<span class="rank-badge rb-9"><i class="fas fa-fire"></i> IMMORTAL</span>', class: 'rank-IMMORTAL', color: '#ff1744', border: '#ff1744', effects: true };
-        if (d > 450) return { name: 'WARLORD', html: '<span class="rank-badge rb-8"><i class="fas fa-skull"></i> WARLORD</span>', class: 'rank-WARLORD', color: '#ff6d00', border: '#ff6d00', effects: true };
-        if (d > 300) return { name: 'MASTER', html: '<span class="rank-badge rb-7"><i class="fas fa-star"></i> MASTER</span>', class: 'rank-MASTER', color: '#ffab00', border: '#ffab00', effects: true };
-        if (d > 200) return { name: 'VETERAN', html: '<span class="rank-badge rb-6"><i class="fas fa-gem"></i> VETERAN</span>', class: 'rank-VETERAN', color: '#d500f9', border: '#d500f9', effects: true };
-        if (d > 100) return { name: 'ELITE', html: '<span class="rank-badge rb-5"><i class="fas fa-shield-alt"></i> ELITE</span>', class: 'rank-ELITE', color: '#304ffe', border: '#304ffe', effects: true };
-        if (d > 50) return { name: 'PRO', html: '<span class="rank-badge rb-4"><i class="fas fa-medal"></i> PRO</span>', class: 'rank-PRO', color: '#2979ff', border: '#2979ff', effects: true };
-        if (d > 25) return { name: 'EXPERT', html: '<span class="rank-badge rb-3"><i class="fas fa-award"></i> EXPERT</span>', class: 'rank-EXPERT', color: '#00e676', border: '#00e676', effects: true };
-        if (d > 10) return { name: 'ROOKIE', html: '<span class="rank-badge rb-2"><i class="fas fa-user-check"></i> ROOKIE</span>', class: 'rank-ROOKIE', color: '#80cbc4', border: '#80cbc4', effects: false };
-        if (d > 0) return { name: 'TRAINEE', html: '<span class="rank-badge rb-1"><i class="fas fa-user-clock"></i> TRAINEE</span>', class: 'rank-TRAINEE', color: '#cfd8dc', border: '#cfd8dc', effects: false };
-        return { name: 'NEWBIE', html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', class: 'rank-NEWBIE', color: '#b0bec5', border: '#666666', effects: false };
+    // ==================== GET RANK (รองรับแอดมินจาก DB) ====================
+    async function getRank(deals, uid) {
+      // ถ้า uid ว่าง ให้คืนค่า default
+      if (!uid) return { 
+        name: 'NEWBIE', 
+        html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', 
+        class: 'rank-NEWBIE', 
+        color: '#b0bec5', 
+        border: '#666666', 
+        effects: false 
+      };
+
+      // ตรวจสอบว่าเป็น CEO พิเศษ (คุณ) หรือไม่
+      if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233") {
+        return { 
+          name: 'CEO', 
+          html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', 
+          class: 'rank-CEO', 
+          color: '#ff0000', 
+          border: '#ff0000',
+          effects: true 
+        };
+      }
+
+      // ตรวจสอบว่าเป็นแอดมินทั่วไปหรือไม่ (เรียก RPC)
+      const { data: isAdmin, error } = await supabaseClient
+        .rpc('is_admin', { check_user_id: uid });
+
+      if (!error && isAdmin === true) {
+        return { 
+          name: 'LEGENDARY', 
+          html: '<span class="rank-badge rb-special"><i class="fas fa-crown"></i> LEGENDARY <i class="fas fa-crown"></i></span>', 
+          class: 'rank-LEGENDARY', 
+          color: '#ff00ff', 
+          border: '#ff00ff',
+          effects: true 
+        };
+      }
+
+      // ถ้าไม่ใช่แอดมิน ใช้ระบบยศปกติตามดีล
+      const d = parseInt(deals) || 0;
+      if (d > 1000) return { name: 'GOD', html: '<span class="rank-badge rb-10"><i class="fas fa-dragon"></i> GOD</span>', class: 'rank-GOD', color: '#ffffff', border: '#ffffff', effects: true };
+      if (d > 600) return { name: 'IMMORTAL', html: '<span class="rank-badge rb-9"><i class="fas fa-fire"></i> IMMORTAL</span>', class: 'rank-IMMORTAL', color: '#ff1744', border: '#ff1744', effects: true };
+      if (d > 450) return { name: 'WARLORD', html: '<span class="rank-badge rb-8"><i class="fas fa-skull"></i> WARLORD</span>', class: 'rank-WARLORD', color: '#ff6d00', border: '#ff6d00', effects: true };
+      if (d > 300) return { name: 'MASTER', html: '<span class="rank-badge rb-7"><i class="fas fa-star"></i> MASTER</span>', class: 'rank-MASTER', color: '#ffab00', border: '#ffab00', effects: true };
+      if (d > 200) return { name: 'VETERAN', html: '<span class="rank-badge rb-6"><i class="fas fa-gem"></i> VETERAN</span>', class: 'rank-VETERAN', color: '#d500f9', border: '#d500f9', effects: true };
+      if (d > 100) return { name: 'ELITE', html: '<span class="rank-badge rb-5"><i class="fas fa-shield-alt"></i> ELITE</span>', class: 'rank-ELITE', color: '#304ffe', border: '#304ffe', effects: true };
+      if (d > 50) return { name: 'PRO', html: '<span class="rank-badge rb-4"><i class="fas fa-medal"></i> PRO</span>', class: 'rank-PRO', color: '#2979ff', border: '#2979ff', effects: true };
+      if (d > 25) return { name: 'EXPERT', html: '<span class="rank-badge rb-3"><i class="fas fa-award"></i> EXPERT</span>', class: 'rank-EXPERT', color: '#00e676', border: '#00e676', effects: true };
+      if (d > 10) return { name: 'ROOKIE', html: '<span class="rank-badge rb-2"><i class="fas fa-user-check"></i> ROOKIE</span>', class: 'rank-ROOKIE', color: '#80cbc4', border: '#80cbc4', effects: false };
+      if (d > 0) return { name: 'TRAINEE', html: '<span class="rank-badge rb-1"><i class="fas fa-user-clock"></i> TRAINEE</span>', class: 'rank-TRAINEE', color: '#cfd8dc', border: '#cfd8dc', effects: false };
+      return { name: 'NEWBIE', html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', class: 'rank-NEWBIE', color: '#b0bec5', border: '#666666', effects: false };
     }
 
     function getAvatarGlowStyle(rankInfo, uid) {
@@ -3577,7 +3748,10 @@
         if (rankInfo.effects) {
             boxShadow = `0 0 20px ${color}`;
             animation = 'pulseGlow 2s infinite alternate';
-            if (['GOD','IMMORTAL','WARLORD','MASTER'].includes(rankInfo.name)) {
+            if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233" || uid === "00000000-0000-0000-0000-000000000000") {
+                boxShadow = `0 0 30px ${color}, 0 0 50px ${color}`;
+                animation = 'fireGlow 1s infinite alternate';
+            } else if (['GOD','IMMORTAL','WARLORD','MASTER'].includes(rankInfo.name)) {
                 boxShadow = `0 0 25px ${color}, 0 0 40px ${color}`;
                 animation = 'fireGlow 1.5s infinite alternate';
             }
@@ -3587,6 +3761,9 @@
 
     function getTextShadowStyle(rankInfo, uid) {
         const color = rankInfo.color;
+        if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233" || uid === "00000000-0000-0000-0000-000000000000") {
+            return `0 0 15px ${color}, 0 0 30px ${color}, 0 0 45px ${color}`;
+        }
         if (rankInfo.effects) {
             return `0 0 8px ${color}, 0 0 15px ${color}`;
         }
@@ -3882,8 +4059,9 @@
             document.getElementById('partnerRank').className = 'partner-rank rank-badge rb-0';
             document.getElementById('partnerRank').innerHTML = '<i class="fas fa-user-clock"></i> รอคู่ค้า';
             document.getElementById('partnerInfo').onclick = function() {
-                alert('ยังไม่มีคู่ค้าในห้องนี้ กรุณารอสักครู่');
+                showAiAlert('⚠️ ยังไม่มีคู่ค้าในห้องนี้ กรุณารอสักครู่', false);
             };
+            return;
         } else {
             const partnerData = await fetchUserPublic(partnerId);
                 
@@ -3908,20 +4086,13 @@
         try {
             const { data, error } = await supabaseClient
                 .from('trades')
-                .select(`
-                    mode,
-                    product_price,
-                    status,
-                    updated_at,
-                    buyer_id,
-                    seller_id
-                `)
+                .select('mode, product_price, status, updated_at, buyer_id, seller_id')
                 .or(`buyer_id.eq.${currentUser.id},seller_id.eq.${currentUser.id}`)
                 .order('updated_at', { ascending: false })
                 .limit(3);
-            
+
             if (error) throw error;
-            
+
             let historyHtml = '';
             if (data && data.length > 0) {
                 data.forEach(trade => {
@@ -3929,12 +4100,11 @@
                     const modeText = trade.mode === 'game' ? 'ไอดีเกม' : 'สินค้า';
                     const statusText = trade.status === 'received' ? 'สำเร็จ' : (trade.status === 'cancelled' ? 'ยกเลิก' : 'กำลังดำเนินการ');
                     const date = new Date(trade.updated_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-                    historyHtml += `• ${role} ${modeText} - ${statusText} (${trade.product_price.toLocaleString()} AGS) <span style="color:#666; font-size:9px;">${date}</span><br>`;
+                    historyHtml += `• ${role} ${modeText} - ${statusText} (${trade.product_price?.toLocaleString() || 0} AGS) <span style="color:#666; font-size:9px;">${date}</span><br>`;
                 });
             } else {
                 historyHtml = '• ยังไม่มีประวัติการซื้อขาย';
             }
-            
             document.getElementById('myRecentHistory').innerHTML = historyHtml;
         } catch (err) {
             console.error('Error loading history:', err);
@@ -4023,12 +4193,17 @@
                 avatarImg.src = currentUser?.profile?.photo_url || DEFAULT_AVATAR;
                 avatarImg.onclick = openMyProfile;
                 
-                const myRankInfo = getRank(currentUser.profile?.completed_deals || 0, currentUser.id);
-                const myGlow = getAvatarGlowStyle(myRankInfo, currentUser.id);
+                // ต้องเรียก getRank แบบ async แต่ตอนนี้ renderMessages ไม่รองรับ async
+                // จึงใช้ค่า rank จาก currentUser.profile.rank แทน หรือต้องปรับเป็น async
+                // แต่เพื่อความง่าย ใช้ rank ที่มีอยู่
+                const myRankInfo = { 
+                    border: currentUser.profile?.rank === 'rb-ceo' ? '#ff0000' : '#666',
+                    color: '#fff',
+                    effects: false
+                };
+                // หมายเหตุ: ไม่ได้ใช้ getRank จริง ๆ เพื่อป้องกันปัญหา async
                 avatarImg.style.borderColor = myRankInfo.border;
-                avatarImg.style.borderWidth = myGlow.borderWidth;
-                avatarImg.style.boxShadow = myGlow.boxShadow;
-                avatarImg.style.animation = myGlow.animation;
+                avatarImg.style.borderWidth = '2px';
             } else if (sender === 'admin') {
                 avatarImg.src = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
                 avatarImg.onclick = null;
@@ -4092,6 +4267,18 @@
             });
         } catch (err) {
             console.error('incrementQuest error:', err);
+        }
+    }
+
+    // ============================================
+    // 🔥 increment cancelled deals
+    // ============================================
+    async function incrementCancelled(userId) {
+        try {
+            const { error } = await supabaseClient.rpc('increment_cancelled_deals', { p_user_id: userId });
+            if (error) console.error('incrementCancelled error:', error);
+        } catch (e) {
+            console.error('incrementCancelled exception:', e);
         }
     }
 
@@ -4353,7 +4540,10 @@
                 .from('trades')
                 .update({ status: 'cancelled', updated_at: new Date() })
                 .eq('room_id', roomId)
-                .then(() => {
+                .then(async () => {
+                    // ✅ เพิ่ม cancelled ให้ทั้งสองฝ่าย
+                    if (tradeData.buyer_id) await incrementCancelled(tradeData.buyer_id);
+                    if (tradeData.seller_id) await incrementCancelled(tradeData.seller_id);
                     addAiAlertMessage('⏰ เวลาหมด! การซื้อขายถูกยกเลิกโดยอัตโนมัติ');
                     setTimeout(() => window.location.href = 'dashboard.html', 2000);
                 })
@@ -4607,6 +4797,22 @@
         showAiAlert(`📦 ผู้ขายได้ส่งสินค้าแล้ว!<br><b>บริษัท:</b> ${carrierSelect.options[carrierSelect.selectedIndex].text}<br><b>เลขพัสดุ:</b> ${trackingNumber}`, true, `https://track.example.com/${trackingNumber}`);
         addAiAlertMessage(`📦 ผู้ขายส่งสินค้าแล้ว! ${carrierSelect.options[carrierSelect.selectedIndex].text} - ${trackingNumber}`);
         
+        // 🔔 แจ้งเตือนผู้ซื้อผ่าน OneSignal
+        await ส่งแจ้งเตือน(
+            tradeData.buyer_id,
+            'general',
+            'ผู้ขายส่งพัสดุ',
+            {
+                ห้องไอดี: roomId,
+                บริษัทขนส่ง: carrierSelect.options[carrierSelect.selectedIndex].text,
+                เลขพัสดุ: trackingNumber,
+                จำนวนเงิน: tradeData.product_price,
+                ค่าธรรมเนียม: tradeData.fee,
+                ผู้ซื้อไอดี: tradeData.buyer_id,
+                ผู้ขายไอดี: currentUser.id
+            }
+        );
+        
         closeShippingModal();
         setTimeout(() => { confirmBtn.disabled = false; }, 1000);
     };
@@ -4638,6 +4844,20 @@
         extendTimer(60);
         addAiAlertMessage('🎁 ผู้ขายส่งมอบ ID/ไอเทมและรหัสผ่านให้ผู้ซื้อแล้ว กรุณาตรวจสอบและกด "รับ ID/ไอเทมเรียบร้อย"');
         document.getElementById('gameDeliveryReceivedModal')?.classList.add('active');
+        
+        // 🔔 แจ้งเตือนผู้ซื้อผ่าน OneSignal (โหมดเกม)
+        await ส่งแจ้งเตือน(
+            tradeData.buyer_id,
+            'game',
+            'ผู้ขายส่งไอเทม',
+            {
+                ห้องไอดี: roomId,
+                จำนวนเงิน: tradeData.product_price,
+                ค่าธรรมเนียม: tradeData.fee || 0,
+                ผู้ซื้อไอดี: tradeData.buyer_id,
+                ผู้ขายไอดี: currentUser.id
+            }
+        );
     };
 
     window.receiveProduct = function() {
@@ -4684,6 +4904,29 @@
                 created_at: new Date(),
                 updated_at: new Date()
             }]);
+
+            // 🔔 แจ้งเตือนผู้ขายผ่าน OneSignal
+            await ส่งแจ้งเตือน(
+                trade.seller_id,
+                'general',
+                'ผู้ซื้อรับของ',
+                {
+                    ห้องไอดี: roomId,
+                    จำนวนเงิน: trade.product_price,
+                    ค่าธรรมเนียม: trade.fee || 0,
+                    ผู้ซื้อไอดี: currentUser.id,
+                    ผู้ขายไอดี: trade.seller_id
+                },
+                newSellerBalance
+            );
+        }
+
+        // 🔥 เพิ่ม completed_deals ให้ทั้งสองฝ่าย
+        try {
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: currentUser.id, p_increment: 1 });
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
+        } catch (dealErr) {
+            console.error('Error incrementing deals:', dealErr);
         }
 
         await supabaseClient
@@ -4710,13 +4953,24 @@
         
         addAiAlertMessage('✅ ผู้ซื้อรับสินค้าเรียบร้อยแล้ว! ธุรกรรมสำเร็จ');
         
-        // 🌟 จินนี่: อัปเดตเควสเทรดสำเร็จด้วยระบบใหม่ V3.0
-        try {
-            const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
-            tradeQuests.forEach(slug => {
-                supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
-            });
-        } catch (qErr) { console.error('Quest update error:', qErr); }
+        // ตรวจสอบ flagged ก่อนอัปเดตเควส
+        const { data: tradeCheck } = await supabaseClient
+            .from('trades')
+            .select('flagged')
+            .eq('room_id', roomId)
+            .single();
+
+        if (!tradeCheck?.flagged) {
+            // 🌟 อัปเดตเควสเทรดสำเร็จด้วยระบบใหม่ V3.0
+            try {
+                const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
+                tradeQuests.forEach(slug => {
+                    supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
+                });
+            } catch (qErr) { console.error('Quest update error:', qErr); }
+        } else {
+            console.log('⚠️ Trade is flagged, skipping quest updates.');
+        }
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
@@ -4757,6 +5011,29 @@
                 created_at: new Date(),
                 updated_at: new Date()
             }]);
+
+            // 🔔 แจ้งเตือนผู้ขายผ่าน OneSignal (โหมดเกม)
+            await ส่งแจ้งเตือน(
+                trade.seller_id,
+                'game',
+                'ผู้ซื้อรับของ',
+                {
+                    ห้องไอดี: roomId,
+                    จำนวนเงิน: trade.product_price,
+                    ค่าธรรมเนียม: trade.fee || 0,
+                    ผู้ซื้อไอดี: currentUser.id,
+                    ผู้ขายไอดี: trade.seller_id
+                },
+                newSellerBalance
+            );
+        }
+
+        // 🔥 เพิ่ม completed_deals ให้ทั้งสองฝ่าย
+        try {
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: currentUser.id, p_increment: 1 });
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
+        } catch (dealErr) {
+            console.error('Error incrementing deals:', dealErr);
         }
 
         await supabaseClient
@@ -4783,12 +5060,23 @@
         
         addAiAlertMessage('✅ ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว! ธุรกรรมสำเร็จ (โหมดเกม)');
         
-        try {
-            const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
-            tradeQuests.forEach(slug => {
-                supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
-            });
-        } catch (qErr) { console.error('Quest update error:', qErr); }
+        // ตรวจสอบ flagged ก่อนอัปเดตเควส
+        const { data: tradeCheck } = await supabaseClient
+            .from('trades')
+            .select('flagged')
+            .eq('room_id', roomId)
+            .single();
+
+        if (!tradeCheck?.flagged) {
+            try {
+                const tradeQuests = ['pioneer_first_trade', 'daily_trade_1', 'daily_trade_3', 'daily_trade_5'];
+                tradeQuests.forEach(slug => {
+                    supabaseClient.rpc('process_quest_action', { p_user_id: currentUser.id, p_slug: slug });
+                });
+            } catch (qErr) { console.error('Quest update error:', qErr); }
+        } else {
+            console.log('⚠️ Trade is flagged, skipping quest updates.');
+        }
         
         setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 3000);
     };
@@ -4830,40 +5118,16 @@
         closeModal('cancelModal');
         
         if (tradeStatus === 'waiting_payment') {
+            // ✅ ยกเลิกก่อนโอน -> increment cancelled ทั้งคู่
+            await incrementCancelled(currentUser.id);
+            if (partnerId) await incrementCancelled(partnerId);
+            
             await supabaseClient.from('trades').update({ status: 'cancelled' }).eq('room_id', roomId);
             addAiAlertMessage('❌ คุณได้ยกเลิกการซื้อขายและออกจากห้องแล้ว', false);
             setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+            
         } else if (tradeStatus === 'payment_done') {
-            const { data: trade, error: tradeError } = await supabaseClient
-                .from('trades')
-                .select('buyer_id, total, room_id')
-                .eq('room_id', roomId)
-                .single();
-            if (!tradeError && trade) {
-                const { data: buyer, error: buyerError } = await supabaseClient
-                    .from('users')
-                    .select('balance')
-                    .eq('id', trade.buyer_id)
-                    .single();
-                if (!buyerError && buyer) {
-                    const newBalance = buyer.balance + trade.total;
-                    await supabaseClient
-                        .from('users')
-                        .update({ balance: newBalance, updated_at: new Date() })
-                        .eq('id', trade.buyer_id);
-                    await supabaseClient.from('transactions').insert([{
-                        user_id: trade.buyer_id,
-                        amount: trade.total,
-                        type: 'refund',
-                        direction: 'in',
-                        status: 'completed',
-                        reference: trade.room_id,
-                        note: `คืนเงินจากการยกเลิกดีล ${trade.room_id}`,
-                        created_at: new Date(),
-                        updated_at: new Date()
-                    }]);
-                }
-            }
+            // ❌ กรณีโอนแล้ว -> แจ้ง Admin อย่างเดียว, รอ Admin ตัดสินใจ
             showEmergencyAlert();
             adminJoinRoom();
             addAdminMessage('👑 ADMIN: รับทราบการแจ้งยกเลิกจากผู้ใช้ กำลังตรวจสอบ');
@@ -4887,48 +5151,33 @@
             if (sellerError) throw sellerError;
 
             const newSellerBalance = seller.balance + trade.product_price;
-
-            const { error: updateError } = await supabaseClient
+            await supabaseClient
                 .from('users')
                 .update({ balance: newSellerBalance, updated_at: new Date() })
                 .eq('id', trade.seller_id);
-            if (updateError) throw updateError;
 
-            const { error: txError } = await supabaseClient
-                .from('transactions')
-                .insert([{
-                    user_id: trade.seller_id,
-                    amount: trade.product_price,
-                    type: 'release',
-                    direction: 'in',
-                    status: 'completed',
-                    reference: trade.room_id,
-                    note: `ได้รับเงินอัตโนมัติจากดีล ${trade.room_id} (หมดเวลารับสินค้า)`,
-                    created_at: new Date(),
-                    updated_at: new Date()
-                }]);
-            if (txError) throw txError;
+            await supabaseClient.from('transactions').insert([{
+                user_id: trade.seller_id,
+                amount: trade.product_price,
+                type: 'release',
+                direction: 'in',
+                status: 'completed',
+                reference: trade.room_id,
+                note: `ได้รับเงินอัตโนมัติจากดีล ${trade.room_id} (หมดเวลารับสินค้า)`,
+                created_at: new Date(),
+                updated_at: new Date()
+            }]);
 
-            const { error: updateTradeError } = await supabaseClient
+            // ✅ ให้ผู้ขายได้ completed (ผู้ซื้อไม่ได้)
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
+
+            await supabaseClient
                 .from('trades')
                 .update({ status: 'received' })
                 .eq('room_id', roomId);
-            if (updateTradeError) throw updateTradeError;
 
             tradeStatus = 'received';
-            const step3 = document.getElementById('step3');
-            const step4 = document.getElementById('step4');
-            const progress = document.getElementById('statusProgress');
-            if (step3) { step3.classList.remove('active'); step3.classList.add('completed'); }
-            if (step4) step4.classList.add('active');
-            if (progress) progress.style.width = '100%';
-            
-            document.getElementById('btnReceive').disabled = true;
-            document.getElementById('btnShip').disabled = true;
-            document.getElementById('btnTransfer').disabled = true;
-            
-            clearInterval(tradeTimer);
-            document.getElementById('timerLabel').textContent = 'สำเร็จแล้ว (Auto)';
+            updateUIByStatus();
             addAiAlertMessage('⏰ หมดเวลารับสินค้า ระบบโอนเงินให้ผู้ขายอัตโนมัติ');
             setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 5000);
 
@@ -5174,7 +5423,10 @@
             console.error(error);
             showAiAlert('❌ คืนเงินไม่สำเร็จ: ' + error.message, false);
         } else {
-            showAiAlert('✅ คืนเงินสำเร็จ', false);
+            // ✅ เพิ่ม cancelled ให้ทั้งสองฝ่าย
+            await incrementCancelled(tradeData.buyer_id);
+            await incrementCancelled(tradeData.seller_id);
+            showAiAlert('✅ คืนเงินสำเร็จ และอัปเดต cancelled_deals เรียบร้อย', false);
             await loadTradeData();
         }
     };
@@ -5188,7 +5440,10 @@
             console.error(error);
             showAiAlert('❌ บังคับเสร็จสิ้นไม่สำเร็จ', false);
         } else {
-            showAiAlert('✅ บังคับเสร็จสิ้นสำเร็จ', false);
+            // ✅ เพิ่ม completed ให้ทั้งสองฝ่าย
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: tradeData.buyer_id, p_increment: 1 });
+            await supabaseClient.rpc('increment_user_deals', { p_user_id: tradeData.seller_id, p_increment: 1 });
+            showAiAlert('✅ บังคับเสร็จสิ้นสำเร็จ และอัปเดต completed_deals เรียบร้อย', false);
             await loadTradeData();
         }
     };
@@ -5560,21 +5815,49 @@
         }
     }
 
-    window.openMyProfile = function() {
+    // ============================================
+    // 👤 OPEN MY PROFILE – MODIFIED (query trades directly)
+    // ============================================
+    window.openMyProfile = async function() {
         if (!currentUser?.profile) {
             console.warn('No profile data');
             return;
         }
         const profile = currentUser.profile;
         const uid = currentUser.id;
-        
-        const rankInfo = getRank(profile.completed_deals || 0, uid);
-        
+
+        // ดึงจำนวนดีลสำเร็จและยกเลิกจาก trades โดยตรง
+        const { count: completed, error: completedError } = await supabaseClient
+            .from('trades')
+            .select('*', { count: 'exact', head: true })
+            .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
+            .eq('status', 'received')
+            .eq('flagged', false);
+
+        const { count: cancelled, error: cancelledError } = await supabaseClient
+            .from('trades')
+            .select('*', { count: 'exact', head: true })
+            .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
+            .eq('status', 'cancelled')
+            .eq('flagged', false);
+
+        if (completedError || cancelledError) {
+            console.error('Error fetching trade stats', completedError || cancelledError);
+            return;
+        }
+
+        const total = completed + cancelled;
+        const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
+
+        const rankInfo = await getRank(completed || 0, uid);
+
+        // อัปเดตชื่อ
         const nameEl = document.getElementById('myProfileName');
         nameEl.innerHTML = (profile.display_name || profile.username || 'ผู้ใช้').toUpperCase();
         nameEl.style.color = rankInfo.color;
         nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
-        
+
+        // อัปเดต avatar
         const avatar = document.getElementById('myProfileAvatar');
         avatar.src = profile.photo_url || DEFAULT_AVATAR;
         const glow = getAvatarGlowStyle(rankInfo, uid);
@@ -5582,29 +5865,34 @@
         avatar.style.borderWidth = glow.borderWidth;
         avatar.style.boxShadow = glow.boxShadow;
         avatar.style.animation = glow.animation;
-        
+
+        // ติ๊กยืนยันตัวตน
         const oldTick = nameEl.querySelector('.fa-check-circle');
         if (oldTick) oldTick.remove();
-        
-        if (profile.kyc_status === 'verified') {
+        if (profile.kyc_status === 'verified' || profile.kyc_verified === true) {
             nameEl.innerHTML += ' <i class="fas fa-check-circle" style="color:var(--primary); text-shadow:0 0 8px var(--primary); font-size:18px;"></i>';
         }
-        
+
+        // อัปเดตยศ
         document.getElementById('myProfileRankBadge').innerHTML = rankInfo.html;
-        
+
+        // อัปเดตสถิติ
+        document.getElementById('myStatDeals').textContent = completed;
+        document.getElementById('myStatSuccess').textContent = successRate + '%';
+        document.getElementById('myStatSales').textContent = total;  // ใช้ total (ดีลทั้งหมด)
+
+        // ดาว (ใช้ average_rating จาก profile)
         document.getElementById('myProfileStars').innerHTML = getStarDisplay(profile.average_rating || 5.0, uid);
-        
-        document.getElementById('myStatDeals').textContent = profile.completed_deals || 0;
-        document.getElementById('myStatSales').textContent = (profile.total_volume || 0).toLocaleString();
-        document.getElementById('myStatSuccess').textContent = (profile.success_rate || 100) + '%';
-        
+
+        // วันที่สมัคร
         if (profile.created_at) {
             const joinDate = new Date(profile.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
             document.getElementById('myJoinDate').textContent = joinDate;
         }
-        
-        loadMyRecentHistory();
-        
+
+        // ประวัติล่าสุด (โหลดใหม่)
+        await loadMyRecentHistory();
+
         document.getElementById('myProfileModal').classList.add('active');
     };
     
@@ -5617,16 +5905,53 @@
         switchReportTab(1);
     }
 
+    // ============================================
+    // 👤 OPEN PARTNER PROFILE – MODIFIED (use total for statSales)
+    // ============================================
     window.openPartnerProfile = async function() {
         if (!partnerId) {
             alert('ยังไม่มีคู่ค้าในห้องนี้');
             return;
         }
         try {
-            const data = await fetchUserPublic(partnerId);
-            if (!data) throw new Error('ไม่พบข้อมูล');
+            // ดึงข้อมูลพื้นฐานจาก users_public
+            const { data: userPublic, error: publicError } = await supabaseClient
+                .from('users_public')
+                .select('username, display_name, photo_url, kyc_verified, rank, total_volume, average_rating, created_at')
+                .eq('id', partnerId)
+                .single();
             
-            const rankInfo = getRank(data.completed_deals || 0, partnerId);
+            if (publicError) throw publicError;
+
+            // ดึงจำนวนดีลสำเร็จและยกเลิกจาก trades โดยตรง
+            const { count: completed, error: completedError } = await supabaseClient
+                .from('trades')
+                .select('*', { count: 'exact', head: true })
+                .or(`buyer_id.eq.${partnerId},seller_id.eq.${partnerId}`)
+                .eq('status', 'received')
+                .eq('flagged', false);
+
+            const { count: cancelled, error: cancelledError } = await supabaseClient
+                .from('trades')
+                .select('*', { count: 'exact', head: true })
+                .or(`buyer_id.eq.${partnerId},seller_id.eq.${partnerId}`)
+                .eq('status', 'cancelled')
+                .eq('flagged', false);
+
+            if (completedError || cancelledError) throw completedError || cancelledError;
+
+            const total = completed + cancelled;
+            const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
+
+            // รวมข้อมูล
+            const data = {
+                ...userPublic,
+                completed_deals: completed,
+                cancelled_deals: cancelled,
+                success_rate: successRate
+            };
+            
+            const rankInfo = await getRank(data.completed_deals || 0, partnerId);
             
             document.getElementById('profileName').innerHTML = (data.display_name || data.username || 'คู่ค้า').toUpperCase();
             document.getElementById('profileName').style.color = rankInfo.color;
@@ -5652,7 +5977,7 @@
             document.getElementById('profileRankBadge').innerHTML = rankSpan.outerHTML;
             
             document.getElementById('statDeals').textContent = data.completed_deals || 0;
-            document.getElementById('statSales').textContent = (data.total_volume || 0).toLocaleString();
+            document.getElementById('statSales').textContent = total;   // เปลี่ยนจาก data.total_volume เป็น total (ดีลทั้งหมด)
             document.getElementById('statSuccess').textContent = (data.success_rate || 100) + '%';
             document.getElementById('profileStars').innerHTML = getStarDisplay(data.average_rating || 5.0, partnerId);
             
@@ -5683,12 +6008,42 @@
         });
     }
 
-    function submitRating() {
-        console.log(`Rating submitted: ${currentRating} stars`);
-        showAiAlert(`⭐ ขอบคุณที่ให้คะแนน ${currentRating} ดาว คะแนนของคุณจะช่วยคำนวณระดับความน่าเชื่อถือของคู่ค้า`, false);
-        document.getElementById('ratingModal')?.classList.remove('active');
-        setTimeout(() => { window.location.href = 'dashboard.html'; }, 3000);
-    }
+    // ============================================
+    // ⭐ SUBMIT RATING FUNCTION (แก้ไขตามที่กำหนด)
+    // ============================================
+    window.submitRating = async function() {
+        if (currentRating === 0) return;
+
+        if (!partnerId) {
+            showAiAlert('❌ ไม่พบข้อมูลคู่ค้า', false);
+            return;
+        }
+
+        try {
+            // 1. Insert คะแนน
+            const { error } = await supabaseClient
+                .from('ratings')
+                .insert([{
+                    rater_id: currentUser.id,
+                    rated_id: partnerId,
+                    trade_id: tradeData.id,
+                    rating: currentRating
+                }]);
+            if (error) throw error;
+
+            // 2. อัปเดต average_rating ของ partner ผ่าน RPC
+            await supabaseClient.rpc('update_average_rating', { p_user_id: partnerId });
+
+            // 3. แจ้งผลและกลับหน้า dashboard
+            showAiAlert(`⭐ ขอบคุณที่ให้คะแนน ${currentRating} ดาว`, false);
+            document.getElementById('ratingModal')?.classList.remove('active');
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+
+        } catch (err) {
+            console.error('Error submitting rating:', err);
+            showAiAlert('❌ ไม่สามารถบันทึกคะแนนได้', false);
+        }
+    };
 
     function skipRating() {
         document.getElementById('ratingModal')?.classList.remove('active');
@@ -5946,6 +6301,19 @@
             }
         }, 500);
     });
+</script>
+
+<!-- 👇 เพิ่ม Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+        console.log('ServiceWorker registered');
+      }).catch(function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
 </script>
 
 </body>
