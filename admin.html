@@ -16,11 +16,11 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- SweetAlert2 สำหรับใช้ใน executeAddNotification และอื่น ๆ -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        /* ===== GLOBAL CYBER CEO STYLE (REFINED) ===== */
+        /* ===== GLOBAL CYBER CEO STYLE ===== */
         :root {
             --primary: #00f2ff;
             --secondary: #bc13fe;
@@ -62,7 +62,6 @@
             padding-top: var(--safe-top);
         }
 
-        /* เส้นสแกนเคลื่อนที่ (บางลง) */
         .scan-line {
             position: fixed;
             top: 0;
@@ -87,7 +86,6 @@
             100% { top: 100vh; }
         }
 
-        /* อนุภาคพื้นหลัง */
         .particle-field {
             position: fixed;
             top: 0;
@@ -112,7 +110,6 @@
             100% { transform: translateY(-20vh) scale(0.5); opacity: 0; }
         }
 
-        /* คอนเทนเนอร์หลัก */
         .app-container {
             max-width: 1200px;
             width: 96%;
@@ -354,7 +351,6 @@
             color: #fff;
         }
 
-        /* ตัวเลขแจ้งเตือนบนแท็บ */
         .tab-badge {
             background: var(--danger);
             color: #fff;
@@ -435,7 +431,6 @@
             color: var(--admin-gold);
         }
 
-        /* รายการธุรกรรม */
         .item-list {
             display: flex;
             flex-direction: column;
@@ -613,7 +608,6 @@
         .btn-refund:hover { background: #ffc107; color: #000; }
         .btn-force:hover { background: var(--primary); color: #000; }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -627,7 +621,6 @@
             margin-bottom: 12px;
         }
 
-        /* ===== LOADING SPINNER ===== */
         .loading-spinner {
             display: flex;
             justify-content: center;
@@ -649,7 +642,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -758,7 +750,6 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
         #toastMessage {
             position: fixed;
             bottom: 24px;
@@ -900,7 +891,6 @@
             color: #fff;
         }
 
-        /* ===== AUDIO PLAYER (MINIMAL) ===== */
         .audio-zone {
             position: fixed;
             bottom: 20px;
@@ -946,7 +936,6 @@
             text-overflow: ellipsis;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .stat-dashboard { grid-template-columns: repeat(3,1fr); }
             .item-card { flex-direction: column; align-items: flex-start; }
@@ -967,14 +956,11 @@
             }
         }
 
-        /* custom scroll */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #07090f; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,193,7,0.3); }
 
-        /* ===== ADDED CSS (ข้อ 2) ===== */
-        /* ฟอนต์ Mitr อ่านง่ายสำหรับแอดมิน */
         @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500&display=swap');
 
         .admin-card {
@@ -1082,7 +1068,7 @@
             </div>
         </div>
 
-        <!-- NEW: REVENUE DASHBOARD -->
+        <!-- REVENUE DASHBOARD -->
         <div class="revenue-section">
             <div class="revenue-header">
                 <h3><i class="fas fa-chart-line"></i> รายได้จากค่าธรรมเนียม</h3>
@@ -1109,9 +1095,7 @@
             <button class="tab-btn" data-tab="tab5"><i class="fas fa-id-card"></i> KYC รออนุมัติ</button>
             <button class="tab-btn" data-tab="tab6"><i class="fas fa-terminal"></i> ตั้งค่าระบบ</button>
             <button class="tab-btn" data-tab="tab7"><i class="fas fa-bullhorn"></i> ประกาศ</button>
-            <!-- NEW TAB: ต้องสงสัย -->
             <button class="tab-btn" data-tab="tab8"><i class="fas fa-flag"></i> ต้องสงสัย</button>
-            <!-- NEW TAB: จัดการแอดมิน -->
             <button class="tab-btn" data-tab="tabManageAdmin"><i class="fas fa-user-cog"></i> จัดการแอดมิน</button>
         </div>
 
@@ -1130,67 +1114,60 @@
                     ต้องตรงกับที่ลูกค้ากดยืนยัน
                 </div>
 
-                <div id="depositList" class="item-list">
-                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
-                </div>
+                <div id="depositList" class="item-list"></div>
             </div>
         </div>
 
+        <!-- TAB 2: แจ้งถอน -->
         <div id="tab2" class="panel">
             <div class="data-panel">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-clock"></i> รายการถอนเงินรอตรวจสอบ</div>
                     <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="withdrawList" class="item-list">
-                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
-                </div>
+                <div id="withdrawList" class="item-list"></div>
             </div>
         </div>
 
+        <!-- TAB 3: ซัพพอร์ต -->
         <div id="tab3" class="panel">
             <div class="data-panel">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-headset"></i> ข้อความที่ต้องการความช่วยเหลือ</div>
                     <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="ticketList" class="item-list">
-                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
-                </div>
+                <div id="ticketList" class="item-list"></div>
             </div>
         </div>
 
+        <!-- TAB 4: ตรวจสอบห้อง -->
         <div id="tab4" class="panel">
             <div class="data-panel">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> ตรวจสอบห้องเทรดที่มีปัญหา</div>
                     <button class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <!-- ส่วนแสดงดีลพิพาท (NEW) -->
                 <div id="disputedTradesSection" style="margin-bottom:20px;">
                     <h4 style="color:var(--danger); margin-bottom:10px;"><i class="fas fa-exclamation-triangle"></i> ดีลที่มีข้อพิพาท (Disputed)</h4>
                     <div id="disputedTradesList" class="item-list"></div>
                 </div>
-                <!-- ส่วนแสดงตั๋วห้องเทรดเดิม -->
                 <h4 style="color:var(--primary); margin:20px 0 10px;"><i class="fas fa-ticket-alt"></i> ตั๋วแจ้งปัญหาห้องเทรด</h4>
-                <div id="tradeRoomList" class="item-list">
-                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
-                </div>
+                <div id="tradeRoomList" class="item-list"></div>
             </div>
         </div>
 
-        <!-- TAB 5: KYC รออนุมัติ -->
+        <!-- TAB 5: KYC -->
         <div id="tab5" class="panel">
             <div class="data-panel">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-clock"></i> รายการยืนยันตัวตน (KYC) รอตรวจสอบ</div>
                     <button class="refresh-btn" onclick="refreshKyc()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="kycList" class="item-list">
-                </div>
+                <div id="kycList" class="item-list"></div>
             </div>
         </div>
 
+        <!-- TAB 6: ตั้งค่าระบบ -->
         <div id="tab6" class="panel">
             <div class="data-panel">
                 <div class="section-title" style="margin-bottom: 20px;"><i class="fas fa-server"></i> System Status</div>
@@ -1209,7 +1186,7 @@
             </div>
         </div>
 
-        <!-- TAB 7 ประกาศ -->
+        <!-- TAB 7: ประกาศ -->
         <div id="tab7" class="panel">
             <div class="data-panel">
                 <div class="section-header">
@@ -1217,7 +1194,6 @@
                     <button class="refresh-btn" onclick="loadNotifications()"><i class="fas fa-sync-alt"></i> โหลดใหม่</button>
                 </div>
 
-                <!-- ฟอร์มส่งประกาศ -->
                 <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                     <div style="display: grid; gap: 16px; grid-template-columns: 1fr 1fr;">
                         <div style="grid-column: span 2;">
@@ -1252,38 +1228,31 @@
                     </button>
                 </div>
 
-                <!-- รายการประกาศที่ส่งไปแล้ว -->
                 <div class="section-header" style="border-bottom: none; margin-bottom: 10px;">
                     <div class="section-title"><i class="fas fa-history"></i> ประวัติประกาศล่าสุด</div>
                 </div>
-                <div id="notificationsList" class="item-list">
-                    <!-- แสดงรายการประกาศ -->
-                </div>
+                <div id="notificationsList" class="item-list"></div>
             </div>
         </div>
 
-        <!-- TAB 8: ต้องสงสัย (flagged trades & suspicious IPs) -->
+        <!-- TAB 8: ต้องสงสัย -->
         <div id="tab8" class="panel">
             <div class="data-panel">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-flag" style="color:var(--danger);"></i> รายการดีลที่ถูก Flag</div>
                     <button class="refresh-btn" onclick="loadFlaggedTrades()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="flaggedTradesList" class="item-list">
-                    <!-- รายการดีลที่ flagged = true -->
-                </div>
+                <div id="flaggedTradesList" class="item-list"></div>
                 
                 <div class="section-header" style="margin-top:30px;">
                     <div class="section-title"><i class="fas fa-network-wired" style="color:var(--warning);"></i> IP ที่น่าสงสัย (มีการใช้งานหลายบัญชี)</div>
                     <button class="refresh-btn" onclick="loadSuspiciousIPs()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
-                <div id="suspiciousIPsList" class="item-list">
-                    <!-- รายการ IP ที่มีผู้ใช้มากกว่า 1 คน -->
-                </div>
+                <div id="suspiciousIPsList" class="item-list"></div>
             </div>
         </div>
 
-        <!-- TAB 9: จัดการแอดมิน (เฉพาะ CEO) -->
+        <!-- TAB 9: จัดการแอดมิน -->
         <div id="tabManageAdmin" class="panel">
             <div class="data-panel">
                 <div class="section-header">
@@ -1322,9 +1291,7 @@
                 <div class="section-header" style="margin-top: 30px;">
                     <div class="section-title"><i class="fas fa-list"></i> รายชื่อแอดมินปัจจุบัน</div>
                 </div>
-                <div id="adminList" class="item-list">
-                    <!-- จะแสดงรายการแอดมินทั้งหมด -->
-                </div>
+                <div id="adminList" class="item-list"></div>
             </div>
         </div>
     </div>
@@ -1355,10 +1322,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // --------------------------------------------------------------
-        // 🔥 AEGIS NEX CEO PANEL - PRODUCTION READY
-        // 🔥 SUPABASE CONFIG
-        // --------------------------------------------------------------
+        // 🔥 AEGIS CONFIG
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -1366,7 +1330,6 @@
             auth: { persistSession: true, autoRefreshToken: true }
         });
 
-        // 🔥 UID ผู้บริหารสูงสุด (CEO / GOD)
         const CEO_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
 
         // --------------------------------------------------------------
@@ -1390,7 +1353,7 @@
         let isManualRefresh = false;
 
         // --------------------------------------------------------------
-        // 🐞 FLOATING CONSOLE – เก็บและแสดง log ทั้งหมด
+        // 🐞 FLOATING CONSOLE
         // --------------------------------------------------------------
         const consoleContent = document.getElementById('consoleContent');
         const originalLog = console.log;
@@ -1407,7 +1370,6 @@
             consoleContent.scrollTop = consoleContent.scrollHeight;
         }
 
-        // Override console
         console.log = function(...args) {
             originalLog.apply(console, args);
             addToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), 'log');
@@ -1467,7 +1429,7 @@
         }
 
         // --------------------------------------------------------------
-        // ESCAPE HTML (ป้องกัน XSS)
+        // ESCAPE HTML
         // --------------------------------------------------------------
         function escapeHTML(str) {
             if (!str) return '';
@@ -1491,7 +1453,6 @@
                 }
                 const user = session.user;
                 
-                // ตรวจสอบสิทธิ์แอดมินจากตาราง admin_users
                 const { data: adminRecord, error: adminError } = await supa
                     .from('admin_users')
                     .select('user_id')
@@ -1516,7 +1477,6 @@
                 document.getElementById('adminUidShort').innerText = user.id.substring(0, 8).toUpperCase();
                 document.getElementById('footerUid').innerText = user.id;
 
-                // โหลดข้อมูลทั้งหมด
                 await Promise.all([
                     loadPendingDeposits(),
                     loadPendingWithdrawals(),
@@ -1524,12 +1484,11 @@
                     loadTradeRoomTickets(),
                     loadPendingKyc(),
                     loadDisputedTrades(),
-                    loadFlaggedTrades(), // โหลด flagged ด้วย เพื่ออัปเดตสถิติ
+                    loadFlaggedTrades(),
                     loadRevenueData('today'),
                     loadNotifications()
                 ]);
 
-                // โหลดเพิ่มเติมสำหรับแท็บที่ 8 (ถ้าจำเป็น)
                 if (document.querySelector('.tab-btn[data-tab="tab8"].active')) {
                     loadFlaggedTrades();
                     loadSuspiciousIPs();
@@ -1680,7 +1639,6 @@
         // ========== FLAGGED TRADES (ต้องสงสัย) ==========
         async function loadFlaggedTrades() {
             try {
-                // เคลียร์ข้อมูลเก่าก่อนโหลดใหม่
                 flaggedTrades = [];
                 const container = document.getElementById('flaggedTradesList');
                 if (container) container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
@@ -1698,7 +1656,6 @@
                 flaggedTrades = data || [];
                 renderFlaggedTrades();
 
-                // อัปเดตสถิติดีลต้องสงสัย
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 console.error('loadFlaggedTrades error:', e);
@@ -1711,7 +1668,6 @@
                 const container = document.getElementById('suspiciousIPsList');
                 if (container) container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
 
-                // ดึง ip_logs พร้อมข้อมูลผู้ใช้
                 const { data, error } = await supa
                     .from('ip_logs')
                     .select(`
@@ -1723,7 +1679,6 @@
                 
                 if (error) throw error;
 
-                // Group by IP
                 const ipMap = new Map();
                 data.forEach(log => {
                     if (!log.ip || !log.user_id) return;
@@ -1737,7 +1692,6 @@
                     }
                 });
 
-                // Filter เฉพาะ IP ที่มีมากกว่า 1 user
                 suspiciousIPs = Array.from(ipMap.values())
                     .filter(entry => entry.count > 1)
                     .map(entry => ({
@@ -2036,7 +1990,7 @@
         }
 
         // --------------------------------------------------------------
-        // ACTION FUNCTIONS (MODALS, APPROVE, REJECT, etc.)
+        // ACTION FUNCTIONS
         // --------------------------------------------------------------
         function viewDetail(id, type) {
             let item = null;
@@ -2254,7 +2208,7 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS (ต้องสงสัย) – รีเฟรชทันที
+        // FLAGGED TRADES ACTIONS – รีเฟรชทันที
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
@@ -2264,9 +2218,7 @@
                     .eq('id', tradeId);
                 if (error) throw error;
                 showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
-                // โหลดข้อมูลใหม่ทันที
-                await loadFlaggedTrades();
-                // อัปเดตสถิติ flagged
+                await loadFlaggedTrades(); // รีเฟรชทันที
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
@@ -2275,12 +2227,10 @@
 
         async function penalizePair(buyerId, sellerId) {
             try {
-                // increment_penalty ต้องมีฟังก์ชันใน DB
                 const { error: err1 } = await supa.rpc('increment_penalty', { p_user_id: buyerId });
                 const { error: err2 } = await supa.rpc('increment_penalty', { p_user_id: sellerId });
                 if (err1 || err2) throw err1 || err2;
 
-                // ส่งแจ้งเตือน
                 const notification = {
                     title: '📢 การลงโทษจากทีมงาน',
                     message: 'คุณได้รับคะแนนความผิด (penalty) เนื่องจากพฤติกรรมต้องสงสัยในการเทรด กรุณาตรวจสอบ',
@@ -2294,9 +2244,7 @@
                 await supa.from('notifications').insert([notification]);
 
                 showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
-                // โหลดข้อมูลใหม่ทันที
-                await loadFlaggedTrades();
-                // อัปเดตสถิติ flagged
+                await loadFlaggedTrades(); // รีเฟรชทันที
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
@@ -2304,7 +2252,7 @@
         }
 
         // --------------------------------------------------------------
-        // 🔥 แก้ไข banIP ให้ตรวจสอบว่ามี CEO อยู่หรือไม่
+        // banIP พร้อมป้องกัน CEO
         // --------------------------------------------------------------
         async function banIP(ip) {
             const entry = suspiciousIPs.find(e => e.ip === ip);
@@ -2313,7 +2261,6 @@
                 return;
             }
 
-            // ตรวจสอบว่ามี CEO อยู่ในกลุ่มนี้หรือไม่
             const hasCEO = entry.users.some(u => u.id === CEO_UID);
             let confirmMessage = `ต้องการแบน IP: ${ip} ใช่หรือไม่?`;
 
@@ -2353,7 +2300,6 @@
                 trade = data;
             }
 
-            // ดึง IP ล่าสุดของ buyer และ seller
             const { data: buyerIps } = await supa
                 .from('ip_logs')
                 .select('ip, created_at')
@@ -2387,7 +2333,7 @@
         }
 
         // --------------------------------------------------------------
-        // ADMIN REFUND & FORCE COMPLETE (RPC)
+        // ADMIN REFUND & FORCE COMPLETE
         // --------------------------------------------------------------
         async function adminRefund(tradeId, target) {
             if (!confirm(`ยืนยันการคืนเงินให้ ${target === 'buyer' ? 'ผู้ซื้อ' : 'ผู้ขาย'}?`)) return;
@@ -2499,7 +2445,7 @@
         }
 
         // --------------------------------------------------------------
-        // REVENUE DATA (แก้ไขให้ดึงข้อมูลถูกต้อง)
+        // REVENUE DATA
         // --------------------------------------------------------------
         async function loadRevenueData(range) {
             try {
@@ -2560,7 +2506,7 @@
         });
 
         // --------------------------------------------------------------
-        // TAB HANDLER (with lazy loading)
+        // TAB HANDLER
         // --------------------------------------------------------------
         function initTabs() {
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -2571,17 +2517,12 @@
                     const tabId = this.dataset.tab;
                     document.getElementById(tabId).classList.add('active');
 
-                    // โหลดข้อมูลเฉพาะเมื่อเปิดแท็บนั้น
-                    if (tabId === 'tab7') {
-                        loadNotifications();
-                    }
+                    if (tabId === 'tab7') loadNotifications();
                     if (tabId === 'tab8') {
                         loadFlaggedTrades();
                         loadSuspiciousIPs();
                     }
-                    if (tabId === 'tabManageAdmin') {
-                        loadAdminList();
-                    }
+                    if (tabId === 'tabManageAdmin') loadAdminList();
                 });
             });
         }
@@ -2795,7 +2736,7 @@
         });
 
         // --------------------------------------------------------------
-        // GLOBAL FUNCTIONS (ต้องเปิดเผย)
+        // GLOBAL FUNCTIONS
         // --------------------------------------------------------------
         window.refreshData = refreshData;
         window.viewDetail = viewDetail;
