@@ -1882,6 +1882,7 @@
                         <button class="btn-refund" onclick='adminRefund("${trade.id}", "buyer")'><i class="fas fa-rotate-left"></i> คืนเงินผู้ซื้อ</button>
                         <button class="btn-refund" onclick='adminRefund("${trade.id}", "seller")'><i class="fas fa-rotate-left"></i> คืนเงินผู้ขาย</button>
                         <button class="btn-force" onclick='adminForceComplete("${trade.id}")'><i class="fas fa-check-double"></i> บังคับสำเร็จ</button>
+                        <button class="btn-warp" onclick='warpToTradeRoom("${trade.id}")'><i class="fas fa-rocket"></i> เข้าห้อง</button>
                         <button class="btn-view" onclick='viewTradeDetail("${trade.id}")'><i class="fas fa-search"></i> ดูดีล</button>
                     </div>
                 </div>`;
@@ -1957,6 +1958,7 @@
                     <div class="item-actions">
                         <button class="btn-approve" onclick='approveTrade("${tradeId}")'><i class="fas fa-check"></i> ปล่อยผ่าน</button>
                         <button class="btn-reject" onclick='penalizePair("${tradeId}", "${trade.buyer_id}", "${trade.seller_id}")'><i class="fas fa-gavel"></i> ลงโทษทั้งคู่</button>
+                        <button class="btn-warp" onclick='warpToTradeRoom("${tradeId}")'><i class="fas fa-rocket"></i> เข้าห้อง</button>
                         <button class="btn-view" onclick='viewTradeDetail("${tradeId}")'><i class="fas fa-search"></i> ดูดีล</button>
                     </div>
                 </div>`;
@@ -2139,10 +2141,47 @@
             window.open(`general_trade_hybrid.html?mode=general&id=${roomId}&role=admin`, '_blank');
         }
 
-        function warpToSpecificRoom(text) {
+        // --------------------------------------------------------------
+        // 🚀 Warp to trade room (supports game / parcel / fallback)
+        // --------------------------------------------------------------
+        async function warpToTradeRoom(tradeId) {
+            try {
+                const { data, error } = await supa
+                    .from('trades')
+                    .select('category')
+                    .eq('id', tradeId)
+                    .single();
+
+                if (error || !data) {
+                    console.error('Trade not found:', error);
+                    showToast('❌ ไม่พบข้อมูลดีล', 'error');
+                    return;
+                }
+
+                const category = data.category;
+                let url;
+
+                if (category === 'game') {
+                    url = `trade_game.html?id=${tradeId}`;
+                } else if (category === 'parcel') {
+                    url = `trade_parcel.html?id=${tradeId}`;
+                } else {
+                    // fallback to old hybrid room
+                    url = `general_trade_hybrid.html?mode=general&id=${tradeId}&role=admin`;
+                }
+
+                window.open(url, '_blank');
+            } catch (e) {
+                console.error('warpToTradeRoom error:', e);
+                showToast('❌ เกิดข้อผิดพลาด', 'error');
+            }
+        }
+
+        async function warpToSpecificRoom(text) {
             const match = text.match(/(TR-(?:GEN|G)-[A-Z0-9]+)/i);
             if (match) {
-                window.open(`general_trade_hybrid.html?mode=general&id=${match[1]}&role=admin`, '_blank');
+                const tradeId = match[1];
+                await warpToTradeRoom(tradeId);
             } else {
                 showToast('❌ ไม่พบ room ID ในข้อความ', 'error');
             }
@@ -2862,6 +2901,7 @@
         window.addNewAdmin = addNewAdmin;
         window.loadAdminList = loadAdminList;
         window.removeAdmin = removeAdmin;
+        window.warpToTradeRoom = warpToTradeRoom;
 
     </script>
 
