@@ -1350,7 +1350,6 @@
                 initAudioController();
             } catch (e) {
                 console.error('Session init error:', e);
-                // ไม่ redirect ทันที เพราะอาจมี error ที่ไม่ใช่ auth
                 showToast('⚠️ เกิดข้อผิดพลาด: ' + e.message, 'error', 5000);
             }
         }
@@ -1485,8 +1484,14 @@
             }
         }
 
+        // ========== FLAGGED TRADES (ต้องสงสัย) ==========
         async function loadFlaggedTrades() {
             try {
+                // เคลียร์ข้อมูลเก่าก่อนโหลดใหม่
+                flaggedTrades = [];
+                const container = document.getElementById('flaggedTradesList');
+                if (container) container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
+
                 const { data, error } = await supa
                     .from('trades')
                     .select(`
@@ -1507,7 +1512,6 @@
 
         async function loadSuspiciousIPs() {
             try {
-                // ดึง ip_logs พร้อมข้อมูลผู้ใช้
                 const { data, error } = await supa
                     .from('ip_logs')
                     .select(`
@@ -1518,7 +1522,6 @@
                     .order('created_at', { ascending: false });
                 if (error) throw error;
 
-                // Group by IP
                 const ipMap = new Map();
                 data.forEach(log => {
                     if (!log.ip || !log.user_id) return;
@@ -1532,7 +1535,6 @@
                     }
                 });
 
-                // Filter เฉพาะ IP ที่มีมากกว่า 1 user
                 suspiciousIPs = Array.from(ipMap.values())
                     .filter(entry => entry.count > 1)
                     .map(entry => ({
@@ -1760,10 +1762,13 @@
 
         function renderFlaggedTrades() {
             const container = document.getElementById('flaggedTradesList');
+            if (!container) return;
+            
             if (!flaggedTrades.length) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีดีลที่ถูก flag</p></div>`;
                 return;
             }
+            
             let html = '';
             flaggedTrades.forEach(trade => {
                 const buyer = trade.buyer || {};
@@ -2046,7 +2051,7 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS
+        // FLAGGED TRADES ACTIONS (ต้องสงสัย)
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
@@ -2056,6 +2061,7 @@
                     .eq('id', tradeId);
                 if (error) throw error;
                 showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
+                // โหลดข้อมูลใหม่ทันที
                 await loadFlaggedTrades();
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
@@ -2083,6 +2089,7 @@
                 await supa.from('notifications').insert([notification]);
 
                 showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
+                // โหลดข้อมูลใหม่ทันที
                 await loadFlaggedTrades();
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
@@ -2262,9 +2269,8 @@
             }
         }
 
-        // แบบใหม่ (executeAddNotification) – ถ้าต้องการเรียกจากปุ่มอื่น
         async function executeAddNotification() {
-            await sendNotification(); // ใช้ฟังก์ชันเดิม
+            await sendNotification();
         }
 
         // --------------------------------------------------------------
