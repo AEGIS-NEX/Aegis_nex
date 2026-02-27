@@ -2303,8 +2303,26 @@
             }
         }
 
+        // --------------------------------------------------------------
+        // 🔥 แก้ไข banIP ให้ตรวจสอบว่ามี CEO อยู่หรือไม่
+        // --------------------------------------------------------------
         async function banIP(ip) {
-            if (!confirm(`ต้องการแบน IP: ${ip} ใช่หรือไม่?`)) return;
+            const entry = suspiciousIPs.find(e => e.ip === ip);
+            if (!entry) {
+                showToast('❌ ไม่พบ IP นี้', 'error');
+                return;
+            }
+
+            // ตรวจสอบว่ามี CEO อยู่ในกลุ่มนี้หรือไม่
+            const hasCEO = entry.users.some(u => u.id === CEO_UID);
+            let confirmMessage = `ต้องการแบน IP: ${ip} ใช่หรือไม่?`;
+
+            if (hasCEO) {
+                confirmMessage = `⚠️ IP นี้มีการใช้งานโดย CEO (คุณ) ด้วย!\n\nหากแบน IP นี้ คุณจะไม่สามารถเข้าสู่ระบบจาก IP นี้ได้อีก\n\nยืนยันที่จะแบน?`;
+            }
+
+            if (!confirm(confirmMessage)) return;
+
             try {
                 const { error } = await supa
                     .from('banned_ips')
@@ -2481,7 +2499,7 @@
         }
 
         // --------------------------------------------------------------
-        // REVENUE DATA
+        // REVENUE DATA (แก้ไขให้ดึงข้อมูลถูกต้อง)
         // --------------------------------------------------------------
         async function loadRevenueData(range) {
             try {
