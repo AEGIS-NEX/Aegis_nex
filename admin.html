@@ -2220,7 +2220,7 @@
         }
 
         // --------------------------------------------------------------
-        // 🔥 approveTrade – ปล่อยผ่านดีล (แก้ไขให้ใช้คอลัมน์ flagged)
+        // 🔥 approveTrade – ปล่อยผ่านดีล (แก้ให้ UI หายทันที)
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             console.log('🟢 approveTrade called with tradeId:', tradeId);
@@ -2230,11 +2230,15 @@
                     .update({ flagged: false, updated_at: new Date() })
                     .eq('id', tradeId);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Update error:', error);
+                    showToast('❌ อัปเดตไม่สำเร็จ: ' + error.message, 'error');
+                    return;
+                }
 
                 console.log('✅ Trade updated successfully');
 
-                // ลบออกจาก array ทันที (ให้ UI หายไป)
+                // 🔥 ลบออกจาก array flaggedTrades ทันที (UI จะหาย)
                 flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
                 renderFlaggedTrades();
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
@@ -2247,7 +2251,7 @@
         }
 
         // --------------------------------------------------------------
-        // 🔥 penalizePair – ลงโทษทั้งคู่ (แก้ไขให้ใช้คอลัมน์ flagged และ flag_reason)
+        // 🔥 penalizePair – ลงโทษทั้งคู่ (แก้ให้ UI หายทันที)
         // --------------------------------------------------------------
         async function penalizePair(tradeId, buyerId, sellerId) {
             console.log('🔴 penalizePair called', { tradeId, buyerId, sellerId });
@@ -2266,7 +2270,7 @@
             if (!reason) return;
 
             try {
-                // 1. ลงโทษผู้ใช้ (increment_penalty หรือ RPC อื่น)
+                // 1. ลงโทษผู้ใช้ (increment_penalty) – ข้ามถ้าไม่มี RPC
                 try {
                     await supa.rpc('increment_penalty', { p_user_id: buyerId });
                     await supa.rpc('increment_penalty', { p_user_id: sellerId });
@@ -2274,7 +2278,7 @@
                     console.warn('⚠️ increment_penalty failed, continuing', rpcErr);
                 }
 
-                // 2. ส่งแจ้งเตือน (ถ้ามีตาราง notifications)
+                // 2. ส่งแจ้งเตือน (ข้ามถ้าตาราง notifications ไม่มี)
                 try {
                     await supa.from('notifications').insert([
                         { 
@@ -2308,11 +2312,15 @@
                     })
                     .eq('id', tradeId);
 
-                if (tradeError) throw tradeError;
+                if (tradeError) {
+                    console.error('❌ Trade update error:', tradeError);
+                    showToast('❌ อัปเดตไม่สำเร็จ: ' + tradeError.message, 'error');
+                    return;
+                }
 
                 console.log('✅ Trade updated to cancelled');
 
-                // ลบออกจาก array ทันที
+                // 🔥 ลบออกจาก array flaggedTrades ทันที (UI จะหาย)
                 flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
                 renderFlaggedTrades();
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
