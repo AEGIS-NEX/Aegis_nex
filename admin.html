@@ -1917,6 +1917,7 @@
             container.innerHTML = html;
         }
 
+        // ========== แก้ไข renderFlaggedTrades ให้ส่ง tradeId ไปยัง penalizePair ==========
         function renderFlaggedTrades() {
             const container = document.getElementById('flaggedTradesList');
             if (!container) return;
@@ -1952,7 +1953,7 @@
                     </div>
                     <div class="item-actions">
                         <button class="btn-approve" onclick='approveTrade("${tradeId}")'><i class="fas fa-check"></i> ปล่อยผ่าน</button>
-                        <button class="btn-reject" onclick='penalizePair("${trade.buyer_id}", "${trade.seller_id}")'><i class="fas fa-gavel"></i> ลงโทษทั้งคู่</button>
+                        <button class="btn-reject" onclick='penalizePair("${trade.buyer_id}", "${trade.seller_id}", "${tradeId}")'><i class="fas fa-gavel"></i> ลงโทษทั้งคู่</button>
                         <button class="btn-view" onclick='viewTradeDetail("${tradeId}")'><i class="fas fa-search"></i> ดูดีล</button>
                     </div>
                 </div>`;
@@ -1960,6 +1961,7 @@
             container.innerHTML = html;
         }
 
+        // ========== แก้ไข renderSuspiciousIPs ให้กรอง CEO และปิดปุ่มแบน ==========
         function renderSuspiciousIPs() {
             const container = document.getElementById('suspiciousIPsList');
             if (!suspiciousIPs.length) {
@@ -1968,9 +1970,16 @@
             }
             let html = '';
             suspiciousIPs.forEach(entry => {
-                const userList = entry.users.map(u => 
+                const hasCEO = entry.users.some(u => u.id === CEO_UID);
+                const filteredUsers = entry.users.filter(u => u.id !== CEO_UID);
+                const userList = filteredUsers.map(u => 
                     `<span class="user-badge" style="font-size:11px; cursor:pointer;" onclick="copyToClipboard('${u.id}')" title="คัดลอก UID"><i class="fas fa-copy"></i> ${escapeHTML(u.username || u.email)}</span>`
                 ).join(' ');
+
+                const actionBtn = hasCEO 
+                    ? `<button class="btn-view" disabled><i class="fas fa-shield-alt"></i> IP ของ CEO (ป้องกันแล้ว)</button>`
+                    : `<button class="btn-reject" onclick='banIP("${escapeHTML(entry.ip)}")'><i class="fas fa-ban"></i> แบน IP</button>`;
+
                 html += `<div class="item-card" style="border-left-color: var(--warning);">
                     <div class="item-info">
                         <div class="item-header">
@@ -1982,7 +1991,7 @@
                         </div>
                     </div>
                     <div class="item-actions">
-                        <button class="btn-reject" onclick='banIP("${escapeHTML(entry.ip)}")'><i class="fas fa-ban"></i> แบน IP</button>
+                        ${actionBtn}
                     </div>
                 </div>`;
             });
@@ -2208,7 +2217,7 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS – รีเฟรชทันที
+        // FLAGGED TRADES ACTIONS – แก้ไขให้รีเฟรชทันทีและอัปเดต flaggedTrades array
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
@@ -2218,19 +2227,24 @@
                     .eq('id', tradeId);
                 if (error) throw error;
                 showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
-                await loadFlaggedTrades(); // รีเฟรชทันที
+                
+                // ลบออกจาก array ทันที
+                flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
+                renderFlaggedTrades();
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
             }
         }
 
-        async function penalizePair(buyerId, sellerId) {
+        async function penalizePair(buyerId, sellerId, tradeId) {
             try {
+                // 1. increment penalty
                 const { error: err1 } = await supa.rpc('increment_penalty', { p_user_id: buyerId });
                 const { error: err2 } = await supa.rpc('increment_penalty', { p_user_id: sellerId });
                 if (err1 || err2) throw err1 || err2;
 
+                // 2. ส่งแจ้งเตือน
                 const notification = {
                     title: '📢 การลงโทษจากทีมงาน',
                     message: 'คุณได้รับคะแนนความผิด (penalty) เนื่องจากพฤติกรรมต้องสงสัยในการเทรด กรุณาตรวจสอบ',
@@ -2243,8 +2257,18 @@
                 notification.target_user_id = sellerId;
                 await supa.from('notifications').insert([notification]);
 
+                // 3. อัปเดต trades: ปลด flagged และ set status = 'cancelled'
+                const { error: tradeError } = await supa
+                    .from('trades')
+                    .update({ flagged: false, status: 'cancelled', updated_at: new Date() })
+                    .eq('id', tradeId);
+                if (tradeError) throw tradeError;
+
                 showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
-                await loadFlaggedTrades(); // รีเฟรชทันที
+                
+                // ลบออกจาก array ทันที
+                flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
+                renderFlaggedTrades();
                 document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
@@ -2252,7 +2276,7 @@
         }
 
         // --------------------------------------------------------------
-        // banIP พร้อมป้องกัน CEO
+        // banIP
         // --------------------------------------------------------------
         async function banIP(ip) {
             const entry = suspiciousIPs.find(e => e.ip === ip);
@@ -2691,7 +2715,7 @@
                                 <span>เพิ่มเมื่อ: ${date}</span>
                             </div>
                         </div>
-                        ${currentUser?.id === CEO_UID ? `
+                        ${(currentUser?.id === CEO_UID && admin.user_id !== CEO_UID) ? `
                         <div class="item-actions">
                             <button class="btn-delete" onclick="removeAdmin('${admin.user_id}')"><i class="fas fa-trash"></i> ลบ</button>
                         </div>
