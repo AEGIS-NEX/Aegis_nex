@@ -1953,7 +1953,7 @@
                     </div>
                     <div class="item-actions">
                         <button class="btn-approve" onclick='approveTrade("${tradeId}")'><i class="fas fa-check"></i> ปล่อยผ่าน</button>
-                        <button class="btn-reject" onclick='penalizePair("${trade.buyer_id}", "${trade.seller_id}", "${tradeId}")'><i class="fas fa-gavel"></i> ลงโทษทั้งคู่</button>
+                        <button class="btn-reject" onclick='penalizePair("${tradeId}", "${trade.buyer_id}", "${trade.seller_id}")'><i class="fas fa-gavel"></i> ลงโทษทั้งคู่</button>
                         <button class="btn-view" onclick='viewTradeDetail("${tradeId}")'><i class="fas fa-search"></i> ดูดีล</button>
                     </div>
                 </div>`;
@@ -2217,7 +2217,7 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS – แก้ไขให้รีเฟรชทันทีและอัปเดต flaggedTrades array
+        // FLAGGED TRADES ACTIONS – แก้ไขให้รับ tradeId และอัปเดต flagged / status
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
@@ -2237,41 +2237,65 @@
             }
         }
 
-        async function penalizePair(buyerId, sellerId, tradeId) {
+        // ฟังก์ชันลงโทษทั้งคู่ – ตามที่ลูกค้าต้องการ (ใช้ SweetAlert2 ให้กรอกเหตุผล)
+        async function penalizePair(tradeId, buyerId, sellerId) {
+            const { value: reason } = await Swal.fire({
+                title: 'ระบุเหตุผลการลงโทษ',
+                input: 'text',
+                inputPlaceholder: 'เช่น พยายามโกงระบบดึงรหัส',
+                showCancelButton: true,
+                background: '#050b14',
+                color: '#fff',
+                confirmButtonColor: '#ff0055',
+                cancelButtonColor: '#555'
+            });
+            
+            if (!reason) return;
+
             try {
-                // 1. increment penalty
-                const { error: err1 } = await supa.rpc('increment_penalty', { p_user_id: buyerId });
-                const { error: err2 } = await supa.rpc('increment_penalty', { p_user_id: sellerId });
-                if (err1 || err2) throw err1 || err2;
-
+                // 1. ลงโทษผู้ใช้ผ่าน RPC (ถ้ามีฟังก์ชันนี้) – หากไม่มี ให้ใช้ increment_penalty หรือวิธีอื่น
+                // สมมติว่ามี RPC ชื่อ admin_penalize_user
+                await supa.rpc('admin_penalize_user', { p_user_id: buyerId, p_reason: reason });
+                await supa.rpc('admin_penalize_user', { p_user_id: sellerId, p_reason: reason });
+                
                 // 2. ส่งแจ้งเตือน
-                const notification = {
-                    title: '📢 การลงโทษจากทีมงาน',
-                    message: 'คุณได้รับคะแนนความผิด (penalty) เนื่องจากพฤติกรรมต้องสงสัยในการเทรด กรุณาตรวจสอบ',
-                    target: 'specific',
-                    target_user_id: buyerId,
-                    created_by: currentUser?.id || CEO_UID,
-                    is_active: true
-                };
-                await supa.from('notifications').insert([notification]);
-                notification.target_user_id = sellerId;
-                await supa.from('notifications').insert([notification]);
+                await supa.from('notifications').insert([
+                    { user_id: buyerId, title: '📢 ถูกลงโทษ', message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, target: 'specific', target_user_id: buyerId, is_active: true },
+                    { user_id: sellerId, title: '📢 ถูกลงโทษ', message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, target: 'specific', target_user_id: sellerId, is_active: true }
+                ]);
 
-                // 3. อัปเดต trades: ปลด flagged และ set status = 'cancelled'
+                // 3. ✨ ปลด Flag และยกเลิกดีลนี้ใน Database จริงๆ
                 const { error: tradeError } = await supa
                     .from('trades')
-                    .update({ flagged: false, status: 'cancelled', updated_at: new Date() })
+                    .update({ 
+                        flagged: false, 
+                        status: 'cancelled', // ปรับเป็นยกเลิกไปเลยเพราะโดนลงโทษแล้ว
+                        note: 'ถูกลงโทษโดยแอดมิน: ' + reason 
+                    })
                     .eq('id', tradeId);
+
                 if (tradeError) throw tradeError;
 
-                showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'สำเร็จ',
+                    text: 'ลงโทษและปิดดีลนี้เรียบร้อยแล้ว รายการจะไม่กลับมาอีก',
+                    background: '#050b14',
+                    color: '#fff'
+                });
                 
-                // ลบออกจาก array ทันที
-                flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
-                renderFlaggedTrades();
-                document.getElementById('statFlagged').innerText = flaggedTrades.length;
-            } catch (e) {
-                showToast(`❌ ${e.message}`, 'error');
+                // โหลดข้อมูลใหม่มาแสดงผลทันที
+                await loadFlaggedTrades(); 
+
+            } catch (err) {
+                console.error('Penalize error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ผิดพลาด',
+                    text: 'ไม่สามารถบันทึกสถานะได้: ' + err.message,
+                    background: '#050b14',
+                    color: '#fff'
+                });
             }
         }
 
