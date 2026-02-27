@@ -9,8 +9,8 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://wwrvvnwdmqwoimvaazhb.supabase.co">
-    <link rel="dns-prefetch" href="https://wwrvvnwdmqwoimvaazhb.supabase.co">
+    <link rel="preconnect" href="https://uskdcxuetdqdbhtezvpf.supabase.co">
+    <link rel="dns-prefetch" href="https://uskdcxuetdqdbhtezvpf.supabase.co">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Chakra+Petch:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
@@ -202,7 +202,7 @@
         /* ===== STAT CARDS ===== */
         .stat-dashboard {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -906,14 +906,14 @@
                 <div class="stat-icon"><i class="fas fa-wallet"></i></div>
                 <div class="stat-info">
                     <span class="stat-number" id="statDeposit">0</span>
-                    <span class="stat-label">เติมเงินรออนุมัติ</span>
+                    <span class="stat-label">เติมเงินรอ</span>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon" style="color:var(--danger); background:rgba(255,51,102,0.1);"><i class="fas fa-money-bill-transfer"></i></div>
                 <div class="stat-info">
                     <span class="stat-number" id="statWithdraw">0</span>
-                    <span class="stat-label">ถอนเงินรออนุมัติ</span>
+                    <span class="stat-label">ถอนเงินรอ</span>
                 </div>
             </div>
             <div class="stat-card">
@@ -928,6 +928,13 @@
                 <div class="stat-info">
                     <span class="stat-number" id="statKyc">0</span>
                     <span class="stat-label">KYC รออนุมัติ</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:var(--danger); background:rgba(255,51,102,0.1);"><i class="fas fa-flag"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number" id="statFlagged">0</span>
+                    <span class="stat-label">ดีลต้องสงสัย</span>
                 </div>
             </div>
             <div class="stat-card">
@@ -1054,7 +1061,7 @@
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
                     <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); padding:20px; border-radius:12px;">
                         <p style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px;"><i class="fas fa-check-circle" style="color:var(--success);"></i> Supabase Realtime</p>
-                        <p style="font-size:12px; color:#8b9bb4; margin-top:8px;">Project: wwrvvnwdmqwoimvaazhb</p>
+                        <p style="font-size:12px; color:#8b9bb4; margin-top:8px;">Project: uskdcxuetdqdbhtezvpf</p>
                         <p style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fas fa-bolt"></i> WebSocket Connected</p>
                     </div>
                     <div style="background:rgba(255,193,7,0.05); border:1px solid rgba(255,193,7,0.2); padding:20px; border-radius:12px; border-left:4px solid var(--admin-gold);">
@@ -1332,6 +1339,7 @@
                     loadTradeRoomTickets(),
                     loadPendingKyc(),
                     loadDisputedTrades(),
+                    loadFlaggedTrades(), // โหลด flagged ด้วย เพื่ออัปเดตสถิติ
                     loadRevenueData('today'),
                     loadNotifications()
                 ]);
@@ -1504,6 +1512,9 @@
                 if (error) throw error;
                 flaggedTrades = data || [];
                 renderFlaggedTrades();
+
+                // อัปเดตสถิติดีลต้องสงสัย
+                document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 console.error('loadFlaggedTrades error:', e);
                 document.getElementById('flaggedTradesList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>ไม่สามารถโหลดดีลต้องสงสัยได้</p></div>`;
@@ -2070,6 +2081,8 @@
                 showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
                 // โหลดข้อมูลใหม่ทันที
                 await loadFlaggedTrades();
+                // อัปเดตสถิติ flagged
+                document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
             }
@@ -2098,6 +2111,8 @@
                 showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
                 // โหลดข้อมูลใหม่ทันที
                 await loadFlaggedTrades();
+                // อัปเดตสถิติ flagged
+                document.getElementById('statFlagged').innerText = flaggedTrades.length;
             } catch (e) {
                 showToast(`❌ ${e.message}`, 'error');
             }
@@ -2149,8 +2164,8 @@
                 .order('created_at', { ascending: false })
                 .limit(1);
 
-            const buyerIp = buyerIps && buyerIps.length > 0 ? buyerIps[0].ip : 'ไม่พบประวัติ';
-            const sellerIp = sellerIps && sellerIps.length > 0 ? sellerIps[0].ip : 'ไม่พบประวัติ';
+            const buyerIp = (buyerIps && buyerIps.length > 0) ? buyerIps[0].ip : 'ไม่พบประวัติ';
+            const sellerIp = (sellerIps && sellerIps.length > 0) ? sellerIps[0].ip : 'ไม่พบประวัติ';
 
             let html = `<p><strong>Trade ID:</strong> ${trade.id}</p>`;
             html += `<p><strong>ผู้ซื้อ:</strong> ${escapeHTML(trade.buyer?.username)} (${trade.buyer_id})</p>`;
@@ -2331,6 +2346,7 @@
             document.getElementById('statWithdraw').innerText = pendingWithdraws.length;
             document.getElementById('statTicket').innerText = pendingTickets.length;
             document.getElementById('statKyc').innerText = pendingKyc.length;
+            document.getElementById('statFlagged').innerText = flaggedTrades.length;
         }
 
         // --------------------------------------------------------------
