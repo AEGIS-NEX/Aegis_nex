@@ -1322,7 +1322,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 🔥 AEGIS CONFIG
+        // --------------------------------------------------------------
+        // 🔥 AEGIS NEX CEO PANEL - PRODUCTION READY
+        // 🔥 SUPABASE CONFIG
+        // --------------------------------------------------------------
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVza2RjeHVldGRxZGJodGV6dnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MjQ0MTksImV4cCI6MjA4NjUwMDQxOX0.hfZGX2i4aFe3IZydTqyns1iYROlJHgh1CRJGV-1Ftfs';
         const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -1917,7 +1920,7 @@
             container.innerHTML = html;
         }
 
-        // ========== แก้ไข renderFlaggedTrades ให้ส่ง tradeId ไปยัง penalizePair ==========
+        // ========== renderFlaggedTrades (ต้องสงสัย) ==========
         function renderFlaggedTrades() {
             const container = document.getElementById('flaggedTradesList');
             if (!container) return;
@@ -1961,7 +1964,7 @@
             container.innerHTML = html;
         }
 
-        // ========== แก้ไข renderSuspiciousIPs ให้กรอง CEO และปิดปุ่มแบน ==========
+        // ========== renderSuspiciousIPs (กรอง CEO) ==========
         function renderSuspiciousIPs() {
             const container = document.getElementById('suspiciousIPsList');
             if (!suspiciousIPs.length) {
@@ -2217,131 +2220,123 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS – แก้ไขให้รับ tradeId และอัปเดต flagged / status
+        // 🔥 approveTrade – ปล่อยผ่านดีล (แก้ไขให้ใช้คอลัมน์ flagged)
         // --------------------------------------------------------------
-        // --------------------------------------------------------------
-// 🔥 approveTrade – ปล่อยผ่านดีล
-// --------------------------------------------------------------
-async function approveTrade(tradeId) {
-    console.log('🟢 approveTrade called with tradeId:', tradeId);
-    try {
-        const { error } = await supa
-            .from('trades')
-            .update({ flagged: false, updated_at: new Date() })
-            .eq('id', tradeId);
+        async function approveTrade(tradeId) {
+            console.log('🟢 approveTrade called with tradeId:', tradeId);
+            try {
+                const { error } = await supa
+                    .from('trades')
+                    .update({ flagged: false, updated_at: new Date() })
+                    .eq('id', tradeId);
 
-        if (error) {
-            console.error('❌ Update error:', error);
-            throw error;
-        }
+                if (error) throw error;
 
-        console.log('✅ Trade updated successfully');
+                console.log('✅ Trade updated successfully');
 
-        // ลบออกจาก array ทันที
-        flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
-        renderFlaggedTrades();
-        document.getElementById('statFlagged').innerText = flaggedTrades.length;
+                // ลบออกจาก array ทันที (ให้ UI หายไป)
+                flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
+                renderFlaggedTrades();
+                document.getElementById('statFlagged').innerText = flaggedTrades.length;
 
-        showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
-    } catch (e) {
-        console.error('❌ approveTrade error:', e);
-        showToast(`❌ ${e.message}`, 'error');
-    }
-}
-
-// --------------------------------------------------------------
-// 🔥 penalizePair – ลงโทษทั้งคู่ (พร้อมอัปเดต flagged และ status)
-// --------------------------------------------------------------
-async function penalizePair(tradeId, buyerId, sellerId) {
-    console.log('🔴 penalizePair called', { tradeId, buyerId, sellerId });
-
-    const { value: reason } = await Swal.fire({
-        title: 'ระบุเหตุผลการลงโทษ',
-        input: 'text',
-        inputPlaceholder: 'เช่น พยายามโกงระบบดึงรหัส',
-        showCancelButton: true,
-        background: '#050b14',
-        color: '#fff',
-        confirmButtonColor: '#ff0055',
-        cancelButtonColor: '#555'
-    });
-
-    if (!reason) return;
-
-    try {
-        // 1. ถ้ามี RPC admin_penalize_user ให้ใช้ ถ้าไม่มีให้ข้ามไป หรือใช้ increment_penalty แทน
-        try {
-            await supa.rpc('admin_penalize_user', { p_user_id: buyerId, p_reason: reason });
-            await supa.rpc('admin_penalize_user', { p_user_id: sellerId, p_reason: reason });
-        } catch (rpcErr) {
-            console.warn('⚠️ admin_penalize_user RPC failed, using fallback', rpcErr);
-            // fallback: เพิ่มคะแนนความผิด (ถ้ามีคอลัมน์ penalty)
-            await supa.rpc('increment_penalty', { p_user_id: buyerId });
-            await supa.rpc('increment_penalty', { p_user_id: sellerId });
-        }
-
-        // 2. ส่งแจ้งเตือน
-        await supa.from('notifications').insert([
-            { 
-                user_id: buyerId, 
-                title: '📢 ถูกลงโทษ', 
-                message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, 
-                target: 'specific', 
-                target_user_id: buyerId, 
-                is_active: true 
-            },
-            { 
-                user_id: sellerId, 
-                title: '📢 ถูกลงโทษ', 
-                message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, 
-                target: 'specific', 
-                target_user_id: sellerId, 
-                is_active: true 
+                showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
+            } catch (e) {
+                console.error('❌ approveTrade error:', e);
+                showToast(`❌ ${e.message}`, 'error');
             }
-        ]);
-
-        // 3. อัปเดต trades: ปลด flagged และ set status = 'cancelled'
-        const { error: tradeError } = await supa
-            .from('trades')
-            .update({ 
-                flagged: false, 
-                status: 'cancelled', 
-                note: 'ถูกลงโทษโดยแอดมิน: ' + reason,
-                updated_at: new Date()
-            })
-            .eq('id', tradeId);
-
-        if (tradeError) {
-            console.error('❌ Trade update error:', tradeError);
-            throw tradeError;
         }
 
-        console.log('✅ Trade updated to cancelled');
+        // --------------------------------------------------------------
+        // 🔥 penalizePair – ลงโทษทั้งคู่ (แก้ไขให้ใช้คอลัมน์ flagged และ flag_reason)
+        // --------------------------------------------------------------
+        async function penalizePair(tradeId, buyerId, sellerId) {
+            console.log('🔴 penalizePair called', { tradeId, buyerId, sellerId });
 
-        // ลบออกจาก array ทันที
-        flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
-        renderFlaggedTrades();
-        document.getElementById('statFlagged').innerText = flaggedTrades.length;
+            const { value: reason } = await Swal.fire({
+                title: 'ระบุเหตุผลการลงโทษ',
+                input: 'text',
+                inputPlaceholder: 'เช่น พยายามโกงระบบดึงรหัส',
+                showCancelButton: true,
+                background: '#050b14',
+                color: '#fff',
+                confirmButtonColor: '#ff0055',
+                cancelButtonColor: '#555'
+            });
 
-        Swal.fire({
-            icon: 'success',
-            title: 'สำเร็จ',
-            text: 'ลงโทษและปิดดีลนี้เรียบร้อยแล้ว รายการจะไม่กลับมาอีก',
-            background: '#050b14',
-            color: '#fff'
-        });
+            if (!reason) return;
 
-    } catch (err) {
-        console.error('❌ Penalize error:', err);
-        Swal.fire({
-            icon: 'error',
-            title: 'ผิดพลาด',
-            text: 'ไม่สามารถบันทึกสถานะได้: ' + err.message,
-            background: '#050b14',
-            color: '#fff'
-        });
-    }
-}
+            try {
+                // 1. ลงโทษผู้ใช้ (increment_penalty หรือ RPC อื่น)
+                try {
+                    await supa.rpc('increment_penalty', { p_user_id: buyerId });
+                    await supa.rpc('increment_penalty', { p_user_id: sellerId });
+                } catch (rpcErr) {
+                    console.warn('⚠️ increment_penalty failed, continuing', rpcErr);
+                }
+
+                // 2. ส่งแจ้งเตือน (ถ้ามีตาราง notifications)
+                try {
+                    await supa.from('notifications').insert([
+                        { 
+                            user_id: buyerId, 
+                            title: '📢 ถูกลงโทษ', 
+                            message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, 
+                            target: 'specific', 
+                            target_user_id: buyerId, 
+                            is_active: true 
+                        },
+                        { 
+                            user_id: sellerId, 
+                            title: '📢 ถูกลงโทษ', 
+                            message: `คุณถูกลงโทษเนื่องจาก: ${reason}`, 
+                            target: 'specific', 
+                            target_user_id: sellerId, 
+                            is_active: true 
+                        }
+                    ]);
+                } catch (notifyErr) {
+                    console.warn('⚠️ Notification insert failed', notifyErr);
+                }
+
+                // 3. อัปเดต trades: ปลด flagged และบันทึกเหตุผล
+                const { error: tradeError } = await supa
+                    .from('trades')
+                    .update({ 
+                        flagged: false, 
+                        flag_reason: reason,
+                        updated_at: new Date()
+                    })
+                    .eq('id', tradeId);
+
+                if (tradeError) throw tradeError;
+
+                console.log('✅ Trade updated to cancelled');
+
+                // ลบออกจาก array ทันที
+                flaggedTrades = flaggedTrades.filter(t => t.id !== tradeId);
+                renderFlaggedTrades();
+                document.getElementById('statFlagged').innerText = flaggedTrades.length;
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'สำเร็จ',
+                    text: 'ลงโทษและปิดดีลนี้เรียบร้อยแล้ว รายการจะไม่กลับมาอีก',
+                    background: '#050b14',
+                    color: '#fff'
+                });
+
+            } catch (err) {
+                console.error('❌ Penalize error:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ผิดพลาด',
+                    text: 'ไม่สามารถบันทึกสถานะได้: ' + err.message,
+                    background: '#050b14',
+                    color: '#fff'
+                });
+            }
+        }
+
         // --------------------------------------------------------------
         // banIP
         // --------------------------------------------------------------
