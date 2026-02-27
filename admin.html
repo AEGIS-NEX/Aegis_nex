@@ -1512,6 +1512,10 @@
 
         async function loadSuspiciousIPs() {
             try {
+                const container = document.getElementById('suspiciousIPsList');
+                if (container) container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
+
+                // ดึง ip_logs พร้อมข้อมูลผู้ใช้
                 const { data, error } = await supa
                     .from('ip_logs')
                     .select(`
@@ -1520,8 +1524,10 @@
                         users:user_id ( id, username, email )
                     `)
                     .order('created_at', { ascending: false });
+                
                 if (error) throw error;
 
+                // Group by IP
                 const ipMap = new Map();
                 data.forEach(log => {
                     if (!log.ip || !log.user_id) return;
@@ -1535,6 +1541,7 @@
                     }
                 });
 
+                // Filter เฉพาะ IP ที่มีมากกว่า 1 user
                 suspiciousIPs = Array.from(ipMap.values())
                     .filter(entry => entry.count > 1)
                     .map(entry => ({
@@ -1547,7 +1554,7 @@
                 renderSuspiciousIPs();
             } catch (e) {
                 console.error('loadSuspiciousIPs error:', e);
-                document.getElementById('suspiciousIPsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>ไม่สามารถโหลดข้อมูล IP ได้</p></div>`;
+                document.getElementById('suspiciousIPsList').innerHTML = `<div class="empty-state"><i class="fas fa-shield-check" style="color:var(--success);"></i><p>ไม่มีข้อมูล IP ที่น่าสงสัย</p></div>`;
             }
         }
 
@@ -1806,7 +1813,7 @@
         function renderSuspiciousIPs() {
             const container = document.getElementById('suspiciousIPsList');
             if (!suspiciousIPs.length) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-shield-check" style="color:var(--success);"></i><p>ไม่มี IP ที่น่าสงสัย</p></div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-shield-check" style="color:var(--success);"></i><p>ไม่มีข้อมูล IP ที่น่าสงสัย</p></div>`;
                 return;
             }
             let html = '';
