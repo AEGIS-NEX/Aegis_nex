@@ -16,7 +16,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- SweetAlert2 -->
+    <!-- SweetAlert2 สำหรับใช้ใน executeAddNotification และอื่น ๆ -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
@@ -258,7 +258,7 @@
             font-weight: 500;
         }
 
-        /* ===== REVENUE SECTION (NEW) ===== */
+        /* ===== REVENUE SECTION ===== */
         .revenue-section {
             margin: 20px 0;
             padding: 20px;
@@ -885,18 +885,6 @@
     </div>
     <audio id="bgAudio" loop preload="none"></audio>
 
-    <!-- DEBUG CONSOLE (แสดง error บนหน้าจอ) -->
-    <div id="debugConsole" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #111; color: #0f0; font-family: monospace; font-size: 12px; padding: 10px; max-height: 200px; overflow-y: auto; z-index: 999999; border-top: 2px solid #ffaa00;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-            <strong><i class="fas fa-bug"></i> Debug Console</strong>
-            <button onclick="document.getElementById('debugConsole').style.display='none'" style="background: none; border: none; color: #ffaa00; cursor: pointer;">✖</button>
-        </div>
-        <div id="debugLogs"></div>
-    </div>
-    <button onclick="toggleDebugConsole()" style="position: fixed; bottom: 80px; right: 10px; background: #ffaa00; border: none; border-radius: 50%; width: 50px; height: 50px; color: black; font-size: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 99999;">
-        <i class="fas fa-bug"></i>
-    </button>
-
     <div class="app-container">
         <div class="ceo-header">
             <div class="logo-group">
@@ -1225,7 +1213,7 @@
 
     <script>
         // --------------------------------------------------------------
-        // 🔥 AEGIS NEX CEO PANEL - PRODUCTION READY + DEBUG CONSOLE
+        // 🔥 AEGIS NEX CEO PANEL - PRODUCTION READY
         // 🔥 SUPABASE CONFIG
         // --------------------------------------------------------------
         const SUPABASE_URL = 'https://uskdcxuetdqdbhtezvpf.supabase.co';
@@ -1259,56 +1247,6 @@
         let isManualRefresh = false;
 
         // --------------------------------------------------------------
-        // DEBUG CONSOLE (แสดงบนหน้าจอ)
-        // --------------------------------------------------------------
-        let debugLogs = [];
-        function addDebugLog(message, type = 'info') {
-            const timestamp = new Date().toLocaleTimeString('th-TH');
-            debugLogs.push({ timestamp, message, type });
-            updateDebugConsole();
-            if (type === 'error') {
-                document.getElementById('debugConsole').style.display = 'block';
-            }
-        }
-        function updateDebugConsole() {
-            const container = document.getElementById('debugLogs');
-            if (!container) return;
-            let html = '';
-            debugLogs.slice().reverse().forEach(log => {
-                const color = log.type === 'error' ? '#ff5555' : (log.type === 'warn' ? '#ffaa00' : '#00ffaa');
-                html += `<div style="border-bottom: 1px solid #333; padding: 4px 0;">
-                    <span style="color: #888;">[${log.timestamp}]</span>
-                    <span style="color: ${color};"> ${log.message}</span>
-                </div>`;
-            });
-            container.innerHTML = html || '<div style="color: #666;">ยังไม่มี log</div>';
-        }
-        window.toggleDebugConsole = function() {
-            const panel = document.getElementById('debugConsole');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        };
-        // ดักจับ error
-        window.addEventListener('error', function (e) {
-            addDebugLog(`Uncaught Error: ${e.error?.message || e.message}`, 'error');
-        });
-        window.addEventListener('unhandledrejection', function (e) {
-            addDebugLog(`Unhandled Rejection: ${e.reason}`, 'error');
-        });
-        // Override console.error
-        const originalConsoleError = console.error;
-        console.error = function(...args) {
-            originalConsoleError.apply(console, args);
-            addDebugLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'error');
-        };
-        const originalConsoleLog = console.log;
-        console.log = function(...args) {
-            originalConsoleLog.apply(console, args);
-            // เก็บ log ปกติไว้ใน debug ด้วย
-            addDebugLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'log');
-        };
-        addDebugLog('✅ Debug Console พร้อมใช้งาน', 'info');
-
-        // --------------------------------------------------------------
         // UTILITY: Toast
         // --------------------------------------------------------------
         function showToast(message, type = 'success', duration = 4000) {
@@ -1337,99 +1275,88 @@
         }
 
         // --------------------------------------------------------------
-        // AUTH (ปรับให้รองรับกรณีไม่มี column role ใน admin_users)
+        // ESCAPE HTML (ป้องกัน XSS)
+        // --------------------------------------------------------------
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // --------------------------------------------------------------
+        // AUTH
         // --------------------------------------------------------------
         async function initAdminSession() {
             try {
-                addDebugLog('🚀 เริ่มต้น initAdminSession...', 'info');
                 const { data: { session }, error } = await supa.auth.getSession();
-                if (error) {
-                    addDebugLog(`❌ Auth error: ${error.message}`, 'error');
-                    throw error;
-                }
-                if (!session) {
-                    addDebugLog('⛔ No session, redirecting to index...', 'warn');
+                if (error || !session) {
                     window.location.href = 'index.html';
                     return;
                 }
                 const user = session.user;
-                addDebugLog(`✅ Logged in as: ${user.id}`, 'info');
-                document.getElementById('adminName').innerText = user.email?.split('@')[0] || 'ADMIN';
-                document.getElementById('adminUidShort').innerText = user.id.substring(0, 8).toUpperCase();
-                document.getElementById('footerUid').innerText = user.id;
-
-                // 🔍 ตรวจสอบว่าเป็น CEO ก่อน (ผ่าน hardcode) เพื่อให้เข้าได้ทันที
-                if (user.id === CEO_UID) {
-                    addDebugLog('👑 CEO bypass: อนุญาตเข้าใช้งานโดยไม่ต้องตรวจสอบตาราง admin_users', 'info');
-                    currentUser = user;
-                    await refreshData();
-                    await loadPendingKyc();
-                    await loadNotifications();
-                    await loadRevenueData('today');
-                    await loadDisputedTrades();
-                    setupRealtimeSubscriptions();
-                    initAudioController();
-                    return;
-                }
-
-                // ถ้าไม่ใช่ CEO ให้ตรวจสอบตาราง admin_users (อาจไม่มี column role)
-                addDebugLog('🔍 ตรวจสอบสิทธิ์จากตาราง admin_users...', 'info');
+                
+                // ตรวจสอบสิทธิ์แอดมินจากตาราง admin_users
                 const { data: adminRecord, error: adminError } = await supa
                     .from('admin_users')
-                    .select('user_id')  // ขอแค่ user_id ก็พอ (ไม่ต้องใช้ role)
+                    .select('user_id')
                     .eq('user_id', user.id)
                     .maybeSingle();
 
                 if (adminError) {
-                    addDebugLog(`❌ Admin check error: ${adminError.message}`, 'error');
-                    // ถ้า error เกิดจาก column missing (role) ให้ถือว่ามีสิทธิ์ (backward compatible)
-                    if (adminError.message.includes('column "role" does not exist')) {
-                        addDebugLog('⚠️ ตาราง admin_users ยังไม่มี column role, อนุญาตเข้าใช้งานชั่วคราว (legacy)', 'warn');
-                        currentUser = user;
-                        await refreshData();
-                        await loadPendingKyc();
-                        await loadNotifications();
-                        await loadRevenueData('today');
-                        await loadDisputedTrades();
-                        setupRealtimeSubscriptions();
-                        initAudioController();
-                        return;
-                    } else {
-                        // error อื่น ๆ
-                        showToast('⚠️ เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์', 'error', 5000);
-                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
-                        return;
-                    }
+                    console.error('Admin check error:', adminError);
+                    showToast('⚠️ เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์', 'error', 5000);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                    return;
                 }
 
                 if (!adminRecord) {
-                    addDebugLog('⛔ User not in admin_users table, redirecting...', 'warn');
                     showToast('⛔ คุณไม่มีสิทธิ์เข้าใช้งานพื้นที่แอดมิน', 'error', 5000);
                     setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
                     return;
                 }
 
-                // ผ่าน
-                addDebugLog('✅ Admin verified (จากตาราง)', 'info');
                 currentUser = user;
-                await refreshData();
-                await loadPendingKyc();
-                await loadNotifications();
-                await loadRevenueData('today');
-                await loadDisputedTrades();
+                document.getElementById('adminName').innerText = user.email?.split('@')[0] || 'ADMIN';
+                document.getElementById('adminUidShort').innerText = user.id.substring(0, 8).toUpperCase();
+                document.getElementById('footerUid').innerText = user.id;
+
+                // โหลดข้อมูลทั้งหมด
+                await Promise.all([
+                    loadPendingDeposits(),
+                    loadPendingWithdrawals(),
+                    loadPendingTickets(),
+                    loadTradeRoomTickets(),
+                    loadPendingKyc(),
+                    loadDisputedTrades(),
+                    loadRevenueData('today'),
+                    loadNotifications()
+                ]);
+
+                // โหลดเพิ่มเติมสำหรับแท็บที่ 8 (ถ้าจำเป็น)
+                if (document.querySelector('.tab-btn[data-tab="tab8"].active')) {
+                    loadFlaggedTrades();
+                    loadSuspiciousIPs();
+                }
+                if (document.querySelector('.tab-btn[data-tab="tabManageAdmin"].active')) {
+                    loadAdminList();
+                }
+
+                updateStats();
                 setupRealtimeSubscriptions();
                 initAudioController();
-
             } catch (e) {
-                addDebugLog(`🔥 Fatal error in initAdminSession: ${e.message}`, 'error');
-                console.error(e);
-                showToast('เกิดข้อผิดพลาดร้ายแรง กรุณาล็อกอินใหม่', 'error');
-                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                console.error('Session init error:', e);
+                // ไม่ redirect ทันที เพราะอาจมี error ที่ไม่ใช่ auth
+                showToast('⚠️ เกิดข้อผิดพลาด: ' + e.message, 'error', 5000);
             }
         }
 
         // --------------------------------------------------------------
-        // DATA FETCHING (คงเดิมตามไฟล์ต้นฉบับ)
+        // DATA FETCHING FUNCTIONS
         // --------------------------------------------------------------
         async function loadPendingDeposits() {
             try {
@@ -1518,6 +1445,26 @@
             }
         }
 
+        async function loadPendingKyc() {
+            try {
+                const { data, error } = await supa
+                    .from('kyc_submissions')
+                    .select(`
+                        *,
+                        users:user_id ( id, username, email, balance )
+                    `)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                pendingKyc = data || [];
+                renderKycList();
+                document.getElementById('statKyc').innerText = pendingKyc.length;
+            } catch (e) {
+                console.error('loadPendingKyc error:', e);
+                document.getElementById('kycList').innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>ไม่สามารถโหลดข้อมูล KYC ได้</p></div>`;
+            }
+        }
+
         async function loadDisputedTrades() {
             try {
                 const { data, error } = await supa
@@ -1537,28 +1484,6 @@
                 document.getElementById('disputedTradesList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>ไม่สามารถโหลดดีลพิพาทได้</p></div>`;
             }
         }
-
-        async function loadPendingKyc() {
-            // ฟังก์ชันนี้ต้องมีอยู่แล้วในไฟล์เดิม (แต่ถ้าไม่มีให้เพิ่ม placeholder)
-            addDebugLog('loadPendingKyc() ถูกเรียก (placeholder)', 'info');
-        }
-
-        async function loadNotifications() {
-            // placeholder
-            addDebugLog('loadNotifications() ถูกเรียก', 'info');
-        }
-
-        async function loadRevenueData(range) {
-            // placeholder
-            addDebugLog(`loadRevenueData(${range}) ถูกเรียก`, 'info');
-        }
-
-        function renderDeposits() { /* placeholder */ }
-        function renderWithdrawals() { /* placeholder */ }
-        function renderTickets() { /* placeholder */ }
-        function renderTradeRooms() { /* placeholder */ }
-        function renderDisputedTrades() { /* placeholder */ }
-        function refreshKyc() { /* placeholder */ }
 
         async function loadFlaggedTrades() {
             try {
@@ -1582,6 +1507,7 @@
 
         async function loadSuspiciousIPs() {
             try {
+                // ดึง ip_logs พร้อมข้อมูลผู้ใช้
                 const { data, error } = await supa
                     .from('ip_logs')
                     .select(`
@@ -1591,6 +1517,8 @@
                     `)
                     .order('created_at', { ascending: false });
                 if (error) throw error;
+
+                // Group by IP
                 const ipMap = new Map();
                 data.forEach(log => {
                     if (!log.ip || !log.user_id) return;
@@ -1603,6 +1531,8 @@
                         entry.count++;
                     }
                 });
+
+                // Filter เฉพาะ IP ที่มีมากกว่า 1 user
                 suspiciousIPs = Array.from(ipMap.values())
                     .filter(entry => entry.count > 1)
                     .map(entry => ({
@@ -1611,11 +1541,221 @@
                         count: entry.count
                     }))
                     .sort((a, b) => b.count - a.count);
+
                 renderSuspiciousIPs();
             } catch (e) {
                 console.error('loadSuspiciousIPs error:', e);
                 document.getElementById('suspiciousIPsList').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>ไม่สามารถโหลดข้อมูล IP ได้</p></div>`;
             }
+        }
+
+        // --------------------------------------------------------------
+        // RENDER FUNCTIONS
+        // --------------------------------------------------------------
+        function renderDeposits() {
+            const container = document.getElementById('depositList');
+            if (!pendingDeposits.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีรายการเติมเงินรออนุมัติ</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingDeposits.forEach(tx => {
+                const user = tx.users || {};
+                const amount = tx.amount || 0;
+                const date = new Date(tx.created_at).toLocaleString('th-TH');
+                const slipUrl = tx.slip_url || null;
+                html += `<div class="item-card" style="border-left-color:var(--warning);">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</span>
+                            <span class="status-badge"><i class="fas fa-clock"></i> รอตรวจสอบ</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hashtag"></i> Ref: ${tx.id.substring(0,8)}</span>
+                        </div>
+                        <div style="display: flex; gap: 20px; margin-top: 8px;">
+                            <span>จำนวน: <strong class="item-amount">${amount.toLocaleString('th-TH')} AGS</strong></span>
+                        </div>
+                        ${slipUrl ? `<img src="${slipUrl}" class="evidence-thumb" onclick="showEvidence('${slipUrl}')">` : ''}
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-approve" onclick='openApproveModal("${tx.id}", "deposit")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectModal("${tx.id}", "deposit")'><i class="fas fa-times"></i> ปฏิเสธ</button>
+                        <button class="btn-view" onclick='viewDetail("${tx.id}", "deposit")'><i class="fas fa-search"></i> ดูรายละเอียด</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderWithdrawals() {
+            const container = document.getElementById('withdrawList');
+            if (!pendingWithdraws.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีรายการถอนเงินรออนุมัติ</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingWithdraws.forEach(tx => {
+                const user = tx.users || {};
+                const amount = tx.amount || 0;
+                const date = new Date(tx.created_at).toLocaleString('th-TH');
+                html += `<div class="item-card" style="border-left-color:var(--danger);">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</span>
+                            <span class="status-badge"><i class="fas fa-clock"></i> รอตรวจสอบ</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hashtag"></i> Ref: ${tx.id.substring(0,8)}</span>
+                        </div>
+                        <div style="display: flex; gap: 20px; margin-top: 8px;">
+                            <span>จำนวน: <strong class="item-amount amount-negative">-${amount.toLocaleString('th-TH')} AGS</strong></span>
+                        </div>
+                        ${tx.bank_account ? `<div style="font-size:12px;">🏦 ${escapeHTML(tx.bank_account)}</div>` : ''}
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-approve" onclick='openApproveModal("${tx.id}", "withdraw")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectModal("${tx.id}", "withdraw")'><i class="fas fa-times"></i> ปฏิเสธ</button>
+                        <button class="btn-view" onclick='viewDetail("${tx.id}", "withdraw")'><i class="fas fa-search"></i> ดูรายละเอียด</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTickets() {
+            const container = document.getElementById('ticketList');
+            if (!pendingTickets.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มี Ticket รอตอบ</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingTickets.forEach(ticket => {
+                const user = ticket.users || {};
+                const date = new Date(ticket.created_at).toLocaleString('th-TH');
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</span>
+                            <span class="status-badge"><i class="fas fa-tag"></i> ${escapeHTML(ticket.topic || 'ทั่วไป')}</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hashtag"></i> #${ticket.id.substring(0,6)}</span>
+                        </div>
+                        <div style="margin-top:8px; font-size:13px; color:#ccc;">
+                            ${escapeHTML(ticket.detail || '').substring(0,100)}${ticket.detail?.length > 100 ? '…' : ''}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-approve" onclick='closeTicket("${ticket.id}")'><i class="fas fa-check"></i> ปิดเคส</button>
+                        <button class="btn-reject" onclick='rejectTicket("${ticket.id}")'><i class="fas fa-ban"></i> ปฏิเสธ</button>
+                        <button class="btn-view" onclick='viewDetail("${ticket.id}", "ticket")'><i class="fas fa-search"></i> ดู</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTradeRooms() {
+            const container = document.getElementById('tradeRoomList');
+            if (!tradeRoomTickets.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีห้องเทรดที่ถูกแจ้งปัญหา</p></div>`;
+                return;
+            }
+            let html = '';
+            tradeRoomTickets.forEach(ticket => {
+                const user = ticket.users || {};
+                const date = new Date(ticket.created_at).toLocaleString('th-TH');
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</span>
+                            <span class="status-badge"><i class="fas fa-door-open"></i> ห้องเทรด</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hashtag"></i> ${ticket.detail ? ticket.detail.substring(0,30) : ''}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-warp" onclick='warpToSpecificRoom("${ticket.detail || ''}")'><i class="fas fa-rocket"></i> Warp</button>
+                        <button class="btn-view" onclick='viewDetail("${ticket.id}", "ticket")'><i class="fas fa-search"></i> ดู</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderDisputedTrades() {
+            const container = document.getElementById('disputedTradesList');
+            if (!disputedTrades.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีดีลพิพาท</p></div>`;
+                return;
+            }
+            let html = '';
+            disputedTrades.forEach(trade => {
+                const buyer = trade.buyer || {};
+                const seller = trade.seller || {};
+                const amount = trade.amount || trade.product_price || 0;
+                const date = new Date(trade.created_at).toLocaleString('th-TH');
+                html += `<div class="item-card" style="border-left-color: var(--danger);">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ผู้ซื้อ: ${escapeHTML(buyer.username || 'ไม่ทราบ')}</span>
+                            <span class="user-badge"><i class="fas fa-user-tag"></i> ผู้ขาย: ${escapeHTML(seller.username || 'ไม่ทราบ')}</span>
+                            <span class="status-badge disputed"><i class="fas fa-gavel"></i> DISPUTED</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-hashtag"></i> Trade: ${trade.id.substring(0,8)}</span>
+                        </div>
+                        <div style="display: flex; gap: 20px; margin-top: 8px;">
+                            <span>จำนวน: <strong class="item-amount">${amount.toLocaleString('th-TH')} AGS</strong></span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-refund" onclick='adminRefund("${trade.id}", "buyer")'><i class="fas fa-rotate-left"></i> คืนเงินผู้ซื้อ</button>
+                        <button class="btn-refund" onclick='adminRefund("${trade.id}", "seller")'><i class="fas fa-rotate-left"></i> คืนเงินผู้ขาย</button>
+                        <button class="btn-force" onclick='adminForceComplete("${trade.id}")'><i class="fas fa-check-double"></i> บังคับสำเร็จ</button>
+                        <button class="btn-view" onclick='viewTradeDetail("${trade.id}")'><i class="fas fa-search"></i> ดูดีล</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderKycList() {
+            const container = document.getElementById('kycList');
+            if (!pendingKyc.length) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle" style="color:var(--success);"></i><p>ไม่มีคำขอ KYC รออนุมัติ</p></div>`;
+                return;
+            }
+            let html = '';
+            pendingKyc.forEach(kyc => {
+                const user = kyc.users || {};
+                const date = new Date(kyc.created_at).toLocaleString('th-TH');
+                html += `<div class="item-card">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <span class="user-badge"><i class="fas fa-user"></i> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</span>
+                            <span class="status-badge"><i class="fas fa-id-card"></i> KYC</span>
+                        </div>
+                        <div class="item-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            <span><i class="fas fa-phone"></i> ${kyc.phone_number || '-'}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-approve" onclick='openApproveKycModal("${kyc.id}")'><i class="fas fa-check"></i> อนุมัติ</button>
+                        <button class="btn-reject" onclick='openRejectKycModal("${kyc.id}")'><i class="fas fa-times"></i> ปฏิเสธ</button>
+                        <button class="btn-view" onclick='viewKycDetail("${kyc.id}")'><i class="fas fa-search"></i> ดูหลักฐาน</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
         }
 
         function renderFlaggedTrades() {
@@ -1626,18 +1766,17 @@
             }
             let html = '';
             flaggedTrades.forEach(trade => {
-                const buyer = trade.buyer || { username: 'unknown' };
-                const seller = trade.seller || { username: 'unknown' };
-                const amount = trade.amount || 0;
+                const buyer = trade.buyer || {};
+                const seller = trade.seller || {};
+                const amount = trade.amount || trade.product_price || 0;
                 const fee = trade.fee || 0;
-                const date = trade.created_at ? new Date(trade.created_at).toLocaleString('th-TH') : '';
+                const date = new Date(trade.created_at).toLocaleString('th-TH');
                 const tradeId = trade.id;
-
                 html += `<div class="item-card" style="border-left-color: var(--danger);">
                     <div class="item-info">
                         <div class="item-header">
-                            <span class="user-badge"><i class="fas fa-user"></i> ผู้ซื้อ: ${escapeHTML(buyer.username)}</span>
-                            <span class="user-badge"><i class="fas fa-user"></i> ผู้ขาย: ${escapeHTML(seller.username)}</span>
+                            <span class="user-badge"><i class="fas fa-user"></i> ผู้ซื้อ: ${escapeHTML(buyer.username || 'ไม่ทราบ')}</span>
+                            <span class="user-badge"><i class="fas fa-user-tag"></i> ผู้ขาย: ${escapeHTML(seller.username || 'ไม่ทราบ')}</span>
                             <span class="status-badge disputed"><i class="fas fa-flag"></i> FLAGGED</span>
                         </div>
                         <div class="item-meta">
@@ -1645,7 +1784,7 @@
                             <span><i class="fas fa-hashtag"></i> Trade ID: ${tradeId.substring(0,8)}</span>
                         </div>
                         <div style="display: flex; gap: 20px; margin-top: 8px;">
-                            <span>จำนวน: <strong>${amount.toLocaleString('th-TH')} AGS</strong></span>
+                            <span>จำนวน: <strong class="item-amount">${amount.toLocaleString('th-TH')} AGS</strong></span>
                             <span>ค่าธรรมเนียม: <strong>${fee.toLocaleString('th-TH')} AGS</strong></span>
                         </div>
                     </div>
@@ -1688,6 +1827,227 @@
             container.innerHTML = html;
         }
 
+        // --------------------------------------------------------------
+        // ACTION FUNCTIONS (MODALS, APPROVE, REJECT, etc.)
+        // --------------------------------------------------------------
+        function viewDetail(id, type) {
+            let item = null;
+            if (type === 'deposit') item = pendingDeposits.find(t => t.id === id);
+            else if (type === 'withdraw') item = pendingWithdraws.find(t => t.id === id);
+            else if (type === 'ticket') item = pendingTickets.find(t => t.id === id) || tradeRoomTickets.find(t => t.id === id);
+
+            if (!item) {
+                showToast('ไม่พบข้อมูล', 'error');
+                return;
+            }
+
+            let html = '';
+            if (type === 'deposit' || type === 'withdraw') {
+                const user = item.users || {};
+                html = `<p><strong>ผู้ใช้:</strong> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')} (${user.id})</p>`;
+                html += `<p><strong>จำนวน:</strong> ${item.amount} AGS</p>`;
+                html += `<p><strong>ธนาคาร/ช่องทาง:</strong> ${item.payment_method || '-'}</p>`;
+                html += `<p><strong>Ref ID:</strong> ${item.reference || '-'}</p>`;
+                html += `<p><strong>เวลาที่ส่ง:</strong> ${new Date(item.created_at).toLocaleString('th-TH')}</p>`;
+                if (item.slip_url) {
+                    html += `<p><strong>สลิป:</strong><br><img src="${item.slip_url}" style="max-width:100%; max-height:200px; border-radius:8px;" onclick="window.open('${item.slip_url}')"></p>`;
+                }
+            } else if (type === 'ticket') {
+                const user = item.users || {};
+                html = `<p><strong>ผู้ใช้:</strong> ${escapeHTML(user.username || user.email || 'ไม่ทราบ')}</p>`;
+                html += `<p><strong>หัวข้อ:</strong> ${item.topic || 'ทั่วไป'}</p>`;
+                html += `<p><strong>รายละเอียด:</strong><br>${escapeHTML(item.detail || '')}</p>`;
+                if (item.evidence) {
+                    html += `<p><strong>หลักฐาน:</strong><br><img src="${item.evidence}" style="max-width:100%; max-height:200px;" onclick="window.open('${item.evidence}')"></p>`;
+                }
+                html += `<p><strong>เวลา:</strong> ${new Date(item.created_at).toLocaleString('th-TH')}</p>`;
+            }
+
+            document.getElementById('modalBodyContent').innerHTML = html;
+            document.getElementById('modalTitle').innerHTML = `<i class="fas fa-info-circle"></i> รายละเอียด (${type})`;
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function showEvidence(url) {
+            window.open(url, '_blank');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function openApproveModal(id, type) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> ยืนยันการอนุมัติ';
+            document.getElementById('confirmMessage').innerHTML = `คุณต้องการอนุมัติรายการนี้ (${type}) ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`;
+            document.getElementById('confirmYesBtn').onclick = () => approveAction(id, type);
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        function openRejectModal(id, type) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);"></i> ยืนยันการปฏิเสธ';
+            document.getElementById('confirmMessage').innerHTML = `คุณต้องการปฏิเสธรายการนี้ (${type}) ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`;
+            document.getElementById('confirmYesBtn').onclick = () => rejectAction(id, type);
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        async function approveAction(id, type) {
+            closeConfirmModal();
+            try {
+                if (type === 'deposit') {
+                    const { error } = await supa.rpc('admin_approve_topup', { transaction_id: id });
+                    if (error) throw error;
+                    showToast('✅ อนุมัติการเติมเงินสำเร็จ', 'success');
+                } else if (type === 'withdraw') {
+                    const { error } = await supa.rpc('admin_approve_withdraw', { transaction_id: id });
+                    if (error) throw error;
+                    showToast('✅ อนุมัติการถอนเงินสำเร็จ', 'success');
+                }
+                await refreshData();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        async function rejectAction(id, type) {
+            closeConfirmModal();
+            try {
+                if (type === 'deposit') {
+                    const { error } = await supa.rpc('admin_reject_topup', { transaction_id: id });
+                    if (error) throw error;
+                    showToast('✅ ปฏิเสธการเติมเงินเรียบร้อย', 'success');
+                } else if (type === 'withdraw') {
+                    const { error } = await supa.rpc('admin_reject_withdraw', { transaction_id: id });
+                    if (error) throw error;
+                    showToast('✅ ปฏิเสธการถอนเงินเรียบร้อย', 'success');
+                }
+                await refreshData();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmActionModal').style.display = 'none';
+        }
+
+        async function closeTicket(ticketId) {
+            if (!confirm('ยืนยันการปิดเคสนี้?')) return;
+            try {
+                const { error } = await supa
+                    .from('support_tickets')
+                    .update({ status: 'closed', updated_at: new Date() })
+                    .eq('id', ticketId);
+                if (error) throw error;
+                showToast('✅ ปิดเคสเรียบร้อย', 'success');
+                await refreshData();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        async function rejectTicket(ticketId) {
+            if (!confirm('ยืนยันการปฏิเสธเคสนี้?')) return;
+            try {
+                const { error } = await supa
+                    .from('support_tickets')
+                    .update({ status: 'rejected', updated_at: new Date() })
+                    .eq('id', ticketId);
+                if (error) throw error;
+                showToast('✅ ปฏิเสธเคสเรียบร้อย', 'success');
+                await refreshData();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        function warpFromDetail(roomId) {
+            if (!roomId) return;
+            window.open(`general_trade_hybrid.html?mode=general&id=${roomId}&role=admin`, '_blank');
+        }
+
+        function warpToSpecificRoom(text) {
+            const match = text.match(/(TR-(?:GEN|G)-[A-Z0-9]+)/i);
+            if (match) {
+                window.open(`general_trade_hybrid.html?mode=general&id=${match[1]}&role=admin`, '_blank');
+            } else {
+                showToast('❌ ไม่พบ room ID ในข้อความ', 'error');
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 คัดลอกแล้ว', 'success');
+            }).catch(() => {
+                showToast('❌ ไม่สามารถคัดลอกได้', 'error');
+            });
+        }
+
+        // --------------------------------------------------------------
+        // KYC FUNCTIONS
+        // --------------------------------------------------------------
+        function refreshKyc() {
+            loadPendingKyc();
+        }
+
+        function viewKycDetail(kycId) {
+            const kyc = pendingKyc.find(k => k.id === kycId);
+            if (!kyc) return;
+            let html = `<p><strong>ผู้ใช้:</strong> ${escapeHTML(kyc.users?.username || kyc.users?.email || 'ไม่ทราบ')}</p>`;
+            html += `<p><strong>เบอร์โทร:</strong> ${kyc.phone_number || '-'}</p>`;
+            html += `<p><strong>IP Address:</strong> ${kyc.ip_address || '-'}</p>`;
+            html += `<p><strong>เวลาส่ง:</strong> ${new Date(kyc.created_at).toLocaleString('th-TH')}</p>`;
+            html += `<p><strong>รูปบัตรด้านหน้า:</strong><br><img src="${kyc.id_card_front_base64}" style="max-width:100%; max-height:150px; border-radius:8px;" onclick="window.open('${kyc.id_card_front_base64}')"></p>`;
+            html += `<p><strong>รูปบัตรด้านหลัง:</strong><br><img src="${kyc.id_card_back_base64}" style="max-width:100%; max-height:150px; border-radius:8px;" onclick="window.open('${kyc.id_card_back_base64}')"></p>`;
+            html += `<p><strong>รูปเซลฟี่:</strong><br><img src="${kyc.selfie_base64}" style="max-width:100%; max-height:150px; border-radius:8px;" onclick="window.open('${kyc.selfie_base64}')"></p>`;
+
+            document.getElementById('modalBodyContent').innerHTML = html;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-id-card"></i> ตรวจสอบ KYC';
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function openApproveKycModal(kycId) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-check-circle" style="color:var(--success);"></i> อนุมัติ KYC';
+            document.getElementById('confirmMessage').innerHTML = 'ยืนยันการอนุมัติ KYC นี้? ผู้ใช้จะได้รับสิทธิ์เพิ่ม';
+            document.getElementById('confirmYesBtn').onclick = () => approveKyc(kycId);
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        function openRejectKycModal(kycId) {
+            document.getElementById('confirmTitle').innerHTML = '<i class="fas fa-times-circle" style="color:var(--danger);"></i> ปฏิเสธ KYC';
+            document.getElementById('confirmMessage').innerHTML = 'ยืนยันการปฏิเสธ KYC นี้?';
+            document.getElementById('confirmYesBtn').onclick = () => rejectKyc(kycId);
+            document.getElementById('confirmActionModal').style.display = 'flex';
+        }
+
+        async function approveKyc(kycId) {
+            closeConfirmModal();
+            try {
+                const { error } = await supa.rpc('admin_approve_kyc', { submission_id: kycId });
+                if (error) throw error;
+                showToast('✅ อนุมัติ KYC สำเร็จ', 'success');
+                await loadPendingKyc();
+                updateStats();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        async function rejectKyc(kycId) {
+            closeConfirmModal();
+            try {
+                const { error } = await supa.rpc('admin_reject_kyc', { submission_id: kycId });
+                if (error) throw error;
+                showToast('✅ ปฏิเสธ KYC สำเร็จ', 'success');
+                await loadPendingKyc();
+                updateStats();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        // --------------------------------------------------------------
+        // FLAGGED TRADES ACTIONS
+        // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
                 const { error } = await supa
@@ -1698,16 +2058,18 @@
                 showToast('✅ ปล่อยผ่านดีลนี้แล้ว', 'success');
                 await loadFlaggedTrades();
             } catch (e) {
-                console.error('approveTrade error:', e);
                 showToast(`❌ ${e.message}`, 'error');
             }
         }
 
         async function penalizePair(buyerId, sellerId) {
             try {
+                // increment_penalty ต้องมีฟังก์ชันใน DB
                 const { error: err1 } = await supa.rpc('increment_penalty', { p_user_id: buyerId });
                 const { error: err2 } = await supa.rpc('increment_penalty', { p_user_id: sellerId });
                 if (err1 || err2) throw err1 || err2;
+
+                // ส่งแจ้งเตือน
                 const notification = {
                     title: '📢 การลงโทษจากทีมงาน',
                     message: 'คุณได้รับคะแนนความผิด (penalty) เนื่องจากพฤติกรรมต้องสงสัยในการเทรด กรุณาตรวจสอบ',
@@ -1719,10 +2081,10 @@
                 await supa.from('notifications').insert([notification]);
                 notification.target_user_id = sellerId;
                 await supa.from('notifications').insert([notification]);
+
                 showToast('✅ ลงโทษทั้งคู่เรียบร้อย', 'success');
                 await loadFlaggedTrades();
             } catch (e) {
-                console.error('penalizePair error:', e);
                 showToast(`❌ ${e.message}`, 'error');
             }
         }
@@ -1737,11 +2099,13 @@
                 showToast(`✅ แบน IP ${ip} สำเร็จ`, 'success');
                 await loadSuspiciousIPs();
             } catch (e) {
-                console.error('banIP error:', e);
                 showToast(`❌ ${e.message}`, 'error');
             }
         }
 
+        // --------------------------------------------------------------
+        // TRADE DETAIL (with IP)
+        // --------------------------------------------------------------
         async function viewTradeDetail(tradeId) {
             let trade = disputedTrades.find(t => t.id === tradeId) || flaggedTrades.find(t => t.id === tradeId);
             if (!trade) {
@@ -1756,6 +2120,8 @@
                 }
                 trade = data;
             }
+
+            // ดึง IP ล่าสุดของ buyer และ seller
             const { data: buyerIps } = await supa
                 .from('ip_logs')
                 .select('ip, created_at')
@@ -1768,34 +2134,158 @@
                 .eq('user_id', trade.seller_id)
                 .order('created_at', { ascending: false })
                 .limit(1);
+
             const buyerIp = buyerIps && buyerIps.length > 0 ? buyerIps[0].ip : 'ไม่พบประวัติ';
             const sellerIp = sellerIps && sellerIps.length > 0 ? sellerIps[0].ip : 'ไม่พบประวัติ';
+
             let html = `<p><strong>Trade ID:</strong> ${trade.id}</p>`;
             html += `<p><strong>ผู้ซื้อ:</strong> ${escapeHTML(trade.buyer?.username)} (${trade.buyer_id})</p>`;
             html += `<p><strong>IP ผู้ซื้อล่าสุด:</strong> ${buyerIp}</p>`;
             html += `<p><strong>ผู้ขาย:</strong> ${escapeHTML(trade.seller?.username)} (${trade.seller_id})</p>`;
             html += `<p><strong>IP ผู้ขายล่าสุด:</strong> ${sellerIp}</p>`;
-            html += `<p><strong>จำนวน:</strong> ${trade.amount} AGS</p>`;
-            html += `<p><strong>ค่าธรรมเนียม:</strong> ${trade.fee} AGS</p>`;
+            html += `<p><strong>จำนวน:</strong> ${trade.amount || trade.product_price || 0} AGS</p>`;
+            html += `<p><strong>ค่าธรรมเนียม:</strong> ${trade.fee || 0} AGS</p>`;
             html += `<p><strong>สถานะ:</strong> ${trade.status}</p>`;
             html += `<p><strong>สร้างเมื่อ:</strong> ${new Date(trade.created_at).toLocaleString('th-TH')}</p>`;
             if (trade.completed_at) html += `<p><strong>เสร็จสิ้นเมื่อ:</strong> ${new Date(trade.completed_at).toLocaleString('th-TH')}</p>`;
+
             document.getElementById('modalBodyContent').innerHTML = html;
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-file-lines" style="color:var(--primary);"></i> รายละเอียดดีล (พร้อม IP)';
             document.getElementById('detailModal').style.display = 'flex';
         }
 
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"]/g, function(c) {
-                if (c === '&') return '&amp;';
-                if (c === '<') return '&lt;';
-                if (c === '>') return '&gt;';
-                if (c === '"') return '&quot;';
-                return c;
-            });
+        // --------------------------------------------------------------
+        // ADMIN REFUND & FORCE COMPLETE (RPC)
+        // --------------------------------------------------------------
+        async function adminRefund(tradeId, target) {
+            if (!confirm(`ยืนยันการคืนเงินให้ ${target === 'buyer' ? 'ผู้ซื้อ' : 'ผู้ขาย'}?`)) return;
+            try {
+                const { error } = await supa.rpc('admin_refund', {
+                    p_trade_id: tradeId,
+                    p_target_user_id: target === 'buyer' ? disputedTrades.find(t => t.id === tradeId)?.buyer_id : disputedTrades.find(t => t.id === tradeId)?.seller_id
+                });
+                if (error) throw error;
+                showToast('✅ คืนเงินสำเร็จ', 'success');
+                await loadDisputedTrades();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
         }
 
+        async function adminForceComplete(tradeId) {
+            if (!confirm('ยืนยันการบังคับเสร็จสิ้นดีลนี้?')) return;
+            try {
+                const { error } = await supa.rpc('admin_force_complete', { p_trade_id: tradeId });
+                if (error) throw error;
+                showToast('✅ บังคับเสร็จสิ้นสำเร็จ', 'success');
+                await loadDisputedTrades();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        // --------------------------------------------------------------
+        // NOTIFICATIONS
+        // --------------------------------------------------------------
+        async function loadNotifications() {
+            try {
+                const { data, error } = await supa
+                    .from('notifications')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                if (error) throw error;
+                const container = document.getElementById('notificationsList');
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-bell-slash"></i><p>ไม่มีประกาศ</p></div>`;
+                    return;
+                }
+                let html = '';
+                data.forEach(n => {
+                    const date = new Date(n.created_at).toLocaleString('th-TH');
+                    html += `<div class="item-card" style="border-left-color:var(--primary);">
+                        <div class="item-info">
+                            <div class="item-header">
+                                <span class="user-badge"><i class="fas fa-bullhorn"></i> ${escapeHTML(n.title)}</span>
+                                <span class="status-badge">${n.target === 'all' ? '📢 ทั่วไป' : '👤 เฉพาะ'}</span>
+                            </div>
+                            <div style="margin-top:8px; font-size:13px; color:#ccc;">${escapeHTML(n.message)}</div>
+                            <div class="item-meta" style="margin-top:5px;">
+                                <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('loadNotifications error:', e);
+            }
+        }
+
+        async function sendNotification() {
+            const title = document.getElementById('notiTitle').value.trim();
+            const message = document.getElementById('notiMessage').value.trim();
+            const target = document.getElementById('notiTarget').value;
+            const targetUserId = document.getElementById('notiTargetUserId').value.trim();
+            const expires = document.getElementById('notiExpires').value;
+
+            if (!title || !message) {
+                showToast('กรุณากรอกหัวข้อและรายละเอียด', 'error');
+                return;
+            }
+            if (target === 'specific' && !targetUserId) {
+                showToast('กรุณากรอก UID ผู้รับ', 'error');
+                return;
+            }
+
+            const notiData = {
+                title,
+                message,
+                target: target === 'all' ? 'all' : 'specific',
+                target_user_id: target === 'specific' ? targetUserId : null,
+                created_by: currentUser?.id,
+                is_active: true,
+                expires_at: expires ? new Date(expires).toISOString() : null
+            };
+
+            try {
+                const { error } = await supa.from('notifications').insert([notiData]);
+                if (error) throw error;
+                showToast('✅ ส่งประกาศสำเร็จ', 'success');
+                document.getElementById('notiTitle').value = '';
+                document.getElementById('notiMessage').value = '';
+                document.getElementById('notiTargetUserId').value = '';
+                document.getElementById('notiExpires').value = '';
+                loadNotifications();
+            } catch (e) {
+                showToast(`❌ ${e.message}`, 'error');
+            }
+        }
+
+        // แบบใหม่ (executeAddNotification) – ถ้าต้องการเรียกจากปุ่มอื่น
+        async function executeAddNotification() {
+            await sendNotification(); // ใช้ฟังก์ชันเดิม
+        }
+
+        // --------------------------------------------------------------
+        // REVENUE DATA
+        // --------------------------------------------------------------
+        async function loadRevenueData(range) {
+            try {
+                const { data, error } = await supa.rpc('get_revenue_stats', { p_range: range });
+                if (error) throw error;
+                document.getElementById('revenueTotal').innerText = (data.total_revenue || 0).toLocaleString('th-TH');
+                document.getElementById('revenueCount').innerText = (data.trade_count || 0).toLocaleString('th-TH');
+            } catch (e) {
+                console.error('loadRevenueData error:', e);
+                document.getElementById('revenueTotal').innerText = '0';
+                document.getElementById('revenueCount').innerText = '0';
+            }
+        }
+
+        // --------------------------------------------------------------
+        // REFRESH ALL DATA
+        // --------------------------------------------------------------
         async function refreshData() {
             isManualRefresh = true;
             const loaderHtml = `<div class="loading-spinner"><div class="spinner"></div></div>`;
@@ -1804,13 +2294,21 @@
             document.getElementById('ticketList').innerHTML = loaderHtml;
             document.getElementById('tradeRoomList').innerHTML = loaderHtml;
             document.getElementById('disputedTradesList').innerHTML = loaderHtml;
+            document.getElementById('kycList').innerHTML = loaderHtml;
+            if (document.getElementById('flaggedTradesList')) document.getElementById('flaggedTradesList').innerHTML = loaderHtml;
+            if (document.getElementById('suspiciousIPsList')) document.getElementById('suspiciousIPsList').innerHTML = loaderHtml;
+
             await Promise.all([
                 loadPendingDeposits(),
                 loadPendingWithdrawals(),
                 loadPendingTickets(),
                 loadTradeRoomTickets(),
-                loadDisputedTrades()
+                loadPendingKyc(),
+                loadDisputedTrades(),
+                loadFlaggedTrades(),
+                loadSuspiciousIPs()
             ]);
+
             updateStats();
             setTimeout(() => { isManualRefresh = false; }, 500);
         }
@@ -1822,10 +2320,43 @@
             document.getElementById('statKyc').innerText = pendingKyc.length;
         }
 
-        function setupRealtimeSubscriptions() {
-            // placeholder
+        // --------------------------------------------------------------
+        // REVENUE RANGE CHANGE HANDLER
+        // --------------------------------------------------------------
+        document.getElementById('revenueRange')?.addEventListener('change', function(e) {
+            loadRevenueData(e.target.value);
+        });
+
+        // --------------------------------------------------------------
+        // TAB HANDLER (with lazy loading)
+        // --------------------------------------------------------------
+        function initTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    const tabId = this.dataset.tab;
+                    document.getElementById(tabId).classList.add('active');
+
+                    // โหลดข้อมูลเฉพาะเมื่อเปิดแท็บนั้น
+                    if (tabId === 'tab7') {
+                        loadNotifications();
+                    }
+                    if (tabId === 'tab8') {
+                        loadFlaggedTrades();
+                        loadSuspiciousIPs();
+                    }
+                    if (tabId === 'tabManageAdmin') {
+                        loadAdminList();
+                    }
+                });
+            });
         }
 
+        // --------------------------------------------------------------
+        // AUDIO CONTROLLER
+        // --------------------------------------------------------------
         function initAudioController() {
             const audio = document.getElementById('bgAudio');
             const playBtn = document.getElementById('playPauseBtn');
@@ -1864,42 +2395,94 @@
             });
         }
 
-        function initTabs() {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                    const tabId = this.dataset.tab;
-                    document.getElementById(tabId).classList.add('active');
-                    if (tabId === 'tab7') {
-                        loadNotifications();
-                    }
-                    if (tabId === 'tab8') {
+        // --------------------------------------------------------------
+        // REALTIME SUBSCRIPTIONS
+        // --------------------------------------------------------------
+        function setupRealtimeSubscriptions() {
+            if (depositChannel) supa.removeChannel(depositChannel);
+            depositChannel = supa.channel('deposits')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: 'type=eq.topup' }, () => {
+                    if (!isManualRefresh) loadPendingDeposits();
+                })
+                .subscribe();
+
+            if (withdrawChannel) supa.removeChannel(withdrawChannel);
+            withdrawChannel = supa.channel('withdraws')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: 'type=eq.withdraw' }, () => {
+                    if (!isManualRefresh) loadPendingWithdrawals();
+                })
+                .subscribe();
+
+            if (ticketChannel) supa.removeChannel(ticketChannel);
+            ticketChannel = supa.channel('tickets')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => {
+                    if (!isManualRefresh) loadPendingTickets();
+                })
+                .subscribe();
+
+            if (kycChannel) supa.removeChannel(kycChannel);
+            kycChannel = supa.channel('kyc')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'kyc_submissions' }, () => {
+                    if (!isManualRefresh) loadPendingKyc();
+                })
+                .subscribe();
+
+            if (tradesChannel) supa.removeChannel(tradesChannel);
+            tradesChannel = supa.channel('trades')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'trades' }, () => {
+                    if (!isManualRefresh) {
+                        loadDisputedTrades();
                         loadFlaggedTrades();
-                        loadSuspiciousIPs();
                     }
-                    if (tabId === 'tabManageAdmin') {
-                        loadAdminList();
-                    }
-                });
-            });
+                })
+                .subscribe();
         }
 
-        // ฟังก์ชันจัดการแอดมิน (placeholder)
+        // --------------------------------------------------------------
+        // ADMIN MANAGEMENT (RPC)
+        // --------------------------------------------------------------
         async function addNewAdmin() {
-            addDebugLog('addNewAdmin() ถูกเรียก (ยังไม่ได้ implement)', 'warn');
-            showToast('ฟังก์ชันนี้ยังไม่สมบูรณ์', 'warning');
+            const uid = document.getElementById('newAdminUid').value.trim();
+            const role = document.getElementById('newAdminRole').value;
+            if (!uid || !role) {
+                showToast('⚠️ กรุณากรอก UID และเลือกแผนก', 'error');
+                return;
+            }
+            if (!confirm(`ยืนยันการเพิ่ม UID นี้เป็นแอดมินแผนก ${role}?`)) return;
+
+            const btn = event.target;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังเพิ่ม...';
+            btn.disabled = true;
+
+            try {
+                const { data, error } = await supa.rpc('add_admin', {
+                    target_user_id: uid,
+                    target_role: role
+                });
+                if (error) throw error;
+                if (data.success) {
+                    showToast('✅ ' + data.message, 'success');
+                    document.getElementById('newAdminUid').value = '';
+                    loadAdminList();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ เกิดข้อผิดพลาด: ' + err.message, 'error');
+            } finally {
+                btn.innerHTML = original;
+                btn.disabled = false;
+            }
         }
 
         async function loadAdminList() {
             const container = document.getElementById('adminList');
             if (!container) return;
             container.innerHTML = `<div class="loading-spinner"><div class="spinner"></div></div>`;
-            // ถ้าตาราง admin_users ไม่มี role เรายัง query ได้แค่ user_id
-            const { data, error } = await supa
-                .from('admin_users')
-                .select('user_id, created_at');
+
+            const { data, error } = await supa.rpc('get_all_admins');
+
             if (error) {
                 console.error(error);
                 container.innerHTML = `<div class="empty-state">โหลดไม่สำเร็จ</div>`;
@@ -1909,22 +2492,26 @@
                 container.innerHTML = `<div class="empty-state">ยังไม่มีแอดมิน</div>`;
                 return;
             }
+
+            const roleMap = {
+                'ceo': '👑 CEO',
+                'finance': '💰 การเงิน',
+                'support': '💬 Support',
+                'kyc': '🆔 KYC',
+                'escrow': '⚖️ Escrow',
+                'market_mod': '🛒 ตลาด'
+            };
+
             let html = '';
-            for (let admin of data) {
-                // ดึง username จาก users_public (ถ้ามี)
-                const { data: userData } = await supa
-                    .from('users_public')
-                    .select('username')
-                    .eq('id', admin.user_id)
-                    .maybeSingle();
-                const username = userData?.username || 'ไม่ทราบ';
+            data.forEach(admin => {
+                const roleName = roleMap[admin.role] || admin.role;
                 const date = new Date(admin.created_at).toLocaleDateString('th-TH');
                 html += `
                     <div class="item-card">
                         <div class="item-info">
                             <div class="item-header">
-                                <span class="user-badge">${escapeHTML(username)}</span>
-                                <span class="status-badge">แอดมิน</span>
+                                <span class="user-badge">${escapeHTML(admin.username || 'ไม่ทราบ')}</span>
+                                <span class="status-badge">${roleName}</span>
                             </div>
                             <div class="item-meta">
                                 <span>UID: ${admin.user_id.substring(0,8)}...</span>
@@ -1938,33 +2525,29 @@
                         ` : ''}
                     </div>
                 `;
-            }
+            });
             container.innerHTML = html;
         }
 
         async function removeAdmin(userId) {
-            if (!confirm('ต้องการลบแอดมินคนนี้ออกจากระบบ?')) return;
+            if (!confirm('ต้องการลบแอดมินคนนี้ออกจากระบบ? ผู้ใช้จะไม่สามารถเข้า admin ได้อีก')) return;
             try {
-                const { error } = await supa
-                    .from('admin_users')
-                    .delete()
-                    .eq('user_id', userId);
+                const { data, error } = await supa.rpc('remove_admin', { target_user_id: userId });
                 if (error) throw error;
-                showToast('✅ ลบแอดมินสำเร็จ', 'success');
-                loadAdminList();
+                if (data.success) {
+                    showToast('✅ ลบแอดมินสำเร็จ', 'success');
+                    loadAdminList();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
             } catch (err) {
                 showToast('❌ ' + err.message, 'error');
             }
         }
 
-        function closeModal() {
-            document.getElementById('detailModal').style.display = 'none';
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmActionModal').style.display = 'none';
-        }
-
+        // --------------------------------------------------------------
+        // INIT
+        // --------------------------------------------------------------
         window.onload = function() {
             initParticles();
             initAdminSession();
@@ -1979,10 +2562,30 @@
             if (tradesChannel) supa.removeChannel(tradesChannel);
         });
 
-        // ฟังก์ชัน global ที่ต้องมี
+        // --------------------------------------------------------------
+        // GLOBAL FUNCTIONS (ต้องเปิดเผย)
+        // --------------------------------------------------------------
         window.refreshData = refreshData;
+        window.viewDetail = viewDetail;
+        window.showEvidence = showEvidence;
         window.closeModal = closeModal;
+        window.openApproveModal = openApproveModal;
+        window.openRejectModal = openRejectModal;
         window.closeConfirmModal = closeConfirmModal;
+        window.closeTicket = closeTicket;
+        window.rejectTicket = rejectTicket;
+        window.warpFromDetail = warpFromDetail;
+        window.warpToSpecificRoom = warpToSpecificRoom;
+        window.copyToClipboard = copyToClipboard;
+        window.refreshKyc = refreshKyc;
+        window.viewKycDetail = viewKycDetail;
+        window.openApproveKycModal = openApproveKycModal;
+        window.openRejectKycModal = openRejectKycModal;
+        window.loadNotifications = loadNotifications;
+        window.sendNotification = sendNotification;
+        window.executeAddNotification = executeAddNotification;
+        window.adminRefund = adminRefund;
+        window.adminForceComplete = adminForceComplete;
         window.viewTradeDetail = viewTradeDetail;
         window.loadFlaggedTrades = loadFlaggedTrades;
         window.loadSuspiciousIPs = loadSuspiciousIPs;
@@ -1990,15 +2593,12 @@
         window.penalizePair = penalizePair;
         window.banIP = banIP;
         window.addNewAdmin = addNewAdmin;
+        window.loadAdminList = loadAdminList;
         window.removeAdmin = removeAdmin;
-        window.copyToClipboard = (text) => { navigator.clipboard?.writeText(text); showToast('คัดลอกแล้ว'); };
-        window.sendNotification = () => { addDebugLog('sendNotification', 'warn'); };
-        window.executeAddNotification = () => { addDebugLog('executeAddNotification', 'warn'); };
-        window.refreshKyc = () => { addDebugLog('refreshKyc', 'warn'); };
-        window.loadNotifications = loadNotifications;
+
     </script>
 
-    <!-- 👇 Service Worker Registration -->
+    <!-- 👇 เพิ่ม Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
