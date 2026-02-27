@@ -1826,7 +1826,7 @@
                     <div class="balance-amount" id="userBalance">0.00</div>
                 </div>
                 <div class="balance-item">
-                    <div class="balance-label-small">AG (เหรียญเควส) <span style="color:#ffd700;">(100 AG = 1 AGS)</span></div>
+                    <div class="balance-label-small">AG (เหรียญเควส) <span style="color:#ffd700;"></span></div>
                     <div class="balance-amount" id="userBalanceAG">0</div>
                 </div>
             </div>
@@ -1864,7 +1864,7 @@
                 <span>ห้องกลางไอดีเกม</span>
                 <span class="sub-text">ซื้อขายไอดี/ไอเทมเกม</span>
             </div>
-            <div class="menu-card" onclick="confirmEntry('general')">
+            <div class="menu-card" onclick="confirmEntry('parcel')">
                 <i class="fas fa-box-open" style="color:var(--primary)"></i>
                 <span>ห้องกลางของทั่วไป</span>
                 <span class="sub-text">สินค้าดิจิทัล/ส่งของ</span>
@@ -2783,7 +2783,7 @@
                         
                         localStorage.setItem('last_room', JSON.stringify({
                             id: latest.room_id,
-                            mode: latest.mode || 'general',
+                            mode: latest.mode || 'parcel',
                             role: role
                         }));
                         return true;
@@ -3049,8 +3049,8 @@
         }
 
         function confirmEntry(type) { 
-            if (type === 'game') pendingLink = 'general_trade_hybrid.html?mode=game';
-            else pendingLink = 'general_trade_hybrid.html?mode=general';
+            if (type === 'game') pendingLink = 'trade_game.html?mode=game';
+            else pendingLink = 'trade_parcel.html?mode=parcel';
             localStorage.setItem('last_room_url', pendingLink);
             document.getElementById('roleModal').style.display = 'flex'; 
         }
@@ -3060,10 +3060,10 @@
             closeModal('roleModal');
             try {
                 const isGameMode = pendingLink.includes('mode=game');
-                const roomID = (isGameMode ? "TR-G-" : "TR-GEN-") + 
+                const roomID = (isGameMode ? "TR-G-" : "TR-P-") + 
                     Math.random().toString(36).substring(2, 10).toUpperCase();
                 const baseUrl = pendingLink.split('?')[0];
-                const mode = isGameMode ? 'game' : 'general';
+                const mode = isGameMode ? 'game' : 'parcel';
                 const finalUrl = `${baseUrl}?mode=${mode}&id=${roomID}&role=${role}`;
                 
                 const urlParams = new URLSearchParams(finalUrl.split('?')[1]);
@@ -3076,7 +3076,7 @@
                 localStorage.setItem('last_room_url', finalUrl);
                 await Swal.fire({
                     title: 'สร้างห้องสำเร็จ!',
-                    text: `กำลังนำคุณเข้าสู่ห้องเทรด ${isGameMode ? '(Game)' : '(General)'}: ${roomID}`,
+                    text: `กำลังนำคุณเข้าสู่ห้องเทรด ${isGameMode ? '(Game)' : '(Parcel)'}: ${roomID}`,
                     icon: 'success',
                     confirmButtonText: 'ตกลง',
                     background: '#050b14',
@@ -3136,7 +3136,8 @@
                 return;
             }
             
-            const url = `general_trade_hybrid.html?mode=${lastRoom.mode}&id=${lastRoom.id}&role=${lastRoom.role}`;
+            const filename = lastRoom.mode === 'game' ? 'trade_game.html' : 'trade_parcel.html';
+            const url = `${filename}?mode=${lastRoom.mode}&id=${lastRoom.id}&role=${lastRoom.role}`;
             location.href = url;
         }
 
