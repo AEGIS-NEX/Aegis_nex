@@ -650,7 +650,6 @@
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
             box-shadow: 0 0 30px var(--primary);
             animation: scanning 2s infinite linear;
-            /* ใช้ transform แทน top เพื่อไม่ให้หลุด container */
         }
 
         @keyframes scanning {
@@ -666,7 +665,7 @@
             text-shadow: 0 0 15px rgba(0, 242, 255, 0.7);
             letter-spacing: 2px;
             text-align: center;
-            padding: 0 20px; /* เผื่อขอบจอเล็ก */
+            padding: 0 20px;
         }
 
         /* ===== CYBER TOAST (ภาษาไทย) ===== */
@@ -955,6 +954,11 @@
                 auth: { persistSession: true, autoRefreshToken: true }
             });
 
+            // ---------- DEEP LINK REDIRECT ----------
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('next'); // e.g., "trade_game.html?id=123"
+            const fallbackUrl = 'dashboard.html';
+
             // ---------- GLOBAL ----------
             let isRemembered = false;
             let isProcessing = false;
@@ -1098,14 +1102,10 @@
                     if (error) throw error;
 
                     if (data?.user) {
-                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำไปยังห้องเดิม", "success");
+                        showCyberToast("✅ เข้าสู่ระบบสำเร็จ! กำลังนำไปยังหน้าถัดไป", "success");
                         if (isRemembered) {
                             localStorage.setItem('aegis_remember_username', loginVal);
                         }
-
-                        // --- ดึง returnUrl จาก URL ---
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const returnUrl = urlParams.get('returnUrl') || 'dashboard.html';
 
                         // --- IP Logging (background) ---
                         (async () => {
@@ -1124,7 +1124,13 @@
                         })();
 
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        window.location.href = decodeURIComponent(returnUrl); // ✅ กลับไปห้องเดิม
+
+                        // ---------- DEEP LINK REDIRECT ----------
+                        if (redirectUrl && redirectUrl.trim() !== '') {
+                            window.location.href = decodeURIComponent(redirectUrl);
+                        } else {
+                            window.location.href = fallbackUrl;
+                        }
                     } else {
                         throw new Error('ไม่สามารถเข้าสู่ระบบได้');
                     }
