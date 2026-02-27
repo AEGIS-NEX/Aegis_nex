@@ -785,6 +785,121 @@
             to { bottom: 24px; opacity: 1; transform: translate(-50%, 0); }
         }
 
+        /* ===== FLOATING CONSOLE BUTTON ===== */
+        .floating-console-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            z-index: 100000;
+            font-size: 24px;
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .floating-console-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .floating-console-popup {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 500px;
+            max-width: 90vw;
+            max-height: 70vh;
+            background: rgba(10, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            z-index: 100001;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .console-header h3 {
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .console-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .console-close:hover {
+            color: var(--danger);
+        }
+
+        .console-content {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            font-family: 'Chakra Petch', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .console-line {
+            margin-bottom: 4px;
+            border-bottom: 1px dotted rgba(255,255,255,0.05);
+            padding-bottom: 4px;
+        }
+
+        .console-line.error {
+            color: #ff5555;
+        }
+        .console-line.warn {
+            color: #ffaa00;
+        }
+        .console-line.log {
+            color: #00ff88;
+        }
+
+        .console-clear {
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+            margin-right: 8px;
+        }
+        .console-clear:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
         /* ===== AUDIO PLAYER (MINIMAL) ===== */
         .audio-zone {
             position: fixed;
@@ -844,6 +959,12 @@
             .admin-tabs { justify-content: center; }
             .tab-btn { flex: 1; justify-content: center; padding: 8px; font-size: 12px; }
             .audio-zone { bottom: 10px; right: 10px; left: 10px; width: auto; justify-content: center; }
+            .floating-console-popup {
+                width: 95vw;
+                height: 60vh;
+                bottom: 80px;
+                right: 2.5vw;
+            }
         }
 
         /* custom scroll */
@@ -875,6 +996,21 @@
     <div class="scan-line"></div>
     
     <div class="particle-field" id="particleField"></div>
+
+    <!-- Floating Console Button and Popup -->
+    <div class="floating-console-btn" id="consoleToggleBtn" onclick="toggleConsolePopup()">
+        <i class="fa-solid fa-terminal"></i>
+    </div>
+    <div class="floating-console-popup" id="consolePopup">
+        <div class="console-header">
+            <h3><i class="fa-solid fa-bug" style="color: var(--danger);"></i> AEGIS CONSOLE</h3>
+            <div>
+                <span class="console-clear" onclick="clearConsole()">Clear</span>
+                <button class="console-close" onclick="toggleConsolePopup()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <div class="console-content" id="consoleContent"></div>
+    </div>
 
     <div class="audio-zone">
         <button class="audio-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
@@ -1252,6 +1388,55 @@
         let ticketChannel = null;
         let tradesChannel = null;
         let isManualRefresh = false;
+
+        // --------------------------------------------------------------
+        // 🐞 FLOATING CONSOLE – เก็บและแสดง log ทั้งหมด
+        // --------------------------------------------------------------
+        const consoleContent = document.getElementById('consoleContent');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(message, type = 'log') {
+            if (!consoleContent) return;
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const now = new Date().toLocaleTimeString();
+            line.textContent = `[${now}] ${message}`;
+            consoleContent.appendChild(line);
+            consoleContent.scrollTop = consoleContent.scrollHeight;
+        }
+
+        // Override console
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), 'log');
+        };
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), 'error');
+        };
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), 'warn');
+        };
+
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error(`Global error: ${message} at ${source}:${lineno}`);
+            return true;
+        };
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('🔥 Unhandled rejection:', event.reason ? (event.reason.stack || event.reason) : 'No reason');
+        });
+
+        window.toggleConsolePopup = function() {
+            const popup = document.getElementById('consolePopup');
+            popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        window.clearConsole = function() {
+            if (consoleContent) consoleContent.innerHTML = '';
+        };
 
         // --------------------------------------------------------------
         // UTILITY: Toast
@@ -2069,7 +2254,7 @@
         }
 
         // --------------------------------------------------------------
-        // FLAGGED TRADES ACTIONS (ต้องสงสัย)
+        // FLAGGED TRADES ACTIONS (ต้องสงสัย) – รีเฟรชทันที
         // --------------------------------------------------------------
         async function approveTrade(tradeId) {
             try {
