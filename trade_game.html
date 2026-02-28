@@ -2823,7 +2823,7 @@
         let isTyping = false;
         let typingTimeout = null;
         let shippingData = null;
-        let ratingShown = false; // ป้องกันการแสดง rating ซ้ำ
+        let ratingShown = false;
 
         // user cache
         const userCache = {};
@@ -2961,7 +2961,7 @@
         }
 
         // ============================================
-        // FETCH USER PUBLIC
+        // FETCH USER PUBLIC (พร้อม rankInfo)
         // ============================================
         async function fetchUserPublic(userId) {
             try {
@@ -2972,8 +2972,12 @@
                     .eq('id', userId)
                     .single();
                 if (error) throw error;
-                if (data) userCache[userId] = data;
-                return data;
+                if (data) {
+                    // คำนวณ rankInfo และเก็บไว้ใน cache
+                    const rankInfo = await getRank(data.completed_deals || 0, userId);
+                    userCache[userId] = { ...data, rankInfo };
+                }
+                return userCache[userId];
             } catch (err) {
                 console.error(`❌ fetchUserPublic(${userId}) error:`, err);
                 return null;
@@ -3017,7 +3021,7 @@
                     partnerAvatar = partnerData.photo_url || DEFAULT_AVATAR;
                 }
 
-                const rankInfo = await getRank(partnerData?.completed_deals || 0, partnerId);
+                const rankInfo = partnerData?.rankInfo || await getRank(partnerData?.completed_deals || 0, partnerId);
                 const avatarGlow = getAvatarGlowStyle(rankInfo, partnerId);
                 let kycBadge = (partnerData.kyc_verified === true || partnerData.kyc_status === 'verified') 
                     ? ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:12px;"></i>' 
@@ -3078,7 +3082,7 @@
                     messages = newMessages;
                 }
                 messagesPage++;
-                renderMessages();
+                await renderMessages(); // รอให้ render เสร็จ
                 if (!loadMore) scrollToBottom();
             } catch (err) {
                 console.error('loadMessages error:', err);
@@ -3088,17 +3092,8 @@
             }
         }
 
-        // เพิ่มข้อความใหม่ต่อท้าย (ใช้กับ realtime insert)
-        function appendNewMessage(msg) {
-            if (messages.some(m => m.id === msg.id)) return;
-            messages.push(msg);
-            renderMessageElement(msg, true);
-        }
-
-        async function renderMessageElement(msg, append = false) {
-            const container = document.getElementById('messagesContainer');
-            if (!container) return;
-
+        // ฟังก์ชันสร้าง element ข้อความ (async เพื่อรองรับ rank)
+        async function createMessageElement(msg) {
             const isMine = msg.user_id === currentUser?.id;
             let sender = isMine ? 'sent' : 'received';
             if (msg.type === 'admin' || msg.user_id === SYSTEM_BOT_ID) {
@@ -3109,21 +3104,32 @@
 
             const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === SYSTEM_BOT_ID ? 'SYSTEM' : 'ผู้ใช้');
 
-            // ดึง rank ของผู้ส่ง (สำหรับ received)
+            // ดึง rankInfo สำหรับ avatar
             let rankInfo = null;
-            let avatarGlow = { boxShadow: 'none', animation: '', borderWidth: '2px', border: '#666' };
+            let avatarGlow = { boxShadow: 'none', animation: '', borderWidth: '2px' };
+            let borderColor = '#666';
+
             if (sender === 'sent') {
                 // เรา
-                const myRank = await getRank(currentUser.profile?.completed_deals || 0, currentUser.id);
-                avatarGlow = getAvatarGlowStyle(myRank, currentUser.id);
+                if (currentUser.profile) {
+                    const myRank = await getRank(currentUser.profile.completed_deals || 0, currentUser.id);
+                    rankInfo = myRank;
+                    avatarGlow = getAvatarGlowStyle(myRank, currentUser.id);
+                    borderColor = myRank.border;
+                }
             } else if (sender === 'received') {
                 // คู่ค้า
-                const partnerRankInfo = await getRank(0, partnerId); // ใช้ partnerId
-                avatarGlow = getAvatarGlowStyle(partnerRankInfo, partnerId);
+                if (partnerId) {
+                    const partnerData = await fetchUserPublic(partnerId);
+                    const partnerRankInfo = partnerData?.rankInfo || await getRank(partnerData?.completed_deals || 0, partnerId);
+                    rankInfo = partnerRankInfo;
+                    avatarGlow = getAvatarGlowStyle(partnerRankInfo, partnerId);
+                    borderColor = partnerRankInfo.border;
+                }
             }
 
             const avatarHtml = (sender === 'admin' || sender === 'system') ? '' : `
-                <div class="avatar-frame message-avatar-frame" style="border:${avatarGlow.borderWidth} solid ${avatarGlow.border || '#666'}; box-shadow:${avatarGlow.boxShadow}; animation:${avatarGlow.animation};" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
+                <div class="avatar-frame message-avatar-frame" style="border:${avatarGlow.borderWidth} solid ${borderColor}; box-shadow:${avatarGlow.boxShadow}; animation:${avatarGlow.animation};" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
                     <img src="${sender === 'sent' ? (currentUser.profile?.photo_url || DEFAULT_AVATAR) : (sender === 'admin' ? 'https://cdn-icons-png.flaticon.com/512/847/847969.png' : (msg.users_public?.photo_url || partnerAvatar || DEFAULT_AVATAR))}" class="message-avatar" alt="${username}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                 </div>
             `;
@@ -3154,7 +3160,7 @@
             const statusDiv = document.createElement('div');
             statusDiv.className = 'message-status';
 
-            // เฉพาะข้อความระหว่างผู้ใช้ (sent/received) เท่านั้นที่แสดง read receipt
+            // เฉพาะข้อความระหว่างผู้ใช้เท่านั้นที่แสดง read receipt
             if (sender === 'sent' || sender === 'received') {
                 const readSpan = document.createElement('span');
                 readSpan.className = 'read-receipt';
@@ -3189,23 +3195,29 @@
                 messageDiv.appendChild(messageContent);
             }
 
-            if (append) {
-                container.appendChild(messageDiv);
-            } else {
-                container.insertBefore(messageDiv, container.firstChild);
-            }
-            scrollToBottom();
+            return messageDiv;
         }
 
-        function renderMessages() {
+        async function renderMessages() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
             container.innerHTML = '';
             if (!messages || !Array.isArray(messages)) return;
 
-            messages.forEach(msg => {
-                renderMessageElement(msg);
-            });
+            // สร้าง element ทั้งหมดแบบ async
+            const elements = await Promise.all(messages.map(msg => createMessageElement(msg)));
+            elements.forEach(el => container.appendChild(el));
+            scrollToBottom();
+            observeMessages();
+        }
+
+        // เพิ่มข้อความใหม่ต่อท้าย (ใช้กับ realtime insert)
+        async function appendNewMessage(msg) {
+            if (messages.some(m => m.id === msg.id)) return;
+            messages.push(msg);
+            const container = document.getElementById('messagesContainer');
+            const el = await createMessageElement(msg);
+            container.appendChild(el);
             scrollToBottom();
             observeMessages();
         }
@@ -3220,7 +3232,7 @@
                         const msgId = msgEl.id;
                         if (msgId.startsWith('temp_')) return;
                         const msg = messages.find(m => m.id === msgId);
-                        // อัปเดต read เฉพาะข้อความของคู่ค้า (received) เท่านั้น
+                        // อัปเดต read เฉพาะข้อความของคู่ค้า (received) ที่เป็นข้อความธรรมดา
                         if (msg && msg.user_id !== currentUser?.id && msg.type === 'text' && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
                             supabaseClient
                                 .from('messages')
@@ -3303,7 +3315,7 @@
                             restartTimerFromTradeData();
                         }
 
-                        // เมื่อสถานะเปลี่ยนเป็น received ให้แสดง rating modal สำหรับทุกคน
+                        // เมื่อสถานะเป็น received ให้แสดง rating
                         if (oldStatus !== 'received' && tradeStatus === 'received' && !ratingShown) {
                             ratingShown = true;
                             setTimeout(() => {
@@ -3326,6 +3338,7 @@
                         } else {
                             if (existingMsg.status === 'sending') {
                                 existingMsg.status = 'sent';
+                                // อัปเดต element
                                 const el = document.getElementById(payload.new.id);
                                 if (el) el.classList.remove('optimistic');
                             }
@@ -3883,7 +3896,7 @@
                 );
             }
 
-            // rating modal จะแสดงผ่าน realtime เมื่อสถานะเป็น received
+            // rating จะแสดงผ่าน realtime
         };
 
         // ============================================
@@ -4463,7 +4476,7 @@
                         photo_url: currentUser.profile?.photo_url
                     }
                 };
-                appendNewMessage(tempMsg);
+                await appendNewMessage(tempMsg); // รอให้ element ถูกเพิ่ม
                 input.value = '';
                 clearTyping();
 
