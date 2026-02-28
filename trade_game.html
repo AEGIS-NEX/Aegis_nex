@@ -3292,17 +3292,10 @@
                             insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
                         }
 
-                        // ตรวจสอบการออกจากห้อง
+                        // ตรวจสอบการออกจากห้อง (ถ้ามีคอลัมน์ buyer_left/seller_left)
                         if (tradeData.buyer_left || tradeData.seller_left) {
                             const whoLeft = tradeData.buyer_left ? 'ผู้ซื้อ' : 'ผู้ขาย';
                             insertSystemMessage(`👋 ${whoLeft} ได้ออกจากห้องแล้ว รอผู้ค้าใหม่`, 'system');
-                            // ปิดปุ่ม action สำหรับผู้ที่เหลือ
-                            if ((role === 'buyer' && tradeData.buyer_left) || (role === 'seller' && tradeData.seller_left)) {
-                                // เราเป็นคนที่เหลือ
-                                // ไม่ต้องทำอะไร
-                            } else {
-                                // เราเป็นคนที่ออกไป? แต่เราได้รับ update แสดงว่ายังอยู่ในห้อง? จริงๆแล้วคนที่ออกไปจะไม่ได้รับ update
-                            }
                         }
 
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
@@ -3584,9 +3577,8 @@
                         timer_minutes: 15,
                         timer_seconds: 0,
                         timer_started_at: new Date().toISOString(),
-                        created_by: currentUser.id,  // ระบุผู้สร้างห้อง
-                        buyer_left: false,
-                        seller_left: false
+                        created_by: currentUser.id  // ระบุผู้สร้างห้อง
+                        // ไม่ใส่ buyer_left/seller_left เผื่อไม่มีคอลัมน์
                     };
                     const { data: inserted, error: insertError } = await supabaseClient
                         .from('trades')
@@ -4089,13 +4081,7 @@
         window.confirmCancel = async function() {
             closeModal('cancelModal');
             if (tradeStatus === 'waiting_payment') {
-                // ออกจากห้อง: อัปเดต flag ว่าผู้ใช้ออก
-                if (role === 'buyer') {
-                    await supabaseClient.from('trades').update({ buyer_left: true }).eq('room_id', roomId);
-                } else {
-                    await supabaseClient.from('trades').update({ seller_left: true }).eq('room_id', roomId);
-                }
-                // รอสักครู่ให้อีกฝ่ายได้รับอัปเดต แล้ว redirect
+                // ออกจากห้อง: redirect ไป dashboard อย่างเดียว (ไม่ต้องอัปเดต flag เพราะไม่มีคอลัมน์)
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
@@ -4984,7 +4970,7 @@
         }
 
         // ============================================
-        // FORCE SYNC ON VISIBILITY CHANGE
+        // FORCE SYNC ON VISIBILITY CHANGE (แก้ไขไม่ให้ error เมื่อไม่มีข้อมูล)
         // ============================================
         async function forceSyncTradeState() {
             console.log('🔄 Tab became visible – forcing sync');
@@ -4993,7 +4979,7 @@
                     .from('trades')
                     .select('*')
                     .eq('room_id', roomId)
-                    .single();
+                    .maybeSingle(); // ใช้ maybeSingle แทน single เพื่อป้องกัน error เมื่อไม่มีข้อมูล
                 if (error) throw error;
                 if (trade) {
                     tradeData = trade;
@@ -5004,6 +4990,8 @@
                     if (!window.roomChannel || window.roomChannel.state === 'closed') {
                         setupRealtime();
                     }
+                } else {
+                    console.log('⚠️ No trade found for room:', roomId);
                 }
             } catch (err) {
                 console.error('forceSyncTradeState error:', err);
@@ -5064,16 +5052,7 @@
                 }
             });
 
-            // เมื่อผู้ใช้ออกจากหน้า (ปิดแท็บ หรือกลับไป dashboard) ให้อัปเดตสถานะ left
-            window.addEventListener('beforeunload', async function() {
-                if (tradeData && (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done' || tradeStatus === 'shipped')) {
-                    if (role === 'buyer') {
-                        await supabaseClient.from('trades').update({ buyer_left: true }).eq('room_id', roomId);
-                    } else {
-                        await supabaseClient.from('trades').update({ seller_left: true }).eq('room_id', roomId);
-                    }
-                }
-            });
+            // ไม่ต้องอัปเดต buyer_left/seller_left เพราะไม่มีคอลัมน์
         }
 
         // Cleanup
