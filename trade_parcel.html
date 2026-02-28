@@ -3673,19 +3673,19 @@
                 if (!tradeResult.data) {
                     console.log('Trade not found, creating new trade...');
                     const newTrade = {
-                        room_id: roomId,
-                        buyer_id: role === 'buyer' ? currentUser.id : null,
-                        seller_id: role === 'seller' ? currentUser.id : null,
-                        buyer_role: role === 'buyer' ? 'buyer' : null,
-                        seller_role: role === 'seller' ? 'seller' : null,
-                        product_price: 0,
-                        fee: 0,
-                        total: 0,
-                        mode: 'item',  // 🔧 แก้ไขจาก 'parcel' เป็น 'item' เพื่อให้ผ่าน Check Constraint (trades_mode_check)
-                        status: 'waiting_payment',
-                        timer_minutes: 15,
-                        timer_seconds: 0,
-                        timer_started_at: new Date().toISOString()
+    room_id: roomId,
+    buyer_id: role === 'buyer' ? currentUser.id : null,
+    seller_id: role === 'seller' ? currentUser.id : null,
+    buyer_role: role === 'buyer' ? 'buyer' : null,
+    seller_role: role === 'seller' ? 'seller' : null,
+    product_price: 0,
+    fee: 0,
+    total: 0,
+    mode: 'general',          // 🔁 แก้จาก 'item' เป็น 'general'
+    status: 'waiting_payment',
+    timer_minutes: 15,
+    timer_seconds: 0,
+    timer_started_at: new Date().toISOString()
                     };
                     const { data: inserted, error: insertError } = await supabaseClient
                         .from('trades')
@@ -4390,7 +4390,7 @@
                 if (history && history.length > 0) {
                     history.forEach(t => {
                         const date = new Date(t.created_at).toLocaleDateString('th-TH');
-                        const modeText = t.mode === 'parcel' ? 'พัสดุ' : 'สินค้า';
+                        const modeText = t.mode === 'item' ? 'พัสดุ' : 'สินค้า';
                         historyHtml += `• ${modeText} ${t.product_price || 0} AGS (${t.status}) <span style="color:#666;">${date}</span><br>`;
                     });
                 } else {
@@ -4479,7 +4479,7 @@
                 if (data && data.length > 0) {
                     data.forEach(trade => {
                         const role = (trade.buyer_id === currentUser.id) ? 'ซื้อ' : 'ขาย';
-                        const modeText = trade.mode === 'parcel' ? 'พัสดุ' : 'สินค้า';
+                        const modeText = trade.mode === 'item' ? 'พัสดุ' : 'สินค้า';
                         const statusText = trade.status === 'received' ? 'สำเร็จ' : (trade.status === 'cancelled' ? 'ยกเลิก' : 'กำลังดำเนินการ');
                         const date = new Date(trade.updated_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
                         historyHtml += `• ${role} ${modeText} - ${statusText} (${trade.product_price?.toLocaleString() || 0} AGS) <span style="color:#666; font-size:9px;">${date}</span><br>`;
@@ -4645,7 +4645,7 @@
                     for (let word of badWords) {
                         if (lower.includes(word)) return true;
                     }
-                    if (mode === 'parcel' && lower.includes('นอกระบบ')) return true;
+                    if (mode === 'item' && lower.includes('นอกระบบ')) return true;
                     return false;
                 }
 
