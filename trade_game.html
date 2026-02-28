@@ -18,9 +18,6 @@
     <!-- Supabase client library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- OneSignal SDK (optional) -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    
     <!-- Anti‑debug -->
     <script>
         document.addEventListener('keydown', function(e) {
@@ -1162,24 +1159,9 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
         
+        /* ลบ gradient สีม่วงออก ใช้ border และ box-shadow จาก rank แทน */
         .profile-box::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-            z-index: -1;
-            border-radius: 22px;
-            animation: gradientMove 4s linear infinite;
-            opacity: 0.4;
-            filter: blur(7px);
-        }
-        
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+            display: none;
         }
         
         .profile-close {
@@ -2441,7 +2423,7 @@
 
     <!-- 👤 PROFILE POPUP MODAL (ของอีกฝั่ง) -->
     <div class="profile-modal" id="profileModal">
-        <div class="profile-box" id="profileBox">
+        <div class="profile-box" id="profileBox" style="border: 2px solid transparent; box-shadow: none;">
             <div class="profile-close" onclick="closeProfileModal()">
                 <i class="fas fa-times"></i>
             </div>
@@ -2501,7 +2483,7 @@
 
     <!-- 👤 PROFILE POPUP MODAL (ของเรา) -->
     <div class="profile-modal" id="myProfileModal">
-        <div class="profile-box" id="myProfileBox">
+        <div class="profile-box" id="myProfileBox" style="border: 2px solid transparent; box-shadow: none;">
             <div class="profile-close" onclick="closeMyProfileModal()">
                 <i class="fas fa-times"></i>
             </div>
@@ -2840,7 +2822,7 @@
         let timerSeconds = 0;
         let isTyping = false;
         let typingTimeout = null;
-        let shippingData = null;  // เก็บข้อมูลพัสดุ (อาจไม่ใช้ แต่เก็บเผื่อ)
+        let shippingData = null;
 
         // user cache
         const userCache = {};
@@ -2967,11 +2949,6 @@
             } catch (err) {
                 console.error('insertSystemMessage exception:', err);
             }
-        }
-
-        async function insertJeannySystemMessage(text, targetRole) {
-            if (role !== targetRole) return;
-            await insertSystemMessage(text, 'system');
         }
 
         // ============================================
@@ -3112,13 +3089,12 @@
 
         // เพิ่มข้อความใหม่ต่อท้าย (ใช้กับ realtime insert)
         function appendNewMessage(msg) {
-            // ตรวจสอบว่าซ้ำหรือไม่
             if (messages.some(m => m.id === msg.id)) return;
             messages.push(msg);
-            renderMessageElement(msg, true); // true = append
+            renderMessageElement(msg, true);
         }
 
-        function renderMessageElement(msg, append = false) {
+        async function renderMessageElement(msg, append = false) {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
 
@@ -3131,16 +3107,22 @@
             }
 
             const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === SYSTEM_BOT_ID ? 'SYSTEM' : 'ผู้ใช้');
+
+            // ดึง rank ของผู้ส่ง (สำหรับ received)
             let rankInfo = null;
+            let avatarGlow = { boxShadow: 'none', animation: '', borderWidth: '2px', border: '#666' };
             if (sender === 'sent') {
                 // เรา
-                rankInfo = { color: '#fff', border: '#666', effects: false }; // placeholder จะอัปเดตทีหลังถ้าต้องการ
+                const myRank = await getRank(currentUser.profile?.completed_deals || 0, currentUser.id);
+                avatarGlow = getAvatarGlowStyle(myRank, currentUser.id);
             } else if (sender === 'received') {
-                rankInfo = { color: partnerRank ? '#ff0000' : '#fff', border: '#666', effects: false };
+                // คู่ค้า
+                const partnerRankInfo = await getRank(0, partnerId); // ใช้ partnerId
+                avatarGlow = getAvatarGlowStyle(partnerRankInfo, partnerId);
             }
 
             const avatarHtml = (sender === 'admin' || sender === 'system') ? '' : `
-                <div class="avatar-frame message-avatar-frame" style="border:2px solid ${rankInfo?.border || '#666'}; box-shadow:${rankInfo ? '0 0 10px ' + rankInfo.color : 'none'};" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
+                <div class="avatar-frame message-avatar-frame" style="border:${avatarGlow.borderWidth} solid ${avatarGlow.border || '#666'}; box-shadow:${avatarGlow.boxShadow}; animation:${avatarGlow.animation};" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
                     <img src="${sender === 'sent' ? (currentUser.profile?.photo_url || DEFAULT_AVATAR) : (sender === 'admin' ? 'https://cdn-icons-png.flaticon.com/512/847/847969.png' : (msg.users_public?.photo_url || partnerAvatar || DEFAULT_AVATAR))}" class="message-avatar" alt="${username}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                 </div>
             `;
@@ -3229,7 +3211,7 @@
                     if (entry.isIntersecting) {
                         const msgEl = entry.target;
                         const msgId = msgEl.id;
-                        if (msgId.startsWith('temp_')) return; // ข้ามข้อความที่ยังไม่ส่งจริง
+                        if (msgId.startsWith('temp_')) return;
                         const msg = messages.find(m => m.id === msgId);
                         if (msg && msg.user_id !== currentUser?.id && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
                             supabaseClient
@@ -3238,8 +3220,9 @@
                                 .eq('id', msgId)
                                 .then(() => {
                                     msg.read_by = [...(msg.read_by || []), currentUser.id];
+                                    // อัปเดต UI เฉพาะข้อความนั้น
                                     const statusSpan = msgEl.querySelector('.read-receipt');
-                                    if (statusSpan && msg.user_id === currentUser.id) {
+                                    if (statusSpan) {
                                         statusSpan.style.display = 'inline';
                                         statusSpan.innerHTML = 'อ่านแล้ว';
                                     }
@@ -3307,14 +3290,25 @@
                             partnerId = newPartnerId;
                             loadPartnerInfo();
                             insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
-                            // ข้อความ system สำหรับอีกฝั่งจะถูก insert โดยอีกฝั่ง (ไม่ใส่ซ้ำ)
+                        }
+
+                        // ตรวจสอบการออกจากห้อง
+                        if (tradeData.buyer_left || tradeData.seller_left) {
+                            const whoLeft = tradeData.buyer_left ? 'ผู้ซื้อ' : 'ผู้ขาย';
+                            insertSystemMessage(`👋 ${whoLeft} ได้ออกจากห้องแล้ว รอผู้ค้าใหม่`, 'system');
+                            // ปิดปุ่ม action สำหรับผู้ที่เหลือ
+                            if ((role === 'buyer' && tradeData.buyer_left) || (role === 'seller' && tradeData.seller_left)) {
+                                // เราเป็นคนที่เหลือ
+                                // ไม่ต้องทำอะไร
+                            } else {
+                                // เราเป็นคนที่ออกไป? แต่เราได้รับ update แสดงว่ายังอยู่ในห้อง? จริงๆแล้วคนที่ออกไปจะไม่ได้รับ update
+                            }
                         }
 
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
                             restartTimerFromTradeData();
                         }
 
-                        // เราไม่ insert system message ซ้ำอีกต่อไป ให้ action ต่างๆ เป็นผู้ insert
                         updateUIByStatus();
                     })
                     .on('postgres_changes', {
@@ -3324,12 +3318,10 @@
                         filter: `room_id=eq.${roomId}`
                     }, (payload) => {
                         console.log('💬 New message:', payload.new);
-                        // ตรวจสอบว่าเป็นข้อความที่เราส่ง optimistic ไปแล้วหรือไม่
                         const existingMsg = messages.find(m => m.id === payload.new.id);
                         if (!existingMsg) {
                             appendNewMessage(payload.new);
                         } else {
-                            // ถ้ามีอยู่แล้ว (optimistic) ให้อัปเดตสถานะเป็นส่งสำเร็จ
                             if (existingMsg.status === 'sending') {
                                 existingMsg.status = 'sent';
                                 const el = document.getElementById(payload.new.id);
@@ -3591,7 +3583,10 @@
                         status: 'waiting_payment',
                         timer_minutes: 15,
                         timer_seconds: 0,
-                        timer_started_at: new Date().toISOString()
+                        timer_started_at: new Date().toISOString(),
+                        created_by: currentUser.id,  // ระบุผู้สร้างห้อง
+                        buyer_left: false,
+                        seller_left: false
                     };
                     const { data: inserted, error: insertError } = await supabaseClient
                         .from('trades')
@@ -3771,12 +3766,10 @@
                 })
                 .eq('room_id', roomId);
 
-            // Insert system message สำหรับผู้ซื้อ (จะถูกส่งผ่าน realtime ให้อีกฝั่งเห็น)
             await insertSystemMessage(
                 `🎮 ผู้ขายได้ส่งมอบ ID/ไอเทมเรียบร้อยแล้ว กรุณาตรวจสอบ`,
                 'system'
             );
-            // สำหรับผู้ขาย (ตัวเอง)
             if (role === 'seller') {
                 await insertSystemMessage(
                     `✅ คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
@@ -3880,7 +3873,6 @@
             document.getElementById('timerLabel').textContent = 'สำเร็จแล้ว';
             document.getElementById('timerDisplay').style.color = 'var(--success)';
 
-            // Insert system message สำหรับผู้ขาย (อีกฝั่ง)
             await insertSystemMessage(
                 `💰 ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว ระบบจะโอนเงิน ${trade.product_price.toLocaleString()} AGS ให้ผู้ขาย`,
                 'system'
@@ -4013,7 +4005,7 @@
                     product_price: price,
                     fee: fee,
                     total: total,
-                    timer_minutes: 180,  // 3 ชั่วโมง
+                    timer_minutes: 180,
                     timer_started_at: new Date().toISOString()
                 })
                 .eq('room_id', roomId);
@@ -4023,7 +4015,6 @@
                 return;
             }
 
-            // Insert system message สำหรับผู้ขาย
             await insertSystemMessage(
                 `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
                 'system'
@@ -4098,11 +4089,16 @@
         window.confirmCancel = async function() {
             closeModal('cancelModal');
             if (tradeStatus === 'waiting_payment') {
-                await incrementCancelled(currentUser.id);
-                if (partnerId) await incrementCancelled(partnerId);
-                await supabaseClient.from('trades').update({ status: 'cancelled' }).eq('room_id', roomId);
-                insertSystemMessage('❌ คุณได้ยกเลิกการซื้อขายและออกจากห้องแล้ว', 'system');
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+                // ออกจากห้อง: อัปเดต flag ว่าผู้ใช้ออก
+                if (role === 'buyer') {
+                    await supabaseClient.from('trades').update({ buyer_left: true }).eq('room_id', roomId);
+                } else {
+                    await supabaseClient.from('trades').update({ seller_left: true }).eq('room_id', roomId);
+                }
+                // รอสักครู่ให้อีกฝ่ายได้รับอัปเดต แล้ว redirect
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
             } else if (tradeStatus === 'payment_done') {
                 showEmergencyAlert();
                 adminJoinRoom();
@@ -4133,10 +4129,10 @@
                     ? ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:18px;"></i>' 
                     : '';
 
-                document.getElementById('profileName').innerHTML = 
-                    (user.display_name || user.username || 'คู่ค้า').toUpperCase() + kycBadge;
-                document.getElementById('profileName').style.color = rankInfo.color;
-                document.getElementById('profileName').style.textShadow = getTextShadowStyle(rankInfo, partnerId);
+                const nameEl = document.getElementById('profileName');
+                nameEl.innerHTML = (user.display_name || user.username || 'คู่ค้า').toUpperCase() + kycBadge;
+                nameEl.style.color = rankInfo.color;
+                nameEl.style.textShadow = getTextShadowStyle(rankInfo, partnerId);
 
                 const avatarFrame = document.getElementById('profileAvatarFrame');
                 const avatarGlow = getAvatarGlowStyle(rankInfo, partnerId);
@@ -4144,6 +4140,11 @@
                 avatarFrame.style.boxShadow = avatarGlow.boxShadow;
                 avatarFrame.style.animation = avatarGlow.animation;
                 document.getElementById('profileAvatar').src = user.photo_url || DEFAULT_AVATAR;
+
+                // ตั้งสีขอบของ popup ตาม rank
+                const profileBox = document.getElementById('profileBox');
+                profileBox.style.border = `2px solid ${rankInfo.border}`;
+                profileBox.style.boxShadow = `0 0 20px ${rankInfo.color}`;
 
                 document.getElementById('profileRankBadge').innerHTML = rankInfo.html;
                 document.getElementById('statDeals').innerText = completed;
@@ -4161,9 +4162,10 @@
                 let historyHtml = '';
                 if (history && history.length > 0) {
                     history.forEach(t => {
-                        const date = new Date(t.created_at).toLocaleDateString('th-TH');
+                        const date = new Date(t.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
                         const modeText = t.mode === 'game' ? 'เกม' : 'สินค้า';
-                        historyHtml += `• ${modeText} ${t.product_price || 0} AGS (${t.status}) <span style="color:#666;">${date}</span><br>`;
+                        const statusText = t.status === 'received' ? 'สำเร็จ' : (t.status === 'cancelled' ? 'ยกเลิก' : 'กำลังดำเนินการ');
+                        historyHtml += `• ${modeText} ${t.product_price?.toLocaleString() || 0} AGS (${statusText}) <span style="color:#666;">${date}</span><br>`;
                     });
                 } else {
                     historyHtml = '• ไม่มีประวัติ';
@@ -4222,6 +4224,11 @@
             avatarFrame.style.animation = avatarGlow.animation;
             document.getElementById('myProfileAvatar').src = profile.photo_url || DEFAULT_AVATAR;
 
+            // ตั้งสีขอบของ popup ตาม rank
+            const myProfileBox = document.getElementById('myProfileBox');
+            myProfileBox.style.border = `2px solid ${rankInfo.border}`;
+            myProfileBox.style.boxShadow = `0 0 20px ${rankInfo.color}`;
+
             if (profile.kyc_status === 'verified' || profile.kyc_verified === true) {
                 nameEl.innerHTML += ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:18px;"></i>';
             }
@@ -4254,11 +4261,11 @@
                 let historyHtml = '';
                 if (data && data.length > 0) {
                     data.forEach(trade => {
-                        const role = (trade.buyer_id === currentUser.id) ? 'ซื้อ' : 'ขาย';
-                        const modeText = trade.mode === 'game' ? 'ไอดีเกม' : 'สินค้า';
+                        const roleText = (trade.buyer_id === currentUser.id) ? 'ซื้อ' : 'ขาย';
+                        const modeText = trade.mode === 'game' ? 'เกม' : 'สินค้า';
                         const statusText = trade.status === 'received' ? 'สำเร็จ' : (trade.status === 'cancelled' ? 'ยกเลิก' : 'กำลังดำเนินการ');
                         const date = new Date(trade.updated_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-                        historyHtml += `• ${role} ${modeText} - ${statusText} (${trade.product_price?.toLocaleString() || 0} AGS) <span style="color:#666; font-size:9px;">${date}</span><br>`;
+                        historyHtml += `• ${roleText} ${modeText} - ${statusText} (${trade.product_price?.toLocaleString() || 0} AGS) <span style="color:#666;">${date}</span><br>`;
                     });
                 } else {
                     historyHtml = '• ยังไม่มีประวัติการซื้อขาย';
@@ -4382,8 +4389,6 @@
         // ============================================
         // SEND MESSAGE (Optimistic)
         // ============================================
-        let pendingMessages = {};
-
         window.sendMessage = async function() {
             if (window.isSendingMessage) return;
             window.isSendingMessage = true;
@@ -4454,7 +4459,6 @@
                     return;
                 }
 
-                // สร้างข้อความชั่วคราว
                 const tempId = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 const tempMsg = {
                     id: tempId,
@@ -4469,12 +4473,10 @@
                         photo_url: currentUser.profile?.photo_url
                     }
                 };
-                // เพิ่มลงใน DOM ทันที
                 appendNewMessage(tempMsg);
                 input.value = '';
                 clearTyping();
 
-                // ส่งไปยัง Supabase
                 const { data, error } = await supabaseClient
                     .from('messages')
                     .insert([{
@@ -4488,13 +4490,11 @@
 
                 if (error) throw error;
 
-                // อัปเดตข้อความชั่วคราวด้วย id จริง
                 const tempEl = document.getElementById(tempId);
                 if (tempEl) {
                     tempEl.id = data.id;
                     tempEl.classList.remove('optimistic');
                 }
-                // อัปเดตใน array messages
                 const msgIndex = messages.findIndex(m => m.id === tempId);
                 if (msgIndex !== -1) {
                     messages[msgIndex].id = data.id;
@@ -4506,14 +4506,12 @@
                 sendBtn.disabled = false;
             } catch (err) {
                 console.error('Unexpected error in sendMessage:', err);
-                // ทำเครื่องหมายข้อความว่าส่งไม่สำเร็จ
                 const lastMsg = messages[messages.length - 1];
                 if (lastMsg && lastMsg.id.startsWith('temp_')) {
                     lastMsg.status = 'failed';
                     const el = document.getElementById(lastMsg.id);
                     if (el) {
                         el.classList.add('failed');
-                        // เพิ่มปุ่มลองใหม่
                         const statusDiv = el.querySelector('.message-status');
                         if (statusDiv && !statusDiv.querySelector('.retry-btn')) {
                             const retryBtn = document.createElement('span');
@@ -4531,11 +4529,9 @@
         };
 
         function retryFailedMessage(msg) {
-            // ลบข้อความเดิม
             const el = document.getElementById(msg.id);
             if (el) el.remove();
             messages = messages.filter(m => m.id !== msg.id);
-            // ส่งใหม่
             document.getElementById('messageInput').value = msg.content;
             sendMessage();
         }
@@ -5067,6 +5063,17 @@
                     }
                 }
             });
+
+            // เมื่อผู้ใช้ออกจากหน้า (ปิดแท็บ หรือกลับไป dashboard) ให้อัปเดตสถานะ left
+            window.addEventListener('beforeunload', async function() {
+                if (tradeData && (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done' || tradeStatus === 'shipped')) {
+                    if (role === 'buyer') {
+                        await supabaseClient.from('trades').update({ buyer_left: true }).eq('room_id', roomId);
+                    } else {
+                        await supabaseClient.from('trades').update({ seller_left: true }).eq('room_id', roomId);
+                    }
+                }
+            });
         }
 
         // Cleanup
@@ -5082,7 +5089,6 @@
         // DOMContentLoaded
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            // ตั้งค่าสีและข้อความสำหรับโหมดเกม
             document.title = 'AEGIS NEX: GAME & ITEM TRADE';
             document.documentElement.style.setProperty('--primary', '#bc13fe');
             document.documentElement.style.setProperty('--secondary', '#9d4edd');
@@ -5112,7 +5118,6 @@
             }
         });
 
-        // ตรวจสอบว่าแชทโผล่ (เผื่อมี CSS ไปซ่อน)
         window.addEventListener('load', function() {
             setTimeout(function() {
                 const chat = document.querySelector('.chat-area');
