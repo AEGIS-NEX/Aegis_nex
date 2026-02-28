@@ -177,54 +177,25 @@
             min-width: 0;
         }
         
-        /* ===== Rank Frame Wrapper ===== */
-        .rank-frame {
+        /* ===== Avatar frame ใช้ class .avatar-frame (เหมือน dashboard) ===== */
+        .avatar-frame {
             position: relative;
-            display: inline-block;
             width: 40px;
             height: 40px;
             border-radius: 50%;
             overflow: hidden;
             flex-shrink: 0;
-        }
-        .rank-frame::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            pointer-events: none;
-            box-sizing: border-box;
             border: 2px solid transparent;
+            transition: box-shadow 0.3s, border-color 0.3s;
         }
-        .rank-frame.rb-0::after { border-color: #b0bec5; }
-        .rank-frame.rb-1::after { border-color: #cfd8dc; box-shadow: 0 0 5px #cfd8dc; }
-        .rank-frame.rb-2::after { border-color: #80cbc4; box-shadow: 0 0 8px #80cbc4; }
-        .rank-frame.rb-3::after { border-color: #00e676; box-shadow: 0 0 10px #00e676, 0 0 15px #00e676; }
-        .rank-frame.rb-4::after { border-color: #2979ff; box-shadow: 0 0 12px #2979ff, 0 0 20px #2979ff; }
-        .rank-frame.rb-5::after { border-color: #304ffe; box-shadow: 0 0 15px #304ffe, 0 0 25px #304ffe; }
-        .rank-frame.rb-6::after { border-color: #d500f9; box-shadow: 0 0 18px #d500f9, 0 0 30px #d500f9; }
-        .rank-frame.rb-7::after { border-color: #ffab00; box-shadow: 0 0 20px #ffab00, 0 0 35px #ffab00; }
-        .rank-frame.rb-8::after { border-color: #ff6d00; box-shadow: 0 0 22px #ff6d00, 0 0 40px #ff6d00; }
-        .rank-frame.rb-9::after { border-color: #ff1744; box-shadow: 0 0 25px #ff1744, 0 0 45px #ff1744; }
-        .rank-frame.rb-10::after { border-color: #ffffff; box-shadow: 0 0 30px #ffffff, 0 0 50px #ffffff; animation: pulseGlow 2s infinite alternate; }
-        .rank-frame.rb-special::after { border-color: #ff00ff; box-shadow: 0 0 30px #ff00ff, 0 0 50px #ff00ff; animation: pulseGlow 1.5s infinite alternate; }
-        .rank-frame.rb-ceo::after { border-color: #ff0000; box-shadow: 0 0 30px #ff0000, 0 0 50px #ff0000; animation: fireGlow 1s infinite alternate; }
-
-        .partner-avatar,
-        .message-avatar,
-        .profile-avatar-large {
+        .avatar-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
             display: block;
-            border: none !important;
-            box-shadow: none !important;
         }
-        
+
         .partner-details {
             flex: 1;
             min-width: 0;
@@ -531,25 +502,26 @@
             text-align: center;
         }
         
-        .rank-frame.message-avatar-frame {
+        /* avatar ใน chat ใช้ avatar-frame */
+        .avatar-frame.message-avatar-frame {
             width: 32px;
             height: 32px;
             margin-top: 2px;
             cursor: pointer;
         }
         
-        .message.sent .rank-frame.message-avatar-frame {
+        .message.sent .avatar-frame.message-avatar-frame {
             margin-left: 8px;
             margin-right: 0;
         }
         
-        .message.received .rank-frame.message-avatar-frame {
+        .message.received .avatar-frame.message-avatar-frame {
             margin-right: 8px;
             margin-left: 0;
         }
         
-        .message.admin .rank-frame.message-avatar-frame,
-        .message.system .rank-frame.message-avatar-frame {
+        .message.admin .avatar-frame.message-avatar-frame,
+        .message.system .avatar-frame.message-avatar-frame {
             display: none;
         }
         
@@ -1232,10 +1204,18 @@
             margin-bottom: 25px;
         }
         
-        .rank-frame.profile-avatar-frame {
+        .avatar-frame.profile-avatar-frame {
             width: 90px;
             height: 90px;
             margin: 0 auto 15px;
+            border: 2px solid transparent;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        .profile-avatar-large {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
         
         .profile-name {
@@ -2037,7 +2017,7 @@
         @media (max-width: 768px) {
             .trade-container { max-width: 100%; }
             .trade-header { padding: 10px 12px; gap: 8px; }
-            .rank-frame { width: 36px; height: 36px; }
+            .avatar-frame { width: 36px; height: 36px; }
             .partner-details h3 { font-size: 13px; }
             .trade-timer { min-width: 70px; padding: 5px 8px; }
             .timer-display { font-size: 14px; }
@@ -2050,7 +2030,7 @@
             .step-label { font-size: 8px; max-width: 60px; }
             .status-line, .status-progress { top: 12px; left: 35px; right: 35px; }
             .messages-container { padding: 12px; }
-            .rank-frame.message-avatar-frame { width: 30px; height: 30px; }
+            .avatar-frame.message-avatar-frame { width: 30px; height: 30px; }
             .message-bubble { font-size: 12px; padding: 6px 10px; }
             .sticker-img { width: 60px; height: 60px; }
             .image-preview { max-height: 150px; }
@@ -2165,6 +2145,25 @@
         .shipping-modal,
         .general-receive-confirm-modal {
             display: none !important;
+        }
+
+        /* สถานะ optimistic message */
+        .message.optimistic .message-bubble {
+            opacity: 0.8;
+        }
+        .message.failed .message-bubble {
+            background: #ff5555 !important;
+            cursor: pointer;
+        }
+        .retry-btn {
+            font-size: 10px;
+            color: white;
+            background: var(--danger);
+            border: none;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin-left: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -2347,7 +2346,7 @@
                     <input type="text" class="message-input" id="messageInput" placeholder="พิมพ์ข้อความ..." 
                            onfocus="focusMessageInput()" 
                            oninput="handleTyping()">
-                    <button class="send-btn" id="sendBtn" onclick="window.sendMessage()">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -2447,7 +2446,7 @@
                 <i class="fas fa-times"></i>
             </div>
             <div class="profile-header">
-                <div class="rank-frame profile-avatar-frame" id="profileAvatarFrame">
+                <div class="avatar-frame profile-avatar-frame" id="profileAvatarFrame">
                     <img src="https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop" 
                          class="profile-avatar-large" 
                          id="profileAvatar">
@@ -2507,7 +2506,7 @@
                 <i class="fas fa-times"></i>
             </div>
             <div class="profile-header">
-                <div class="rank-frame profile-avatar-frame" id="myProfileAvatarFrame">
+                <div class="avatar-frame profile-avatar-frame" id="myProfileAvatarFrame">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" 
                          class="profile-avatar-large" 
                          id="myProfileAvatar">
@@ -2847,11 +2846,12 @@
         const userCache = {};
 
         // ============================================
-        // RANK FUNCTIONS (เหมือนใน hybrid)
+        // RANK FUNCTIONS (เหมือน Dashboard)
         // ============================================
         async function getRank(deals, uid) {
             if (!uid) return { name: 'NEWBIE', html: '<span class="rank-badge rb-0">🐣 NEWBIE</span>', class: 'rank-NEWBIE', color: '#b0bec5', border: '#666666', effects: false };
-            if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233") {
+            const CEO_UID = "91e374cf-1d0f-4576-bb3e-b249e58dd233";
+            if (uid === CEO_UID) {
                 return { name: 'CEO', html: '<span class="rank-badge rb-ceo"><i class="fas fa-crown"></i> CEO <i class="fas fa-crown"></i></span>', class: 'rank-CEO', color: '#ff0000', border: '#ff0000', effects: true };
             }
             const { data: isAdmin, error } = await supabaseClient.rpc('is_admin', { check_user_id: uid });
@@ -2874,13 +2874,28 @@
 
         function getTextShadowStyle(rankInfo, uid) {
             const color = rankInfo.color;
-            if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233" || uid === SYSTEM_BOT_ID) {
-                return `0 0 15px ${color}, 0 0 30px ${color}, 0 0 45px ${color}`;
-            }
-            if (rankInfo.effects) {
-                return `0 0 8px ${color}, 0 0 15px ${color}`;
-            }
+            if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233") return `0 0 15px ${color}, 0 0 30px ${color}, 0 0 45px ${color}`;
+            if (rankInfo.effects) return `0 0 8px ${color}, 0 0 15px ${color}`;
             return `0 0 5px ${color}`;
+        }
+
+        function getAvatarGlowStyle(rankInfo, uid) {
+            const color = rankInfo.color;
+            let boxShadow = `0 3px 10px ${color}30`;
+            let animation = '';
+            let borderWidth = '2px';
+            if (rankInfo.effects) {
+                boxShadow = `0 0 20px ${color}`;
+                animation = 'pulseGlow 2s infinite alternate';
+                if (uid === "91e374cf-1d0f-4576-bb3e-b249e58dd233") {
+                    boxShadow = `0 0 30px ${color}, 0 0 50px ${color}`;
+                    animation = 'fireGlow 1s infinite alternate';
+                } else if (['GOD','IMMORTAL','WARLORD','MASTER'].includes(rankInfo.name)) {
+                    boxShadow = `0 0 25px ${color}, 0 0 40px ${color}`;
+                    animation = 'fireGlow 1.5s infinite alternate';
+                }
+            }
+            return { boxShadow, animation, borderWidth };
         }
 
         function getStarDisplay(rating, uid) {
@@ -3004,8 +3019,8 @@
 
                 if (!partnerId) {
                     document.getElementById('partnerInfo').innerHTML = `
-                        <div class="rank-frame rb-0" style="width:40px;height:40px;">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="partner-avatar" alt="คู่ค้า">
+                        <div class="avatar-frame" style="width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid #666;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="partner-avatar" alt="คู่ค้า" style="width:100%; height:100%; object-fit:cover;">
                         </div>
                         <div class="partner-details">
                             <h3>รอคู่ค้า... <i class="fas fa-clock" style="font-size:10px;"></i></h3>
@@ -3022,21 +3037,21 @@
                 if (partnerData) {
                     partnerName = partnerData.display_name || partnerData.username || 'คู่ค้า';
                     partnerAvatar = partnerData.photo_url || DEFAULT_AVATAR;
-                    partnerRank = partnerData.rank || 'rb-4';
                 }
 
                 const rankInfo = await getRank(partnerData?.completed_deals || 0, partnerId);
+                const avatarGlow = getAvatarGlowStyle(rankInfo, partnerId);
                 let kycBadge = (partnerData.kyc_verified === true || partnerData.kyc_status === 'verified') 
-                    ? ' <i class="fas fa-check-circle kyc-neon" style="font-size:12px;" title="ยืนยันตัวตนแล้ว"></i>' 
+                    ? ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:12px;"></i>' 
                     : '';
 
                 document.getElementById('partnerInfo').innerHTML = `
-                    <div class="rank-frame ${partnerRank}" style="width:40px;height:40px;">
-                        <img src="${partnerAvatar}" class="partner-avatar" alt="${partnerName}">
+                    <div class="avatar-frame" style="width:40px; height:40px; border-radius:50%; overflow:hidden; border:${avatarGlow.borderWidth} solid ${rankInfo.border}; box-shadow:${avatarGlow.boxShadow}; animation:${avatarGlow.animation};">
+                        <img src="${partnerAvatar}" class="partner-avatar" alt="${partnerName}" style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div class="partner-details">
-                        <h3>${partnerName}${kycBadge}</h3>
-                        <div class="partner-rank rank-badge ${partnerRank}">${rankInfo.html}</div>
+                        <h3 style="color:${rankInfo.color}; text-shadow:${getTextShadowStyle(rankInfo, partnerId)};">${partnerName}${kycBadge}</h3>
+                        <div class="partner-rank">${rankInfo.html}</div>
                     </div>
                 `;
                 document.getElementById('partnerInfo').onclick = openPartnerProfile;
@@ -3095,6 +3110,104 @@
             }
         }
 
+        // เพิ่มข้อความใหม่ต่อท้าย (ใช้กับ realtime insert)
+        function appendNewMessage(msg) {
+            // ตรวจสอบว่าซ้ำหรือไม่
+            if (messages.some(m => m.id === msg.id)) return;
+            messages.push(msg);
+            renderMessageElement(msg, true); // true = append
+        }
+
+        function renderMessageElement(msg, append = false) {
+            const container = document.getElementById('messagesContainer');
+            if (!container) return;
+
+            const isMine = msg.user_id === currentUser?.id;
+            let sender = isMine ? 'sent' : 'received';
+            if (msg.type === 'admin' || msg.user_id === SYSTEM_BOT_ID) {
+                sender = 'admin';
+            } else if (msg.type === 'system') {
+                sender = 'system';
+            }
+
+            const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === SYSTEM_BOT_ID ? 'SYSTEM' : 'ผู้ใช้');
+            let rankInfo = null;
+            if (sender === 'sent') {
+                // เรา
+                rankInfo = { color: '#fff', border: '#666', effects: false }; // placeholder จะอัปเดตทีหลังถ้าต้องการ
+            } else if (sender === 'received') {
+                rankInfo = { color: partnerRank ? '#ff0000' : '#fff', border: '#666', effects: false };
+            }
+
+            const avatarHtml = (sender === 'admin' || sender === 'system') ? '' : `
+                <div class="avatar-frame message-avatar-frame" style="border:2px solid ${rankInfo?.border || '#666'}; box-shadow:${rankInfo ? '0 0 10px ' + rankInfo.color : 'none'};" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
+                    <img src="${sender === 'sent' ? (currentUser.profile?.photo_url || DEFAULT_AVATAR) : (sender === 'admin' ? 'https://cdn-icons-png.flaticon.com/512/847/847969.png' : (msg.users_public?.photo_url || partnerAvatar || DEFAULT_AVATAR))}" class="message-avatar" alt="${username}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                </div>
+            `;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            if (msg.status === 'sending') messageDiv.classList.add('optimistic');
+            if (msg.status === 'failed') messageDiv.classList.add('failed');
+            messageDiv.id = msg.id;
+
+            let contentHtml = '';
+            if (msg.type === 'text') {
+                contentHtml = `<div class="message-bubble">${escapeHTML(msg.content)}</div>`;
+            } else if (msg.type === 'sticker') {
+                contentHtml = `<div class="message-bubble sticker"><img src="${escapeHTML(msg.sticker_url)}" class="sticker-img"></div>`;
+            } else if (msg.type === 'image') {
+                contentHtml = `<div class="message-bubble image"><img src="${escapeHTML(msg.image_url)}" class="image-preview" onclick="openImageZoom('${escapeHTML(msg.image_url)}')"></div>`;
+            } else if (msg.type === 'system' || msg.type === 'admin') {
+                contentHtml = `<div class="message-bubble">${escapeHTML(msg.content)}</div>`;
+            }
+
+            const time = new Date(msg.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = contentHtml;
+
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'message-status';
+            const readSpan = document.createElement('span');
+            readSpan.className = 'read-receipt';
+            if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
+                readSpan.style.display = 'inline';
+                readSpan.innerHTML = 'อ่านแล้ว';
+            } else {
+                readSpan.style.display = 'none';
+            }
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = time;
+            statusDiv.appendChild(readSpan);
+            statusDiv.appendChild(timeSpan);
+            if (msg.status === 'failed') {
+                const retryBtn = document.createElement('span');
+                retryBtn.className = 'retry-btn';
+                retryBtn.textContent = 'ลองอีกครั้ง';
+                retryBtn.onclick = () => retryFailedMessage(msg);
+                statusDiv.appendChild(retryBtn);
+            }
+            messageContent.appendChild(statusDiv);
+
+            if (sender === 'sent') {
+                messageDiv.appendChild(messageContent);
+                if (avatarHtml) messageDiv.insertAdjacentHTML('beforeend', avatarHtml);
+            } else {
+                if (avatarHtml) messageDiv.insertAdjacentHTML('afterbegin', avatarHtml);
+                messageDiv.appendChild(messageContent);
+            }
+
+            if (append) {
+                container.appendChild(messageDiv);
+            } else {
+                container.insertBefore(messageDiv, container.firstChild);
+            }
+            scrollToBottom();
+        }
+
         function renderMessages() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
@@ -3102,75 +3215,7 @@
             if (!messages || !Array.isArray(messages)) return;
 
             messages.forEach(msg => {
-                const isMine = msg.user_id === currentUser?.id;
-                let sender = isMine ? 'sent' : 'received';
-                if (msg.type === 'admin' || msg.user_id === SYSTEM_BOT_ID) {
-                    sender = 'admin';
-                } else if (msg.type === 'system') {
-                    sender = 'system';
-                }
-
-                const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === SYSTEM_BOT_ID ? 'SYSTEM' : 'ผู้ใช้');
-                let rankClass = 'rb-0';
-                if (sender === 'sent') {
-                    rankClass = currentUser.profile?.rank || 'rb-0';
-                } else if (sender === 'received') {
-                    rankClass = partnerRank || 'rb-0';
-                }
-
-                const avatarHtml = (sender === 'admin' || sender === 'system') ? '' : `
-                    <div class="rank-frame message-avatar-frame ${rankClass}" ${sender === 'sent' ? 'onclick="openMyProfile()"' : (sender === 'received' ? 'onclick="openPartnerProfile()"' : '')}>
-                        <img src="${sender === 'sent' ? (currentUser.profile?.photo_url || DEFAULT_AVATAR) : (sender === 'admin' ? 'https://cdn-icons-png.flaticon.com/512/847/847969.png' : (msg.users_public?.photo_url || partnerAvatar || DEFAULT_AVATAR))}" class="message-avatar" alt="${username}">
-                    </div>
-                `;
-
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}`;
-                messageDiv.id = msg.id;
-
-                let contentHtml = '';
-                if (msg.type === 'text') {
-                    contentHtml = `<div class="message-bubble">${escapeHTML(msg.content)}</div>`;
-                } else if (msg.type === 'sticker') {
-                    contentHtml = `<div class="message-bubble sticker"><img src="${escapeHTML(msg.sticker_url)}" class="sticker-img"></div>`;
-                } else if (msg.type === 'image') {
-                    contentHtml = `<div class="message-bubble image"><img src="${escapeHTML(msg.image_url)}" class="image-preview" onclick="openImageZoom('${escapeHTML(msg.image_url)}')"></div>`;
-                } else if (msg.type === 'system' || msg.type === 'admin') {
-                    contentHtml = `<div class="message-bubble">${escapeHTML(msg.content)}</div>`;
-                }
-
-                const time = new Date(msg.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content';
-                messageContent.innerHTML = contentHtml;
-
-                const statusDiv = document.createElement('div');
-                statusDiv.className = 'message-status';
-                const readSpan = document.createElement('span');
-                readSpan.className = 'read-receipt';
-                if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
-                    readSpan.style.display = 'inline';
-                    readSpan.innerHTML = 'อ่านแล้ว';
-                } else {
-                    readSpan.style.display = 'none';
-                }
-                const timeSpan = document.createElement('span');
-                timeSpan.className = 'message-time';
-                timeSpan.textContent = time;
-                statusDiv.appendChild(readSpan);
-                statusDiv.appendChild(timeSpan);
-                messageContent.appendChild(statusDiv);
-
-                if (sender === 'sent') {
-                    messageDiv.appendChild(messageContent);
-                    if (avatarHtml) messageDiv.insertAdjacentHTML('beforeend', avatarHtml);
-                } else {
-                    if (avatarHtml) messageDiv.insertAdjacentHTML('afterbegin', avatarHtml);
-                    messageDiv.appendChild(messageContent);
-                }
-
-                container.appendChild(messageDiv);
+                renderMessageElement(msg);
             });
             scrollToBottom();
             observeMessages();
@@ -3184,6 +3229,7 @@
                     if (entry.isIntersecting) {
                         const msgEl = entry.target;
                         const msgId = msgEl.id;
+                        if (msgId.startsWith('temp_')) return; // ข้ามข้อความที่ยังไม่ส่งจริง
                         const msg = messages.find(m => m.id === msgId);
                         if (msg && msg.user_id !== currentUser?.id && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
                             supabaseClient
@@ -3261,61 +3307,14 @@
                             partnerId = newPartnerId;
                             loadPartnerInfo();
                             insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
-                            if (role === 'buyer' && newPartnerId) {
-                                insertJeannySystemMessage('ผู้ขายได้เข้าร่วมห้องทำรายการแล้ว ระบบกำลังบันทึกประวัติเพื่อความปลอดภัย', 'buyer');
-                            }
+                            // ข้อความ system สำหรับอีกฝั่งจะถูก insert โดยอีกฝั่ง (ไม่ใส่ซ้ำ)
                         }
 
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
                             restartTimerFromTradeData();
                         }
 
-                        if (oldStatus !== tradeStatus) {
-                            if (tradeStatus === 'payment_done') {
-                                insertJeannySystemMessage(
-                                    `💰 ผู้ซื้อได้โอนเงิน ${tradeData.product_price} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
-                                    'seller'
-                                );
-                            }
-                            else if (tradeStatus === 'shipped') {
-                                if (role === 'buyer') {
-                                    insertJeannySystemMessage(
-                                        `🎁 ผู้ขายได้ส่งมอบ ID/ไอเทมเรียบร้อยแล้ว กรุณาตรวจสอบ`,
-                                        'buyer'
-                                    );
-                                    showGameDeliveryReceivedModal();
-                                    insertJeannySystemMessage(
-                                        'ผู้ขายได้ทำการจัดส่งข้อมูลไอดี/ไอเทมแล้ว โปรดตรวจสอบความถูกต้องและเปลี่ยนรหัสผ่านก่อนกดยืนยันรับสินค้า',
-                                        'buyer'
-                                    );
-                                } else {
-                                    insertJeannySystemMessage(
-                                        `🎁 คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
-                                        'seller'
-                                    );
-                                }
-                            }
-                            else if (tradeStatus === 'received') {
-                                if (role === 'seller') {
-                                    insertJeannySystemMessage(
-                                        `💰 ผู้ซื้อได้รับสินค้าแล้ว เงิน ${tradeData.product_price} AGS โอนเข้าบัญชีคุณ`,
-                                        'seller'
-                                    );
-                                    setTimeout(() => {
-                                        document.getElementById('ratingModal')?.classList.add('active');
-                                    }, 2000);
-                                } else {
-                                    insertJeannySystemMessage(
-                                        `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
-                                        'buyer'
-                                    );
-                                    setTimeout(() => {
-                                        document.getElementById('ratingModal')?.classList.add('active');
-                                    }, 2000);
-                                }
-                            }
-                        }
-
+                        // เราไม่ insert system message ซ้ำอีกต่อไป ให้ action ต่างๆ เป็นผู้ insert
                         updateUIByStatus();
                     })
                     .on('postgres_changes', {
@@ -3325,7 +3324,18 @@
                         filter: `room_id=eq.${roomId}`
                     }, (payload) => {
                         console.log('💬 New message:', payload.new);
-                        loadMessages(false);
+                        // ตรวจสอบว่าเป็นข้อความที่เราส่ง optimistic ไปแล้วหรือไม่
+                        const existingMsg = messages.find(m => m.id === payload.new.id);
+                        if (!existingMsg) {
+                            appendNewMessage(payload.new);
+                        } else {
+                            // ถ้ามีอยู่แล้ว (optimistic) ให้อัปเดตสถานะเป็นส่งสำเร็จ
+                            if (existingMsg.status === 'sending') {
+                                existingMsg.status = 'sent';
+                                const el = document.getElementById(payload.new.id);
+                                if (el) el.classList.remove('optimistic');
+                            }
+                        }
                     })
                     .subscribe((status) => {
                         console.log('📡 Realtime status:', status);
@@ -3615,9 +3625,9 @@
                                     partnerId = tradeData.buyer_id;
                                     if (partnerId) {
                                         await loadPartnerInfo();
-                                        await insertJeannySystemMessage(
+                                        await insertSystemMessage(
                                             `👤 ${currentUser.profile?.display_name || currentUser.profile?.username || 'ผู้ขาย'} ได้เข้ามาในห้องแล้ว`,
-                                            'buyer'
+                                            'system'
                                         );
                                     }
                                 } else {
@@ -3761,15 +3771,21 @@
                 })
                 .eq('room_id', roomId);
 
+            // Insert system message สำหรับผู้ซื้อ (จะถูกส่งผ่าน realtime ให้อีกฝั่งเห็น)
+            await insertSystemMessage(
+                `🎮 ผู้ขายได้ส่งมอบ ID/ไอเทมเรียบร้อยแล้ว กรุณาตรวจสอบ`,
+                'system'
+            );
+            // สำหรับผู้ขาย (ตัวเอง)
             if (role === 'seller') {
-                insertJeannySystemMessage(
-                    'ผู้ขายได้ทำการจัดส่งข้อมูลไอดี/ไอเทมแล้ว โปรดตรวจสอบความถูกต้องและเปลี่ยนรหัสผ่านก่อนกดยืนยันรับสินค้า',
-                    'buyer'
+                await insertSystemMessage(
+                    `✅ คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
+                    'system'
                 );
             }
 
             document.getElementById('btnShip').disabled = true;
-            addAiAlertMessage('🎁 คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ...', false);
+            showAiAlert('🎁 คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ...', false);
 
             await ส่งแจ้งเตือน(
                 tradeData.buyer_id, 'game', 'ผู้ขายส่งไอเทม',
@@ -3864,10 +3880,15 @@
             document.getElementById('timerLabel').textContent = 'สำเร็จแล้ว';
             document.getElementById('timerDisplay').style.color = 'var(--success)';
 
+            // Insert system message สำหรับผู้ขาย (อีกฝั่ง)
+            await insertSystemMessage(
+                `💰 ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว ระบบจะโอนเงิน ${trade.product_price.toLocaleString()} AGS ให้ผู้ขาย`,
+                'system'
+            );
             if (role === 'buyer') {
-                insertJeannySystemMessage(
-                    'ผู้ซื้อได้รับไอเทมเรียบร้อยแล้ว ระบบจะโอนเงิน AGS เข้าบัญชีของคุณ',
-                    'seller'
+                await insertSystemMessage(
+                    `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
+                    'system'
                 );
             }
 
@@ -3928,12 +3949,12 @@
             const price = parseFloat(priceInput);
             if (!price || price <= 0) {
                 closeModal('transferModal');
-                addAiAlertMessage('❌ กรุณากรอกราคาที่ถูกต้อง', false);
+                showAiAlert('❌ กรุณากรอกราคาที่ถูกต้อง', false);
                 confirmBtn.disabled = false;
                 return;
             }
             if (!currentUser) {
-                addAiAlertMessage('❌ กรุณาเข้าสู่ระบบก่อน', false);
+                showAiAlert('❌ กรุณาเข้าสู่ระบบก่อน', false);
                 confirmBtn.disabled = false;
                 return;
             }
@@ -3950,7 +3971,7 @@
                 .single();
             if (userError || !user || user.balance < total) {
                 closeModal('transferModal');
-                addAiAlertMessage('❌ ยอดเงินไม่เพียงพอ (ต้องการ ' + total.toLocaleString() + ' AGS)', false);
+                showAiAlert('❌ ยอดเงินไม่เพียงพอ (ต้องการ ' + total.toLocaleString() + ' AGS)', false);
                 confirmBtn.disabled = false;
                 return;
             }
@@ -3962,7 +3983,7 @@
                 .eq('id', currentUser.id);
             if (updateError) {
                 console.error('Error updating balance:', updateError);
-                addAiAlertMessage('❌ ไม่สามารถหักเงินได้', false);
+                showAiAlert('❌ ไม่สามารถหักเงินได้', false);
                 confirmBtn.disabled = false;
                 return;
             }
@@ -4002,10 +4023,15 @@
                 return;
             }
 
+            // Insert system message สำหรับผู้ขาย
+            await insertSystemMessage(
+                `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
+                'system'
+            );
             if (role === 'buyer') {
-                insertJeannySystemMessage(
-                    'ผู้ซื้อทำการโอนเงินเข้าสู่ระบบกักเงิน (AEGIS Vault) เรียบร้อยแล้ว โปรดตรวจสอบและส่งข้อมูลไอเทม',
-                    'seller'
+                await insertSystemMessage(
+                    `✅ โอนเงินสำเร็จ! ระบบได้รับเงิน ${total.toLocaleString()} AGS ของคุณแล้ว`,
+                    'system'
                 );
             }
 
@@ -4030,13 +4056,7 @@
             document.getElementById('btnReceive').disabled = true;
 
             extendTimer(180);
-            addAiAlertMessage('⏰ ผู้ขายมีเวลา 3 ชั่วโมงในการส่งมอบ ID/ไอเทม', false);
-            addAiAlertMessage('✅ โอนเงินสำเร็จ! ระบบได้รับเงินแล้ว', false);
-
-            await insertJeannySystemMessage(
-                `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
-                'seller'
-            );
+            showAiAlert('⏰ ผู้ขายมีเวลา 3 ชั่วโมงในการส่งมอบ ID/ไอเทม', false);
 
             setTimeout(() => { confirmBtn.disabled = false; }, 1000);
         };
@@ -4110,15 +4130,19 @@
 
                 const rankInfo = await getRank(completed, partnerId);
                 const kycBadge = (user.kyc_verified === true || user.kyc_status === 'verified') 
-                    ? ' <i class="fas fa-check-circle kyc-neon" style="font-size:18px;" title="ยืนยันตัวตนแล้ว"></i>' 
+                    ? ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:18px;"></i>' 
                     : '';
 
                 document.getElementById('profileName').innerHTML = 
                     (user.display_name || user.username || 'คู่ค้า').toUpperCase() + kycBadge;
                 document.getElementById('profileName').style.color = rankInfo.color;
+                document.getElementById('profileName').style.textShadow = getTextShadowStyle(rankInfo, partnerId);
 
                 const avatarFrame = document.getElementById('profileAvatarFrame');
-                avatarFrame.className = `rank-frame profile-avatar-frame ${user.rank || 'rb-0'}`;
+                const avatarGlow = getAvatarGlowStyle(rankInfo, partnerId);
+                avatarFrame.style.border = `${avatarGlow.borderWidth} solid ${rankInfo.border}`;
+                avatarFrame.style.boxShadow = avatarGlow.boxShadow;
+                avatarFrame.style.animation = avatarGlow.animation;
                 document.getElementById('profileAvatar').src = user.photo_url || DEFAULT_AVATAR;
 
                 document.getElementById('profileRankBadge').innerHTML = rankInfo.html;
@@ -4189,13 +4213,17 @@
             const nameEl = document.getElementById('myProfileName');
             nameEl.innerHTML = (profile.display_name || profile.username || 'ผู้ใช้').toUpperCase();
             nameEl.style.color = rankInfo.color;
+            nameEl.style.textShadow = getTextShadowStyle(rankInfo, uid);
 
             const avatarFrame = document.getElementById('myProfileAvatarFrame');
-            avatarFrame.className = `rank-frame profile-avatar-frame ${profile.rank || 'rb-0'}`;
+            const avatarGlow = getAvatarGlowStyle(rankInfo, uid);
+            avatarFrame.style.border = `${avatarGlow.borderWidth} solid ${rankInfo.border}`;
+            avatarFrame.style.boxShadow = avatarGlow.boxShadow;
+            avatarFrame.style.animation = avatarGlow.animation;
             document.getElementById('myProfileAvatar').src = profile.photo_url || DEFAULT_AVATAR;
 
             if (profile.kyc_status === 'verified' || profile.kyc_verified === true) {
-                nameEl.innerHTML += ' <i class="fas fa-check-circle kyc-neon" style="font-size:18px;"></i>';
+                nameEl.innerHTML += ' <i class="fas fa-check-circle" style="color:#00f2ff; text-shadow:0 0 5px #00f2ff; font-size:18px;"></i>';
             }
 
             document.getElementById('myProfileRankBadge').innerHTML = rankInfo.html;
@@ -4352,8 +4380,10 @@
         }
 
         // ============================================
-        // SEND MESSAGE
+        // SEND MESSAGE (Optimistic)
         // ============================================
+        let pendingMessages = {};
+
         window.sendMessage = async function() {
             if (window.isSendingMessage) return;
             window.isSendingMessage = true;
@@ -4424,36 +4454,91 @@
                     return;
                 }
 
-                const { error } = await supabaseClient
+                // สร้างข้อความชั่วคราว
+                const tempId = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const tempMsg = {
+                    id: tempId,
+                    user_id: currentUser.id,
+                    content: text,
+                    type: 'text',
+                    created_at: new Date().toISOString(),
+                    status: 'sending',
+                    users_public: {
+                        username: currentUser.profile?.username,
+                        display_name: currentUser.profile?.display_name,
+                        photo_url: currentUser.profile?.photo_url
+                    }
+                };
+                // เพิ่มลงใน DOM ทันที
+                appendNewMessage(tempMsg);
+                input.value = '';
+                clearTyping();
+
+                // ส่งไปยัง Supabase
+                const { data, error } = await supabaseClient
                     .from('messages')
                     .insert([{
                         room_id: roomId,
                         user_id: currentUser.id,
                         content: text,
                         type: 'text'
-                    }]);
+                    }])
+                    .select()
+                    .single();
 
-                if (error) {
-                    console.error('Send message error:', error);
-                    insertSystemMessage('❌ ไม่สามารถส่งข้อความได้ (อาจติด RLS Policy)', 'system');
-                    window.isSendingMessage = false;
-                    sendBtn.innerHTML = originalHTML;
-                    sendBtn.disabled = false;
-                    return;
+                if (error) throw error;
+
+                // อัปเดตข้อความชั่วคราวด้วย id จริง
+                const tempEl = document.getElementById(tempId);
+                if (tempEl) {
+                    tempEl.id = data.id;
+                    tempEl.classList.remove('optimistic');
+                }
+                // อัปเดตใน array messages
+                const msgIndex = messages.findIndex(m => m.id === tempId);
+                if (msgIndex !== -1) {
+                    messages[msgIndex].id = data.id;
+                    messages[msgIndex].status = 'sent';
                 }
 
-                input.value = '';
-                clearTyping();
                 window.isSendingMessage = false;
                 sendBtn.innerHTML = originalHTML;
                 sendBtn.disabled = false;
             } catch (err) {
                 console.error('Unexpected error in sendMessage:', err);
+                // ทำเครื่องหมายข้อความว่าส่งไม่สำเร็จ
+                const lastMsg = messages[messages.length - 1];
+                if (lastMsg && lastMsg.id.startsWith('temp_')) {
+                    lastMsg.status = 'failed';
+                    const el = document.getElementById(lastMsg.id);
+                    if (el) {
+                        el.classList.add('failed');
+                        // เพิ่มปุ่มลองใหม่
+                        const statusDiv = el.querySelector('.message-status');
+                        if (statusDiv && !statusDiv.querySelector('.retry-btn')) {
+                            const retryBtn = document.createElement('span');
+                            retryBtn.className = 'retry-btn';
+                            retryBtn.textContent = 'ลองอีกครั้ง';
+                            retryBtn.onclick = () => retryFailedMessage(lastMsg);
+                            statusDiv.appendChild(retryBtn);
+                        }
+                    }
+                }
                 window.isSendingMessage = false;
                 sendBtn.innerHTML = originalHTML;
                 sendBtn.disabled = false;
             }
         };
+
+        function retryFailedMessage(msg) {
+            // ลบข้อความเดิม
+            const el = document.getElementById(msg.id);
+            if (el) el.remove();
+            messages = messages.filter(m => m.id !== msg.id);
+            // ส่งใหม่
+            document.getElementById('messageInput').value = msg.content;
+            sendMessage();
+        }
 
         // ============================================
         // STICKER / IMAGE
@@ -4857,7 +4942,7 @@
         }
 
         function addAdminMessage(message) {
-            addAiAlertMessage(message);
+            showAiAlert(message);
         }
 
         async function incrementCancelled(userId) {
@@ -4948,7 +5033,7 @@
             });
 
             document.getElementById('messageInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') { window.sendMessage(); e.preventDefault(); }
+                if (e.key === 'Enter') { sendMessage(); e.preventDefault(); }
             });
 
             const priceInput = document.getElementById('productPrice');
