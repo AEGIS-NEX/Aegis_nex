@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -3375,9 +3376,9 @@
                         if (newPartnerId && newPartnerId !== partnerId && newPartnerId !== currentUser.id) {
                             partnerId = newPartnerId;
                             loadPartnerInfo();
-                            insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
+                            insertSystemMessage('🛡️ คู่ค้าเข้าร่วมห้องแล้ว ระบบ AEGIS บันทึกประวัติการแชทเพื่อความปลอดภัย', 'system');
                             if (role === 'buyer' && newPartnerId) {
-                                insertJeannySystemMessage('ผู้ขายได้เข้าร่วมห้องทำรายการแล้ว ระบบกำลังบันทึกประวัติเพื่อความปลอดภัย', 'buyer');
+                                insertJeannySystemMessage('🛡️ คู่ค้าเข้าร่วมห้องแล้ว ระบบ AEGIS บันทึกประวัติการแชทเพื่อความปลอดภัย', 'buyer');
                             }
                         }
 
@@ -3388,8 +3389,12 @@
                         if (oldStatus !== tradeStatus) {
                             if (tradeStatus === 'payment_done') {
                                 insertJeannySystemMessage(
-                                    `💰 ผู้ซื้อได้โอนเงิน ${tradeData.product_price} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่งสินค้า`,
+                                    `💰 ผู้ซื้อวางเงินประกัน ${tradeData.product_price ? tradeData.product_price.toLocaleString() : ''} AGS เข้า AEGIS Vault แล้ว 📦 ผู้ขายสามารถจัดส่งสินค้าได้เลย`,
                                     'seller'
+                                );
+                                insertJeannySystemMessage(
+                                    `✅ ระบบรับเงินของคุณเข้า AEGIS Vault แล้ว รอผู้ขายจัดส่งสินค้า`,
+                                    'buyer'
                                 );
                             }
                             else if (tradeStatus === 'shipped') {
@@ -3397,12 +3402,12 @@
                                 loadShippingData();
                                 if (role === 'buyer') {
                                     insertJeannySystemMessage(
-                                        `📦 ผู้ขายได้จัดส่งสินค้าเรียบร้อยแล้ว กรุณาตรวจสอบ`,
+                                        `🚚 ผู้ขายจัดส่งสินค้าแล้ว ⏳ กรุณาตรวจสอบและกดยืนยันรับสินค้า`,
                                         'buyer'
                                     );
                                 } else {
                                     insertJeannySystemMessage(
-                                        `📦 คุณได้จัดส่งสินค้าให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
+                                        `🚚 คุณจัดส่งสินค้าเรียบร้อยแล้ว ⏳ รอผู้ซื้อตรวจสอบและยืนยันรับสินค้า`,
                                         'seller'
                                     );
                                 }
@@ -3410,7 +3415,7 @@
                             else if (tradeStatus === 'received') {
                                 if (role === 'seller') {
                                     insertJeannySystemMessage(
-                                        `💰 ผู้ซื้อได้รับสินค้าแล้ว เงิน ${tradeData.product_price} AGS โอนเข้าบัญชีคุณ`,
+                                        `✅ ผู้ซื้อยืนยันรับสินค้า ระบบโอนเงิน ${tradeData.product_price ? tradeData.product_price.toLocaleString() : ''} AGS ให้ผู้ขายเรียบร้อย ปิดดีลสมบูรณ์ 🎉`,
                                         'seller'
                                     );
                                     setTimeout(() => {
@@ -3418,7 +3423,7 @@
                                     }, 2000);
                                 } else {
                                     insertJeannySystemMessage(
-                                        `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
+                                        `✅ ผู้ซื้อยืนยันรับสินค้า ระบบโอนเงินให้ผู้ขายเรียบร้อย ปิดดีลสมบูรณ์ 🎉`,
                                         'buyer'
                                     );
                                     setTimeout(() => {
@@ -3593,7 +3598,7 @@
 
                 tradeStatus = 'received';
                 updateUIByStatus();
-                insertSystemMessage('⏰ หมดเวลารับสินค้า ระบบโอนเงินให้ผู้ขายอัตโนมัติ', 'system');
+                insertSystemMessage('⏰ หมดเวลาตรวจสอบ! ระบบโอนเงินให้ผู้ขายอัตโนมัติ ✅ ปิดดีลสมบูรณ์', 'system');
                 setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 5000);
             } catch (err) {
                 console.error('Error in auto complete trade:', err);
@@ -3977,7 +3982,7 @@
             tradeStatus = 'shipped';
 
             await insertJeannySystemMessage(
-                `📦 คุณได้จัดส่งสินค้าแล้ว (${carrierSelect.options[carrierSelect.selectedIndex].text} - ${trackingNumber})`,
+                `🚚 ผู้ขายจัดส่งสินค้าแล้ว (${carrierSelect.options[carrierSelect.selectedIndex].text}: ${trackingNumber}) ⏳ กรุณาตรวจสอบและกดยืนยันรับสินค้า`,
                 'seller'
             );
 
@@ -4081,11 +4086,11 @@
             document.getElementById('timerDisplay').style.color = 'var(--success)';
 
             await insertJeannySystemMessage(
-                '💰 ผู้ซื้อได้รับสินค้าเรียบร้อยแล้ว เงินจะโอนเข้าบัญชีของคุณ',
+                `✅ ผู้ซื้อยืนยันรับสินค้า ระบบโอนเงิน ${trade.product_price ? trade.product_price.toLocaleString() : ''} AGS ให้ผู้ขายเรียบร้อย ปิดดีลสมบูรณ์ 🎉`,
                 'seller'
             );
             await insertJeannySystemMessage(
-                '✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ',
+                `✅ ผู้ซื้อยืนยันรับสินค้า ระบบโอนเงินให้ผู้ขายเรียบร้อย ปิดดีลสมบูรณ์ 🎉`,
                 'buyer'
             );
             
@@ -4130,11 +4135,36 @@
             document.getElementById('trackingModal').style.display = 'none';
         };
 
-        // ✅ เปลี่ยนให้ไปที่ 17track.net แทนลิงก์เฉพาะบริษัท
+        // ✅ ลิงก์ติดตามพัสดุตามบริษัทขนส่งจริง
         window.goToTrackingPage = function() {
             if (!shippingData) return;
             const trackingNumber = shippingData.tracking_number;
-            const url = `https://www.17track.net/en/track?nums=${encodeURIComponent(trackingNumber)}`;
+            const carrier = shippingData.carrier;
+
+            const trackingUrls = {
+                'kerry':       `https://th.kex-express.com/th/track/?track=${encodeURIComponent(trackingNumber)}`,
+                'flash':       `https://www.flashexpress.co.th/tracking/${encodeURIComponent(trackingNumber)}`,
+                'jnt':         `https://www.jtexpress.co.th/track/${encodeURIComponent(trackingNumber)}`,
+                'ninjavan':    `https://www.ninjavan.co/th-th/tracking?id=${encodeURIComponent(trackingNumber)}`,
+                'thai_post':   `https://track.thailandpost.co.th/?track=${encodeURIComponent(trackingNumber)}`,
+                'best':        `https://bestexpress.thaiware.com/`,
+                'scg':         `https://www.scgexpress.co.th/tracking/${encodeURIComponent(trackingNumber)}`,
+                'alpha':       `http://www.alphaexpress.ca/`,
+                'dhl_th':      `https://www.dhl.com/th-en/home/tracking/tracking-express.html?submit=1&tracking-id=${encodeURIComponent(trackingNumber)}`,
+                'fedex_th':    `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(trackingNumber)}`,
+                'dhl_int':     `https://www.dhl.com/th-en/home/tracking/tracking-express.html?submit=1&tracking-id=${encodeURIComponent(trackingNumber)}`,
+                'fedex_int':   `https://www.fedex.com/th-th/tracking.html`,
+                'ups':         `https://www.ups.com/track?tracknum=${encodeURIComponent(trackingNumber)}`,
+                'tnt':         `https://www.tnt.com/express/th_th/site/shipping-tools/tracking.html?searchType=CON&cons=${encodeURIComponent(trackingNumber)}`,
+                'ems_int':     `https://track.thailandpost.co.th/?track=${encodeURIComponent(trackingNumber)}`,
+                'usps':        `https://tools.usps.com/go/TrackConfirmAction?tLabels=${encodeURIComponent(trackingNumber)}`,
+                'china_post':  `https://parcelsapp.com/en/carriers/china-post`,
+                'singpost':    `https://www.singpost.com/track-items/${encodeURIComponent(trackingNumber)}`,
+                'yanwen':      `https://track.yw56.com.cn/en/index`,
+                'sf_express':  `https://www.sf-express.com/th/th/dynamic_function/waybill/#search/list?trackingNumber=${encodeURIComponent(trackingNumber)}`
+            };
+
+            const url = trackingUrls[carrier] || `https://parcelsapp.com/en/tracking/${encodeURIComponent(trackingNumber)}`;
             window.open(url, '_blank');
         };
 
@@ -4268,8 +4298,12 @@
 
             if (role === 'buyer') {
                 insertJeannySystemMessage(
-                    'ผู้ซื้อทำการโอนเงินเข้าสู่ระบบกักเงิน (AEGIS Vault) เรียบร้อยแล้ว โปรดตรวจสอบและส่งสินค้า',
+                    `💰 ผู้ซื้อวางเงินประกัน ${price.toLocaleString()} AGS เข้า AEGIS Vault แล้ว 📦 ผู้ขายสามารถจัดส่งสินค้าได้เลย`,
                     'seller'
+                );
+                insertJeannySystemMessage(
+                    `✅ ระบบรับเงินของคุณเข้า AEGIS Vault แล้ว รอผู้ขายจัดส่งสินค้า`,
+                    'buyer'
                 );
             }
 
@@ -4298,7 +4332,7 @@
             showAiAlert('⏰ ผู้ขายมีเวลา 48 ชั่วโมงในการจัดส่งสินค้า', false);
 
             await insertJeannySystemMessage(
-                `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่งสินค้า`,
+                `💰 ผู้ซื้อวางเงินประกัน ${price.toLocaleString()} AGS เข้า AEGIS Vault แล้ว 📦 ผู้ขายสามารถจัดส่งสินค้าได้เลย`,
                 'seller'
             );
 
@@ -4345,12 +4379,12 @@
                 await incrementCancelled(currentUser.id);
                 if (partnerId) await incrementCancelled(partnerId);
                 await supabaseClient.from('trades').update({ status: 'cancelled' }).eq('room_id', roomId);
-                insertSystemMessage('❌ คุณได้ยกเลิกการซื้อขายและออกจากห้องแล้ว', 'system');
+                insertSystemMessage('❌ ยกเลิกดีลสำเร็จ ไม่มีค่าใช้จ่ายเกิดขึ้น', 'system');
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
             } else if (tradeStatus === 'payment_done') {
                 showEmergencyAlert();
                 adminJoinRoom();
-                addAdminMessage('👑 ADMIN: รับทราบการแจ้งยกเลิกจากผู้ใช้ กำลังตรวจสอบ');
+                addAdminMessage('⚠️ ผู้ใช้ออกคำสั่งยกเลิกดีล ระบบกำลังเรียก Admin เข้ามาตรวจสอบ โปรดรอสักครู่');
             }
         };
 
@@ -4678,15 +4712,36 @@
                                 detail: 'ห้องถูกแบนอัตโนมัติเนื่องจากละเมิดคำต้องห้ามครบ 5 ครั้ง',
                                 status: 'pending'
                             }]);
-                        insertSystemMessage('⚠️ ห้องนี้ถูกระงับเนื่องจากละเมิดกฎ กรุณารอ Admin ตรวจสอบ', 'system');
+                        insertSystemMessage('⚠️ แจ้งเตือนจาก AEGIS AI: ตรวจพบคำต้องห้าม หากละเมิดครบ 5 ครั้ง ระบบจะระงับห้องนี้ทันที (5/5)', 'system');
                     } else {
-                        insertSystemMessage(`⚠️ ข้อความของคุณมีคำต้องห้าม (${violations}/5)`, 'system');
+                        insertSystemMessage(`⚠️ แจ้งเตือนจาก AEGIS AI: ตรวจพบคำต้องห้าม หากละเมิดครบ 5 ครั้ง ระบบจะระงับห้องนี้ทันที (${violations}/5)`, 'system');
                     }
                     window.isSendingMessage = false;
                     sendBtn.innerHTML = originalHTML;
                     sendBtn.disabled = false;
                     return;
                 }
+
+                // ===== OPTIMISTIC UI: แสดงข้อความทันทีโดยไม่รอ DB =====
+                const optimisticId = `opt-${Date.now()}`;
+                const optimisticTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                const optimisticFrag = document.createDocumentFragment();
+                const optimisticMsgEl = document.createElement('div');
+                optimisticMsgEl.className = 'message sent';
+                optimisticMsgEl.id = `optimistic-${optimisticId}`;
+                optimisticMsgEl.style.animation = 'messageIn 0.2s ease';
+                optimisticMsgEl.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-bubble">${escapeHTML(text)}</div>
+                        <div class="message-status">
+                            <span class="message-time">${optimisticTime}</span>
+                        </div>
+                    </div>`;
+                optimisticFrag.appendChild(optimisticMsgEl);
+                const msgContainerOpt = document.getElementById('messagesContainer');
+                msgContainerOpt.appendChild(optimisticFrag);
+                scrollToBottom();
+                // ===== END OPTIMISTIC UI =====
 
                 const { error } = await supabaseClient
                     .from('messages')
@@ -4699,6 +4754,12 @@
 
                 if (error) {
                     console.error('Send message error:', error);
+                    // ลบ optimistic message ออกเมื่อ error
+                    const optimisticEl = document.getElementById(`optimistic-${optimisticId}`);
+                    if (optimisticEl) {
+                        optimisticEl.style.opacity = '0.4';
+                        optimisticEl.querySelector('.message-time').textContent = '❗ ส่งไม่สำเร็จ';
+                    }
                     insertSystemMessage('❌ ไม่สามารถส่งข้อความได้ (อาจติด RLS Policy)', 'system');
                     window.isSendingMessage = false;
                     sendBtn.innerHTML = originalHTML;
