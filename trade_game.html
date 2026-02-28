@@ -342,8 +342,12 @@
         }
 
         .control-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 8px 15px;
             background: rgba(5, 11, 20, 0.8);
-            border-bottom: 1px solid rgba(0, 210, 255, 0.15);
+            border-bottom: 1px solid rgba(188, 19, 254, 0.1);
             backdrop-filter: blur(var(--glass-blur));
             flex-shrink: 0;
         }
@@ -417,40 +421,6 @@
             box-shadow: 0 2px 6px rgba(255, 0, 85, 0.2);
         }
         
-        .btn-ship-item {
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            color: #fff;
-            box-shadow: 0 2px 6px rgba(0, 180, 216, 0.3);
-            border: none;
-            border-radius: 10px;
-            padding: 8px 4px;
-            font-family: 'Chakra Petch', sans-serif;
-            font-weight: bold;
-            font-size: 10px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            min-height: 50px;
-        }
-        .btn-ship-item i { font-size: 16px; }
-        .btn-ship-item:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: linear-gradient(135deg, #555, #777);
-            color: #999;
-            box-shadow: none;
-            transform: none !important;
-        }
-        .btn-ship-item:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0, 180, 216, 0.5);
-        }
         /* ไม่ใช้ปุ่ม Track ในโหมดเกม */
         .btn-track {
             display: none;
@@ -471,22 +441,13 @@
             transform: none !important;
         }
 
-        /* ===== 🔵 BLUE NEON STYLE สำหรับห้องเกม ===== */
         .chat-area {
             flex: 1 1 0;
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
-            background-color: #050b14 !important;
-            background-image: radial-gradient(circle at center, #001a2e 0%, #050b14 100%);
-            position: relative;
-        }
-
-        .announcement-bar {
-            background: rgba(0, 210, 255, 0.1);
-            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
-            color: #00d2ff;
+            background: rgba(5, 11, 20, 0.6);
         }
         
         .messages-container {
@@ -524,13 +485,40 @@
         .message.system {
             align-self: center;
             max-width: 90%;
-            background: rgba(0, 210, 255, 0.05);
-            border: 1px solid rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 18px;
-            color: #00d2ff;
+            color: #fff;
             font-size: 12px;
             padding: 8px 12px;
             margin: 5px 0;
+        }
+        
+        /* Fix 3: กรอบข้อมูลผู้ซื้อ/ผู้ขาย (Uniform Style) */
+        .participant-info {
+            border: 1px solid rgba(0, 243, 255, 0.3) !important;
+            background: rgba(10, 15, 28, 0.9) !important;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        /* Fix 4: แยกฝั่งแชท Buyer (ซ้าย) / Seller (ขวา) */
+        .message.buyer {
+            align-self: flex-start;
+        }
+        .message.buyer .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #00f3ff;
+            border-radius: 0 12px 12px 12px;
+        }
+        .message.seller {
+            align-self: flex-end;
+        }
+        .message.seller .message-content {
+            background: rgba(111, 66, 193, 0.2);
+            border-right: 3px solid #ff00c8;
+            border-radius: 12px 0 12px 12px;
+            text-align: right;
         }
         .message.system .message-bubble {
             background: transparent;
@@ -606,16 +594,11 @@
         }
         
         .message.system .message-bubble {
-            background: transparent !important;
-            color: #00d2ff !important;
-            text-shadow: 0 0 8px rgba(0, 210, 255, 0.7);
-            font-weight: bold;
-            text-align: center;
+            background: transparent;
             border: none;
-            font-family: 'Chakra Petch', sans-serif;
-            letter-spacing: 0.5px;
-            padding: 6px 0;
-            width: 100%;
+            padding: 0;
+            text-align: center;
+            color: #fff;
         }
         
         .message-status {
@@ -628,11 +611,9 @@
         }
         
         .read-receipt {
-            color: #00d2ff;
+            color: var(--primary);
             font-size: 10px;
             display: none;
-            font-weight: bold;
-            text-shadow: 0 0 6px rgba(0, 210, 255, 0.6);
         }
         
         .message-time {
@@ -643,7 +624,6 @@
         .message.sent .message-status {
             justify-content: flex-end;
             color: rgba(255,255,255,0.5);
-            text-align: right;
         }
         
         .message.received .message-status {
@@ -758,10 +738,18 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 25px;
-            color: #fff;
+            color: #ffffff !important;
             font-family: 'Chakra Petch';
             font-size: 13px;
             transition: all 0.3s;
+        }
+        
+        /* Fix 2: บังคับสีข้อความ input/textarea ใน chat area */
+        .chat-input-area textarea,
+        .chat-input-area input {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .message-input:focus {
@@ -2331,38 +2319,28 @@
         </div>
         
         <!-- 🎮 CONTROL BUTTONS (game mode) -->
-        <div class="control-panel" style="display: flex; flex-direction: column; gap: 8px; padding: 8px 15px;">
-            <!-- แถวบน: โอนเงิน + รับของ -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button class="control-btn btn-transfer" id="btnTransfer" onclick="openTransferModal()">
-                    <i class="fas fa-money-bill-transfer"></i>
-                    โอนเงินเข้าระบบ
-                </button>
-                
-                <button class="control-btn btn-receive" id="btnReceive" onclick="receiveProduct()" disabled>
-                    <i class="fas fa-check-circle"></i>
-                    รับ ID/ไอเทมเรียบร้อย
-                </button>
-            </div>
-            <!-- แถวกลาง: ส่ง ID/pass + ส่งไอเทมเกม -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <button class="control-btn btn-ship" id="btnShip" onclick="openGameDeliveryModal('id')" disabled>
-                    <i class="fas fa-key"></i>
-                    ส่ง ID/pass
-                </button>
-                
-                <button class="control-btn btn-ship-item" id="btnShipItem" onclick="openGameDeliveryModal('item')" disabled>
-                    <i class="fas fa-gift"></i>
-                    ส่งไอเทมเกม
-                </button>
-            </div>
-            <!-- แถวล่าง: ยกเลิกดีล (ปุ่มยาว) -->
-            <div style="display: flex; justify-content: center;">
-                <button class="control-btn btn-cancel" id="btnCancel" onclick="openCancelModal()" style="width: calc(100% - 20px);">
-                    <i class="fas fa-ban"></i>
-                    ยกเลิกดีล
-                </button>
-            </div>
+        <div class="control-panel">
+            <button class="control-btn btn-transfer" id="btnTransfer" onclick="openTransferModal()">
+                <i class="fas fa-money-bill-transfer"></i>
+                โอนเงินเข้าระบบ
+            </button>
+            
+            <button class="control-btn btn-receive" id="btnReceive" onclick="receiveProduct()" disabled>
+                <i class="fas fa-check-circle"></i>
+                รับ ID/ไอเทมเรียบร้อย
+            </button>
+            
+            <button class="control-btn btn-ship" id="btnShip" onclick="openGameDeliveryModal()" disabled>
+                <i class="fas fa-gamepad"></i>
+                ส่งมอบ ID/ไอเทมแล้ว
+            </button>
+            
+            <button class="control-btn btn-cancel" id="btnCancel" onclick="openCancelModal()">
+                <i class="fas fa-ban"></i>
+                ยกเลิกดีล
+            </button>
+            
+            <!-- ไม่มีปุ่ม Track ในโหมดเกม -->
         </div>
         
         <!-- 💬 CHAT AREA -->
@@ -3218,15 +3196,13 @@
             const statusDiv = document.createElement('div');
             statusDiv.className = 'message-status';
 
-            // แสดง "อ่านแล้ว" เฉพาะข้อความที่เราส่ง (sent) เท่านั้น → ขึ้นใต้ฟองข้อความของเรา
-            if (sender === 'sent') {
+            // เฉพาะข้อความระหว่างผู้ใช้เท่านั้นที่แสดง read receipt
+            if (sender === 'sent' || sender === 'received') {
                 const readSpan = document.createElement('span');
                 readSpan.className = 'read-receipt';
-                // ตรวจว่าคู่ค้าอ่านแล้วหรือยัง (read_by มีค่า และไม่ใช่แค่ userid ของเรา)
-                const partnerHasRead = msg.read_by && msg.read_by.some(id => id !== currentUser?.id);
-                if (partnerHasRead) {
+                if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
                     readSpan.style.display = 'inline';
-                    readSpan.innerHTML = '✓✓ อ่านแล้ว';
+                    readSpan.innerHTML = 'อ่านแล้ว';
                 } else {
                     readSpan.style.display = 'none';
                 }
@@ -3293,8 +3269,6 @@
                         if (msgId.startsWith('temp_')) return;
                         const msg = messages.find(m => m.id === msgId);
                         // อัปเดต read เฉพาะข้อความของคู่ค้า (received) ที่เป็นข้อความธรรมดา
-                        // เมื่อเราเห็นข้อความของคู่ค้า → update read_by → แล้วแสดง "อ่านแล้ว" ที่ข้อความที่คู่ค้าส่งมา (received)
-                        // แต่ "อ่านแล้ว" ที่ผู้ส่งเห็น (เรา) คือ: ข้อความที่เราส่ง (sent) + คู่ค้าเปิดอ่านแล้ว
                         if (msg && msg.user_id !== currentUser?.id && msg.type === 'text' && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
                             supabaseClient
                                 .from('messages')
@@ -3302,17 +3276,10 @@
                                 .eq('id', msgId)
                                 .then(() => {
                                     msg.read_by = [...(msg.read_by || []), currentUser.id];
-                                    // ค้นหาข้อความของเรา (sent) ที่ส่งก่อนหน้าข้อความนี้ แล้วแสดง "อ่านแล้ว"
-                                    const allSentEls = document.querySelectorAll('.message.sent');
-                                    if (allSentEls.length > 0) {
-                                        // เอาข้อความ sent ล่าสุดที่ยังไม่มี อ่านแล้ว
-                                        allSentEls.forEach(sentEl => {
-                                            const sentSpan = sentEl.querySelector('.read-receipt');
-                                            if (sentSpan) {
-                                                sentSpan.style.display = 'inline';
-                                                sentSpan.innerHTML = '✓✓ อ่านแล้ว';
-                                            }
-                                        });
+                                    const statusSpan = msgEl.querySelector('.read-receipt');
+                                    if (statusSpan) {
+                                        statusSpan.style.display = 'inline';
+                                        statusSpan.innerHTML = 'อ่านแล้ว';
                                     }
                                 });
                         }
@@ -3377,7 +3344,7 @@
                         if (newPartnerId && newPartnerId !== partnerId && newPartnerId !== currentUser.id) {
                             partnerId = newPartnerId;
                             loadPartnerInfo();
-                            insertSystemMessage('🛡️ AEGIS System: ระบบคุ้มครองการเทรด ID/Item เปิดทำงาน', 'system');
+                            insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
                         }
 
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
@@ -3407,33 +3374,9 @@
                         } else {
                             if (existingMsg.status === 'sending') {
                                 existingMsg.status = 'sent';
+                                // อัปเดต element
                                 const el = document.getElementById(payload.new.id);
                                 if (el) el.classList.remove('optimistic');
-                            }
-                        }
-                    })
-                    .on('postgres_changes', {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'messages',
-                        filter: `room_id=eq.${roomId}`
-                    }, (payload) => {
-                        // เมื่อ read_by อัปเดต → แสดง "อ่านแล้ว" ใต้ข้อความของเรา (sent)
-                        const updatedMsg = payload.new;
-                        if (updatedMsg.user_id === currentUser?.id) {
-                            const partnerRead = updatedMsg.read_by && updatedMsg.read_by.some(id => id !== currentUser.id);
-                            if (partnerRead) {
-                                const el = document.getElementById(updatedMsg.id);
-                                if (el) {
-                                    const readSpan = el.querySelector('.read-receipt');
-                                    if (readSpan) {
-                                        readSpan.style.display = 'inline';
-                                        readSpan.innerHTML = '✓✓ อ่านแล้ว';
-                                    }
-                                }
-                                // อัปเดตใน messages array ด้วย
-                                const msg = messages.find(m => m.id === updatedMsg.id);
-                                if (msg) msg.read_by = updatedMsg.read_by;
                             }
                         }
                     })
@@ -3524,7 +3467,7 @@
                     .then(async () => {
                         if (tradeData.buyer_id) await incrementCancelled(tradeData.buyer_id);
                         if (tradeData.seller_id) await incrementCancelled(tradeData.seller_id);
-                        insertSystemMessage('❌ ดีลถูกยกเลิก: ระบบกำลังโอนเงินคืนผู้ซื้อ (รวมค่าธรรมเนียมถ้ามี)', 'system');
+                        insertSystemMessage('⏰ เวลาหมด! การซื้อขายถูกยกเลิกโดยอัตโนมัติ', 'system');
                         setTimeout(() => window.location.href = 'dashboard.html', 2000);
                     })
                     .catch(err => console.error('Error updating trade status:', err));
@@ -3591,7 +3534,7 @@
 
                 tradeStatus = 'received';
                 updateUIByStatus();
-                insertSystemMessage('✅ ปิดดีล! โอนเงินให้ผู้ขายเรียบร้อย ขอบคุณที่เทรดผ่าน AEGIS NEX', 'system');
+                insertSystemMessage('⏰ หมดเวลารับสินค้า ระบบโอนเงินให้ผู้ขายอัตโนมัติ', 'system');
                 setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 5000);
             } catch (err) {
                 console.error('Error in auto complete trade:', err);
@@ -3606,7 +3549,6 @@
             console.log('🚀 initAuth started');
             document.getElementById('btnTransfer').disabled = true;
             document.getElementById('btnShip').disabled = true;
-            document.getElementById('btnShipItem').disabled = true;
             document.getElementById('btnReceive').disabled = true;
             document.getElementById('btnCancel').disabled = true;
 
@@ -3726,8 +3668,10 @@
                                     partnerId = tradeData.buyer_id;
                                     if (partnerId) {
                                         await loadPartnerInfo();
-                                        await insertSystemMessage('🛡️ AEGIS System: ระบบคุ้มครองการเทรด ID/Item เปิดทำงาน', 'system');
-                                        await insertSystemMessage('⚠️ ห้ามส่งของ/ไอดี ก่อนเห็นข้อความ "เงินเข้ากลาง" จากจินนี่เด็ดขาด!', 'system');
+                                        await insertSystemMessage(
+                                            `👤 ${currentUser.profile?.display_name || currentUser.profile?.username || 'ผู้ขาย'} ได้เข้ามาในห้องแล้ว`,
+                                            'system'
+                                        );
                                     }
                                 } else {
                                     console.error(`❌ [Seller] อัปเดตล้มเหลว`, updateErr);
@@ -3806,7 +3750,6 @@
 
                 document.getElementById('btnTransfer').disabled = true;
                 document.getElementById('btnShip').disabled = true;
-                document.getElementById('btnShipItem').disabled = true;
                 document.getElementById('btnReceive').disabled = true;
                 document.getElementById('btnCancel').disabled = false;
 
@@ -3825,7 +3768,6 @@
                 }
                 if (isSeller && tradeStatus === 'payment_done') {
                     document.getElementById('btnShip').disabled = false;
-                    document.getElementById('btnShipItem').disabled = false;
                 }
                 if (isBuyer && tradeStatus === 'shipped') {
                     document.getElementById('btnReceive').disabled = false;
@@ -3838,7 +3780,6 @@
                 if (tradeStatus === 'cancelled' || tradeStatus === 'received' || tradeStatus === 'banned') {
                     document.getElementById('btnTransfer').disabled = true;
                     document.getElementById('btnShip').disabled = true;
-                    document.getElementById('btnShipItem').disabled = true;
                     document.getElementById('btnReceive').disabled = true;
                     document.getElementById('btnCancel').disabled = true;
                 }
@@ -3848,23 +3789,8 @@
         // ============================================
         // GAME-SPECIFIC FUNCTIONS
         // ============================================
-        let currentDeliveryType = 'id'; // 'id' or 'item'
-        window.openGameDeliveryModal = function(type = 'id') {
-            currentDeliveryType = type;
-            const modal = document.getElementById('gameDeliveryConfirmModal');
-            const msgEl = modal.querySelector('.game-delivery-message');
-            const titleEl = modal.querySelector('.game-delivery-title');
-            const iconEl = modal.querySelector('.game-delivery-icon i');
-            if (type === 'item') {
-                titleEl.textContent = 'ยืนยันการส่งไอเทม';
-                iconEl.className = 'fas fa-gift';
-                msgEl.innerHTML = 'คุณได้ส่ง <span style="color: var(--secondary); font-weight: bold;">ไอเทมเกม</span> ให้ผู้ซื้อครบถ้วนแล้วใช่ไหม?<br><br><span style="font-size: 13px; color: #aaa;">เมื่อยืนยันแล้ว ระบบจะแจ้งเตือนผู้ซื้อและบันทึกหลักฐานในแชท</span>';
-            } else {
-                titleEl.textContent = 'ยืนยันการส่ง ID/Pass';
-                iconEl.className = 'fas fa-key';
-                msgEl.innerHTML = 'คุณได้ส่ง <span style="color: var(--secondary); font-weight: bold;">ID / รหัสผ่าน</span> ให้ผู้ซื้อครบถ้วนแล้วใช่ไหม?<br><br><span style="font-size: 13px; color: #aaa;">เมื่อยืนยันแล้ว ระบบจะแจ้งเตือนผู้ซื้อและบันทึกหลักฐานในแชท</span>';
-            }
-            modal.classList.add('active');
+        window.openGameDeliveryModal = function() {
+            document.getElementById('gameDeliveryConfirmModal').classList.add('active');
         };
         window.closeGameDeliveryModal = function() {
             document.getElementById('gameDeliveryConfirmModal').classList.remove('active');
@@ -3888,23 +3814,19 @@
                 })
                 .eq('room_id', roomId);
 
-            // ข้อความตามประเภทการส่งมอบ
-            if (currentDeliveryType === 'item') {
+            await insertSystemMessage(
+                `🎮 ผู้ขายได้ส่งมอบ ID/ไอเทมเรียบร้อยแล้ว กรุณาตรวจสอบ`,
+                'system'
+            );
+            if (role === 'seller') {
                 await insertSystemMessage(
-                    `🎁 ส่งไอเทมแล้ว! ผู้ซื้อตรวจสอบในเกมและกดยืนยันรับสินค้า`,
-                    'system'
-                );
-            } else {
-                await insertSystemMessage(
-                    `🔑 ส่งรหัสแล้ว! ผู้ซื้อโปรดตรวจสอบและผูกความปลอดภัยทันที`,
+                    `✅ คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
                     'system'
                 );
             }
 
             document.getElementById('btnShip').disabled = true;
-            document.getElementById('btnShipItem').disabled = true;
-            const alertMsg = currentDeliveryType === 'item' ? '🎁 ส่งไอเทมแล้ว! รอผู้ซื้อตรวจสอบ...' : '🔑 ส่งรหัสแล้ว! รอผู้ซื้อตรวจสอบ...';
-            showAiAlert(alertMsg, false);
+            showAiAlert('🎁 คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ...', false);
 
             await ส่งแจ้งเตือน(
                 tradeData.buyer_id, 'game', 'ผู้ขายส่งไอเทม',
@@ -3993,7 +3915,6 @@
 
             document.getElementById('btnReceive').disabled = true;
             document.getElementById('btnShip').disabled = true;
-            document.getElementById('btnShipItem').disabled = true;
             document.getElementById('btnTransfer').disabled = true;
 
             clearInterval(tradeTimer);
@@ -4001,9 +3922,15 @@
             document.getElementById('timerDisplay').style.color = 'var(--success)';
 
             await insertSystemMessage(
-                `✅ ปิดดีล! โอนเงินให้ผู้ขายเรียบร้อย ขอบคุณที่เทรดผ่าน AEGIS NEX`,
+                `💰 ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว ระบบจะโอนเงิน ${trade.product_price.toLocaleString()} AGS ให้ผู้ขาย`,
                 'system'
             );
+            if (role === 'buyer') {
+                await insertSystemMessage(
+                    `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
+                    'system'
+                );
+            }
 
             // rating จะแสดงผ่าน realtime
         };
@@ -4137,11 +4064,14 @@
             }
 
             await insertSystemMessage(
-                `💰 เงินประกัน ${price.toLocaleString()} AGS เข้าสู่ระบบแล้ว! 📦 ผู้ขายส่งมอบ ID หรือ Item ได้เลย`,
+                `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
                 'system'
             );
-            if (role === 'seller') {
-                await insertSystemMessage('⚠️ ห้ามส่งของ/ไอดี ก่อนเห็นข้อความ "เงินเข้ากลาง" จากจินนี่เด็ดขาด!', 'system');
+            if (role === 'buyer') {
+                await insertSystemMessage(
+                    `✅ โอนเงินสำเร็จ! ระบบได้รับเงิน ${total.toLocaleString()} AGS ของคุณแล้ว`,
+                    'system'
+                );
             }
 
             tradeStatus = 'payment_done';
@@ -4162,7 +4092,6 @@
             if (progress) progress.style.width = '50%';
 
             document.getElementById('btnShip').disabled = false;
-            document.getElementById('btnShipItem').disabled = false;
             document.getElementById('btnReceive').disabled = true;
 
             extendTimer(180);
@@ -4214,8 +4143,7 @@
             } else if (tradeStatus === 'payment_done') {
                 showEmergencyAlert();
                 adminJoinRoom();
-                const adminName = currentUser?.profile?.display_name || 'AEGIS';
-            addAdminMessage(`🚨 แจ้งเตือน: กำลังเรียก Admin เข้ามาตรวจสอบห้องนี้ โปรดรอสักครู่`);
+                addAdminMessage('👑 ADMIN: รับทราบการแจ้งยกเลิกจากผู้ใช้ กำลังตรวจสอบ');
             }
         };
 
@@ -5190,6 +5118,38 @@
         // ============================================
         // DOMContentLoaded
         // ============================================
+        // ============================================
+        // FIX 1: INIT SYSTEM PROTECTION (แสดงข้อความเดียว ไม่ซ้ำ)
+        // ============================================
+        function initSystemProtection() {
+            const welcomeMsg = "🛡️ ระบบคุ้มครอง AEGIS NEX ทำงาน: ห้ามทำรายการนอกระบบเด็ดขาด เพื่อความปลอดภัยของเงินและไอดีของท่าน";
+            if (!document.querySelector('.sys-protected')) {
+                insertSystemMessage(welcomeMsg, 'system');
+            }
+        }
+
+        // ============================================
+        // FIX 2: RENDER MESSAGE แยกฝั่งตาม Role
+        // ============================================
+        function renderMessage(data) {
+            const chatContainer = document.getElementById('messagesContainer');
+            if (!chatContainer) return;
+            const msgDiv = document.createElement('div');
+            const roleClass = data.role === 'buyer' ? 'buyer' : 'seller';
+            msgDiv.className = `message ${roleClass}`;
+            msgDiv.innerHTML = `
+                <div class="message-info">
+                    <span class="sender-name">${data.sender_name}</span>
+                    <span class="role-tag">${data.role === 'buyer' ? '[ผู้ซื้อ]' : '[ผู้ขาย]'}</span>
+                </div>
+                <div class="message-content">
+                    ${data.text}
+                </div>
+            `;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.title = 'AEGIS NEX: GAME & ITEM TRADE';
             document.documentElement.style.setProperty('--primary', '#bc13fe');
@@ -5204,6 +5164,7 @@
             loadGraphicsLevel();
             updateFeeRatesUI();
             initAuth();
+            initSystemProtection();
             setupEventListeners();
             setupRatingStars();
             setupImageUpload();
