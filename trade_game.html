@@ -493,16 +493,16 @@
             padding: 8px 12px;
             margin: 5px 0;
         }
-        
-        /* Fix 3: กรอบข้อมูลผู้ซื้อ/ผู้ขาย (Uniform Style) */
+
+        /* Fix: กรอบข้อมูลผู้ซื้อ/ผู้ขาย Uniform Style */
         .participant-info {
             border: 1px solid rgba(0, 243, 255, 0.3) !important;
             background: rgba(10, 15, 28, 0.9) !important;
             border-radius: 8px;
             padding: 10px;
         }
-        
-        /* Fix 4: แยกฝั่งแชท Buyer (ซ้าย) / Seller (ขวา) */
+
+        /* Fix: แยกฝั่งแชท Buyer (ซ้าย) / Seller (ขวา) */
         .message.buyer {
             align-self: flex-start;
         }
@@ -744,7 +744,7 @@
             transition: all 0.3s;
         }
         
-        /* Fix 2: บังคับสีข้อความ input/textarea ใน chat area */
+        /* Fix: บังคับสีขาวทุก input/textarea ใน chat area */
         .chat-input-area textarea,
         .chat-input-area input {
             color: #ffffff !important;
@@ -5119,7 +5119,7 @@
         // DOMContentLoaded
         // ============================================
         // ============================================
-        // FIX 1: INIT SYSTEM PROTECTION (แสดงข้อความเดียว ไม่ซ้ำ)
+        // FIX: SYSTEM PROTECTION — แสดงข้อความเดียว ไม่ซ้ำ
         // ============================================
         function initSystemProtection() {
             const welcomeMsg = "🛡️ ระบบคุ้มครอง AEGIS NEX ทำงาน: ห้ามทำรายการนอกระบบเด็ดขาด เพื่อความปลอดภัยของเงินและไอดีของท่าน";
@@ -5129,7 +5129,7 @@
         }
 
         // ============================================
-        // FIX 2: RENDER MESSAGE แยกฝั่งตาม Role
+        // FIX: RENDER MESSAGE — แยกฝั่งตาม Role
         // ============================================
         function renderMessage(data) {
             const chatContainer = document.getElementById('messagesContainer');
