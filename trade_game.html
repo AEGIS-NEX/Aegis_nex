@@ -2823,6 +2823,7 @@
         let isTyping = false;
         let typingTimeout = null;
         let shippingData = null;
+        let ratingShown = false; // ป้องกันการแสดง rating ซ้ำ
 
         // user cache
         const userCache = {};
@@ -3152,19 +3153,25 @@
 
             const statusDiv = document.createElement('div');
             statusDiv.className = 'message-status';
-            const readSpan = document.createElement('span');
-            readSpan.className = 'read-receipt';
-            if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
-                readSpan.style.display = 'inline';
-                readSpan.innerHTML = 'อ่านแล้ว';
-            } else {
-                readSpan.style.display = 'none';
+
+            // เฉพาะข้อความระหว่างผู้ใช้ (sent/received) เท่านั้นที่แสดง read receipt
+            if (sender === 'sent' || sender === 'received') {
+                const readSpan = document.createElement('span');
+                readSpan.className = 'read-receipt';
+                if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
+                    readSpan.style.display = 'inline';
+                    readSpan.innerHTML = 'อ่านแล้ว';
+                } else {
+                    readSpan.style.display = 'none';
+                }
+                statusDiv.appendChild(readSpan);
             }
+
             const timeSpan = document.createElement('span');
             timeSpan.className = 'message-time';
             timeSpan.textContent = time;
-            statusDiv.appendChild(readSpan);
             statusDiv.appendChild(timeSpan);
+
             if (msg.status === 'failed') {
                 const retryBtn = document.createElement('span');
                 retryBtn.className = 'retry-btn';
@@ -3213,14 +3220,14 @@
                         const msgId = msgEl.id;
                         if (msgId.startsWith('temp_')) return;
                         const msg = messages.find(m => m.id === msgId);
-                        if (msg && msg.user_id !== currentUser?.id && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
+                        // อัปเดต read เฉพาะข้อความของคู่ค้า (received) เท่านั้น
+                        if (msg && msg.user_id !== currentUser?.id && msg.type === 'text' && !(msg.read_by && msg.read_by.includes(currentUser.id))) {
                             supabaseClient
                                 .from('messages')
                                 .update({ read_by: [...(msg.read_by || []), currentUser.id] })
                                 .eq('id', msgId)
                                 .then(() => {
                                     msg.read_by = [...(msg.read_by || []), currentUser.id];
-                                    // อัปเดต UI เฉพาะข้อความนั้น
                                     const statusSpan = msgEl.querySelector('.read-receipt');
                                     if (statusSpan) {
                                         statusSpan.style.display = 'inline';
@@ -3231,7 +3238,7 @@
                     }
                 });
             }, { threshold: 0.5 });
-            document.querySelectorAll('.message').forEach(msg => readObserver.observe(msg));
+            document.querySelectorAll('.message.received, .message.sent').forEach(msg => readObserver.observe(msg));
         }
 
         // ============================================
@@ -3292,14 +3299,16 @@
                             insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
                         }
 
-                        // ตรวจสอบการออกจากห้อง (ถ้ามีคอลัมน์ buyer_left/seller_left)
-                        if (tradeData.buyer_left || tradeData.seller_left) {
-                            const whoLeft = tradeData.buyer_left ? 'ผู้ซื้อ' : 'ผู้ขาย';
-                            insertSystemMessage(`👋 ${whoLeft} ได้ออกจากห้องแล้ว รอผู้ค้าใหม่`, 'system');
-                        }
-
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
                             restartTimerFromTradeData();
+                        }
+
+                        // เมื่อสถานะเปลี่ยนเป็น received ให้แสดง rating modal สำหรับทุกคน
+                        if (oldStatus !== 'received' && tradeStatus === 'received' && !ratingShown) {
+                            ratingShown = true;
+                            setTimeout(() => {
+                                document.getElementById('ratingModal')?.classList.add('active');
+                            }, 2000);
                         }
 
                         updateUIByStatus();
@@ -3576,9 +3585,7 @@
                         status: 'waiting_payment',
                         timer_minutes: 15,
                         timer_seconds: 0,
-                        timer_started_at: new Date().toISOString(),
-                        created_by: currentUser.id  // ระบุผู้สร้างห้อง
-                        // ไม่ใส่ buyer_left/seller_left เผื่อไม่มีคอลัมน์
+                        timer_started_at: new Date().toISOString()
                     };
                     const { data: inserted, error: insertError } = await supabaseClient
                         .from('trades')
@@ -3876,7 +3883,7 @@
                 );
             }
 
-            setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 2000);
+            // rating modal จะแสดงผ่าน realtime เมื่อสถานะเป็น received
         };
 
         // ============================================
@@ -4081,7 +4088,6 @@
         window.confirmCancel = async function() {
             closeModal('cancelModal');
             if (tradeStatus === 'waiting_payment') {
-                // ออกจากห้อง: redirect ไป dashboard อย่างเดียว (ไม่ต้องอัปเดต flag เพราะไม่มีคอลัมน์)
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
@@ -4127,7 +4133,6 @@
                 avatarFrame.style.animation = avatarGlow.animation;
                 document.getElementById('profileAvatar').src = user.photo_url || DEFAULT_AVATAR;
 
-                // ตั้งสีขอบของ popup ตาม rank
                 const profileBox = document.getElementById('profileBox');
                 profileBox.style.border = `2px solid ${rankInfo.border}`;
                 profileBox.style.boxShadow = `0 0 20px ${rankInfo.color}`;
@@ -4210,7 +4215,6 @@
             avatarFrame.style.animation = avatarGlow.animation;
             document.getElementById('myProfileAvatar').src = profile.photo_url || DEFAULT_AVATAR;
 
-            // ตั้งสีขอบของ popup ตาม rank
             const myProfileBox = document.getElementById('myProfileBox');
             myProfileBox.style.border = `2px solid ${rankInfo.border}`;
             myProfileBox.style.boxShadow = `0 0 20px ${rankInfo.color}`;
@@ -4970,7 +4974,7 @@
         }
 
         // ============================================
-        // FORCE SYNC ON VISIBILITY CHANGE (แก้ไขไม่ให้ error เมื่อไม่มีข้อมูล)
+        // FORCE SYNC ON VISIBILITY CHANGE
         // ============================================
         async function forceSyncTradeState() {
             console.log('🔄 Tab became visible – forcing sync');
@@ -4979,7 +4983,7 @@
                     .from('trades')
                     .select('*')
                     .eq('room_id', roomId)
-                    .maybeSingle(); // ใช้ maybeSingle แทน single เพื่อป้องกัน error เมื่อไม่มีข้อมูล
+                    .maybeSingle();
                 if (error) throw error;
                 if (trade) {
                     tradeData = trade;
@@ -5051,8 +5055,6 @@
                     }
                 }
             });
-
-            // ไม่ต้องอัปเดต buyer_left/seller_left เพราะไม่มีคอลัมน์
         }
 
         // Cleanup
