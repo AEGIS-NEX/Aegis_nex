@@ -2262,6 +2262,54 @@
         button, .control-btn, .menu-toggle, .copy-link-header {
             transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
         }
+
+        /* ===== FIX STEP2: Chat Bubble White Clean, No Wrap, No Purple ===== */
+
+        /* 1. กล่องข้อความสีขาว ทั้ง 2 ฝั่ง ลบ border ม่วงออก */
+        .message-bubble.buyer,
+        .message-bubble.seller,
+        .message .message-bubble {
+            background-color: #ffffff !important;
+            color: #1a1a1a !important;
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+            padding: 10px 15px !important;
+        }
+
+        /* 2. เวลาสีเทาเดียวกันทั้งสองฝั่ง */
+        .message-time {
+            color: #888888 !important;
+            font-size: 0.72rem !important;
+            margin-top: 4px !important;
+            text-align: right !important;
+        }
+
+        /* 3. เนื้อหาข้อความ — ไม่ wrap อัตโนมัติ ไม่มี scrollbar */
+        .message .message-content > .message-bubble {
+            white-space: pre-wrap !important;   /* ขึ้นบรรทัดตาม Enter เท่านั้น */
+            overflow: visible !important;
+            word-break: break-word !important;
+        }
+
+        /* 4. System message — โปร่งใส ไม่มีกรอบม่วง สีทอง */
+        .message.system .message-bubble,
+        .message.admin .message-bubble {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #ffcc00 !important;
+            white-space: pre-wrap !important;
+            overflow: visible !important;
+            text-align: center !important;
+        }
+
+        /* 5. หยุด animation flicker ทุก element (เฉพาะที่ไม่ใช่ rank effects) */
+        *:not(.rank-badge):not(.avatar-frame):not(.step-icon.active) {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
+
     </style>
 </head>
 <body>
@@ -2927,6 +2975,7 @@
         let partnerRank = 'rb-0';
         let isAdminPresent = false;
         let messages = [];
+        const renderedMessageIds = new Set(); // FIX STEP1: จำ ID ที่ render แล้ว ไม่ render ซ้ำ
         let currentUserRole = role;
         let hasMoreMessages = true;
         let isLoadingMessages = false;
@@ -3165,6 +3214,7 @@
             if (isLoadingMessages) return;
             if (!loadMore) {
                 messages = [];
+                renderedMessageIds.clear(); // FIX STEP1: reset ตอน load fresh
                 messagesPage = 0;
                 hasMoreMessages = true;
             }
@@ -3334,23 +3384,45 @@
         async function renderMessages() {
             const container = document.getElementById('messagesContainer');
             if (!container) return;
-            container.innerHTML = '';
             if (!messages || !Array.isArray(messages)) return;
 
-            // สร้าง element ทั้งหมดแบบ async
-            const elements = await Promise.all(messages.map(msg => createMessageElement(msg)));
-            elements.forEach(el => { if (el) container.appendChild(el); });
+            // FIX STEP1: append-only — ไม่ล้างจอ หลีกเลี่ยง flicker
+            // ลบ element ที่ไม่มีใน messages array อีกแล้ว (เช่น temp message ที่ถูก replace)
+            const validIds = new Set(messages.map(m => String(m.id)));
+            Array.from(container.children).forEach(el => {
+                if (el.id && !validIds.has(el.id) && !el.classList.contains('system-inserted')) {
+                    container.removeChild(el);
+                    renderedMessageIds.delete(el.id);
+                }
+            });
+
+            // สร้างเฉพาะข้อความที่ยังไม่เคย render
+            const newMessages = messages.filter(msg => !renderedMessageIds.has(String(msg.id)));
+            if (newMessages.length === 0) return;
+
+            const elements = await Promise.all(newMessages.map(msg => createMessageElement(msg)));
+            elements.forEach((el, i) => {
+                if (el) {
+                    renderedMessageIds.add(String(newMessages[i].id));
+                    container.appendChild(el);
+                }
+            });
             scrollToBottom();
             observeMessages();
         }
 
         // เพิ่มข้อความใหม่ต่อท้าย (ใช้กับ realtime insert)
         async function appendNewMessage(msg) {
-            if (messages.some(m => m.id === msg.id)) return;
+            // FIX STEP1: ตรวจสอบทั้ง messages array และ renderedMessageIds
+            if (messages.some(m => String(m.id) === String(msg.id))) return;
+            if (renderedMessageIds.has(String(msg.id))) return;
             messages.push(msg);
             const container = document.getElementById('messagesContainer');
             const el = await createMessageElement(msg);
-            if (el) container.appendChild(el);
+            if (el) {
+                renderedMessageIds.add(String(msg.id)); // FIX STEP1: track ว่า render แล้ว
+                container.appendChild(el);
+            }
             scrollToBottom();
             observeMessages();
         }
@@ -5315,31 +5387,70 @@
         }
 
         // ============================================
-        // FIX 3: RANK SYNC — ซิงค์ยศจาก DB ตรงๆ เหมือน Dashboard
+        // FIX STEP3: getRankColor — แปลงชื่อยศเป็นสีตรง
+        // ============================================
+        function getRankColor(rankName) {
+            // map ชื่อยศ (จาก getRank) → สี (ใช้กับ text และ UI)
+            const colorMap = {
+                'CEO':         '#ff0000',
+                'LEGENDARY':   '#ff00ff',
+                'GOD':         '#ffffff',
+                'IMMORTAL':    '#ff1744',
+                'WARLORD':     '#ff6d00',
+                'MASTER':      '#ffab00',
+                'VETERAN':     '#d500f9',
+                'ELITE':       '#304ffe',
+                'PRO':         '#2979ff',
+                'EXPERT':      '#00e676',
+                'ROOKIE':      '#80cbc4',
+                'TRAINEE':     '#cfd8dc',
+                'NEWBIE':      '#b0bec5',
+            };
+            return colorMap[rankName] || '#ffffff';
+        }
+
+        // ============================================
+        // FIX STEP3: RANK SYNC — ซิงค์ยศ+EXP จาก DB และย้อมสีชื่อ
         // ============================================
         async function fetchUserRankSync() {
             if (!currentUser) return;
             try {
                 const { data: userData, error } = await supabaseClient
-                    .from('users')
-                    .select('rank, xp, deal_count')
+                    .from('users_public')
+                    .select('completed_deals, rank, xp, display_name, username')
                     .eq('id', currentUser.id)
                     .single();
 
                 if (error) throw error;
 
-                // อัปเดตยศในทุก element ที่แสดงยศของเราเอง
+                // ดึง rankInfo จากระบบเดียวกับ Dashboard
+                const deals = userData.completed_deals || 0;
+                const rankInfo = await getRank(deals, currentUser.id);
+
+                // 1. อัปเดต badge ยศทุก element
                 const rankEls = document.querySelectorAll('#myRankDisplay, .my-rank-text, [data-my-rank]');
                 rankEls.forEach(el => {
-                    if (el) el.innerText = userData.rank;
+                    if (el) {
+                        el.innerHTML = rankInfo.html;
+                        el.style.color = rankInfo.color;
+                    }
                 });
 
-                // ถ้ามีฟังก์ชัน updateRankWingsUI ให้เรียกด้วย
-                if (typeof updateRankWingsUI === 'function') {
-                    updateRankWingsUI(userData.rank);
+                // 2. ย้อมสีชื่อตัวเองใน header ตามยศ
+                const myNameEl = document.getElementById('myUserNameDisplay') ||
+                                 document.querySelector('.my-name-display, [data-my-username]');
+                if (myNameEl) {
+                    myNameEl.style.color = rankInfo.color;
+                    myNameEl.style.textShadow = getTextShadowStyle(rankInfo, currentUser.id);
                 }
 
-                console.log('✅ Rank synced from DB:', userData.rank);
+                // 3. อัปเดต currentUser.profile ให้ตรงกับ DB
+                if (currentUser.profile) {
+                    currentUser.profile.completed_deals = deals;
+                    currentUser.profile.rank = rankInfo.name;
+                }
+
+                console.log('✅ Rank synced:', rankInfo.name, '| Deals:', deals);
             } catch (err) {
                 console.error('❌ fetchUserRankSync error:', err);
             }
