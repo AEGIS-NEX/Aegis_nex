@@ -463,7 +463,7 @@
         
         .message {
             display: flex;
-            max-width: 85%;
+            max-width: 95%;
             margin-bottom: 8px;
             animation: messageIn 0.3s ease;
         }
@@ -484,14 +484,22 @@
         
         .message.system {
             align-self: center;
-            max-width: 90%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
+            width: 95%;
+            max-width: 500px;
+            background: rgba(188, 19, 254, 0.05);
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            border-radius: 10px;
             color: #fff;
             font-size: 12px;
-            padding: 8px 12px;
-            margin: 5px 0;
+            padding: 10px;
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        /* FIX 2: Profile text สีขาวทั้งหมด */
+        #profileName, #myProfileName, .stat-label, .stat-value, #profileHistory, .deal-stat-title {
+            color: #ffffff !important;
+            text-shadow: none !important;
         }
 
         /* Fix: กรอบข้อมูลผู้ซื้อ/ผู้ขาย Uniform Style */
@@ -566,6 +574,9 @@
             border-radius: 18px;
             position: relative;
             word-wrap: break-word;
+            white-space: pre-wrap;
+            display: inline-block;
+            max-width: 100%;
             line-height: 1.4;
             font-size: 13px;
         }
@@ -598,7 +609,10 @@
             border: none;
             padding: 0;
             text-align: center;
-            color: #fff;
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.5;
         }
         
         .message-status {
@@ -3782,6 +3796,26 @@
                     document.getElementById('btnShip').disabled = true;
                     document.getElementById('btnReceive').disabled = true;
                     document.getElementById('btnCancel').disabled = true;
+                }
+
+                // FIX 1: Sync timerLabel ตามสถานะจริงจาก Database
+                const timerLabelEl = document.getElementById('timerLabel');
+                if (timerLabelEl) {
+                    if (tradeStatus === 'waiting_payment') {
+                        timerLabelEl.textContent = 'รอโอนเงิน';
+                    } else if (tradeStatus === 'payment_done') {
+                        timerLabelEl.textContent = 'รอส่ง ID/ไอเทม';
+                    } else if (tradeStatus === 'shipped') {
+                        timerLabelEl.textContent = 'ตรวจสอบสินค้า';
+                    } else if (tradeStatus === 'received') {
+                        timerLabelEl.textContent = 'ดีลสำเร็จ';
+                    } else if (tradeStatus === 'cancelled') {
+                        timerLabelEl.textContent = 'ยกเลิกแล้ว';
+                    } else if (tradeStatus === 'disputed') {
+                        timerLabelEl.textContent = 'กักดีล';
+                    } else if (tradeStatus === 'banned') {
+                        timerLabelEl.textContent = 'ถูกระงับ';
+                    }
                 }
             }, 0);
         }
