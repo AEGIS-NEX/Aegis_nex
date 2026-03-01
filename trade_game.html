@@ -573,13 +573,22 @@
             padding: 8px 12px;
             border-radius: 18px;
             position: relative;
-            white-space: pre-wrap;
-            word-break: break-word;
-            overflow-wrap: break-word;
+            white-space: nowrap;
+            overflow-x: auto;
+            max-width: 280px;
             display: inline-block;
-            max-width: 100%;
             line-height: 1.4;
             font-size: 13px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) rgba(255,255,255,0.1);
+        }
+
+        .message-bubble::-webkit-scrollbar {
+            height: 4px;
+        }
+        .message-bubble::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
         }
         
         .message.sent .message-bubble {
@@ -3147,6 +3156,7 @@
                     scrollToBottom();
                 }
                 messagesPage++;
+            } catch (err) {
                 console.error('loadMessages error:', err);
                 await insertSystemMessage('❌ ไม่สามารถโหลดข้อความได้', 'system');
             } finally {
@@ -4001,7 +4011,14 @@
             }
 
             try {
-                if (!tradeData.flagged) {
+                // ดึงข้อมูล trade ล่าสุดอีกครั้งเพื่อตรวจสอบ flagged ที่อัปเดตแล้ว
+                const { data: freshTrade, error: freshErr } = await supabaseClient
+                    .from('trades')
+                    .select('flagged, seller_id')
+                    .eq('room_id', roomId)
+                    .single();
+                if (freshErr) throw freshErr;
+                if (!freshTrade.flagged) {
                     // ดีลปกติ → เพิ่มยศทันที
                     await supabaseClient.rpc('increment_user_deals', { p_user_id: currentUser.id, p_increment: 1 });
                     await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
