@@ -573,10 +573,9 @@
             padding: 8px 12px;
             border-radius: 18px;
             position: relative;
-            word-wrap: break-word;
+            white-space: pre-wrap;
             word-break: break-word;
             overflow-wrap: break-word;
-            white-space: pre-wrap;
             display: inline-block;
             max-width: 100%;
             line-height: 1.4;
@@ -3132,14 +3131,22 @@
                 if (data.length < MESSAGES_PER_PAGE) hasMoreMessages = false;
                 const newMessages = data.reverse();
                 if (loadMore) {
+                    // prepend เฉพาะข้อความเก่า ไม่ต้อง render ใหม่ทั้งหมด (ลด flicker)
                     messages = [...newMessages, ...messages];
+                    const container = document.getElementById('messagesContainer');
+                    const scrollHeightBefore = container.scrollHeight;
+                    const elements = await Promise.all(newMessages.map(msg => createMessageElement(msg)));
+                    const firstChild = container.firstChild;
+                    elements.forEach(el => { if (el) container.insertBefore(el, firstChild); });
+                    // รักษา scroll position ให้คงที่
+                    container.scrollTop = container.scrollHeight - scrollHeightBefore;
+                    observeMessages();
                 } else {
                     messages = newMessages;
+                    await renderMessages();
+                    scrollToBottom();
                 }
                 messagesPage++;
-                await renderMessages(); // รอให้ render เสร็จ
-                if (!loadMore) scrollToBottom();
-            } catch (err) {
                 console.error('loadMessages error:', err);
                 await insertSystemMessage('❌ ไม่สามารถโหลดข้อความได้', 'system');
             } finally {
@@ -3226,7 +3233,8 @@
             if (sender === 'sent') {
                 const readSpan = document.createElement('span');
                 readSpan.className = 'read-receipt';
-                if (msg.read_by && msg.read_by.length > 0) {
+                // แสดง "อ่านแล้ว" เฉพาะเมื่อ partnerId ได้อ่านข้อความนี้จริงๆ
+                if (msg.read_by && partnerId && msg.read_by.includes(partnerId)) {
                     readSpan.style.display = 'inline';
                     readSpan.innerHTML = 'อ่านแล้ว';
                 } else {
@@ -3345,7 +3353,7 @@
                 if (window.roomChannel?.state === 'joined') {
                     window.roomChannel.send({ type: 'broadcast', event: 'heartbeat', payload: { time: Date.now() } });
                 }
-            }, 30000);
+            }, 15000);
 
             function connect() {
                 console.log('📡 Creating realtime channel for room:', roomId);
@@ -3411,7 +3419,14 @@
                     }, (payload) => {
                         // อัปเดต read_by → แสดง "อ่านแล้ว" บน sent message ของเรา
                         const updatedMsg = payload.new;
-                        if (updatedMsg.user_id === currentUser?.id && updatedMsg.read_by && updatedMsg.read_by.length > 0) {
+                        // ตรวจสอบว่าเป็นข้อความของเรา และ partnerId ได้อ่านแล้ว
+                        if (
+                            updatedMsg.user_id === currentUser?.id &&
+                            updatedMsg.read_by &&
+                            updatedMsg.read_by.length > 0 &&
+                            partnerId &&
+                            updatedMsg.read_by.includes(partnerId)
+                        ) {
                             const msg = messages.find(m => m.id === updatedMsg.id);
                             if (msg) msg.read_by = updatedMsg.read_by;
                             const el = document.getElementById(updatedMsg.id);
@@ -4319,24 +4334,10 @@
             const profile = currentUser.profile;
             const uid = currentUser.id;
 
-            const { count: completed, error: completedError } = await supabaseClient
-                .from('trades')
-                .select('*', { count: 'exact', head: true })
-                .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
-                .eq('status', 'received')
-                .eq('flagged', false);
-
-            const { count: cancelled, error: cancelledError } = await supabaseClient
-                .from('trades')
-                .select('*', { count: 'exact', head: true })
-                .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
-                .eq('status', 'cancelled')
-                .eq('flagged', false);
-
-            if (completedError || cancelledError) {
-                console.error('Error fetching trade stats', completedError || cancelledError);
-                return;
-            }
+            // ใช้ค่าจาก profile โดยตรง (เหมือนกับ dashboard) เพื่อให้ตรงกัน
+            // ค่านี้จะถูกอัปเดตผ่าน realtime subscription และ RPC increment_user_deals
+            const completed = profile.completed_deals || 0;
+            const cancelled = profile.cancelled_deals || 0;
 
             const total = completed + cancelled;
             const successRate = total > 0 ? Math.round((completed / total) * 100) : 100;
@@ -5190,7 +5191,9 @@
                 if (document.visibilityState === 'visible') {
                     console.log('👁️ Tab became visible – forcing sync and reconnect');
                     forceSyncTradeState();
-                    if (!window.roomChannel || window.roomChannel.state === 'closed') {
+                    // reconnect ทันทีถ้า channel ไม่ได้อยู่ใน joined state
+                    if (!window.roomChannel || window.roomChannel.state !== 'joined') {
+                        console.log('🔄 Channel not joined – reconnecting immediately');
                         setupRealtime();
                     }
                 }
