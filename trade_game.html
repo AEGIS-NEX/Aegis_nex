@@ -2209,6 +2209,59 @@
             margin-left: 5px;
             cursor: pointer;
         }
+
+        /* ===== FIX 2: UI Overhaul — Black Clean Theme, No Purple Borders, No Blinking ===== */
+
+        /* 1. Remove all purple borders — force black background */
+        :root {
+            --bg-chat-bubble: #111827 !important;
+            --text-color: #ffffff !important;
+        }
+
+        body, .trade-container, .chat-area, .messages-container {
+            background-color: #050b14 !important;
+            color: #ffffff !important;
+        }
+
+        /* 2. Chat bubble — remove purple border, unify buyer/seller */
+        .message-bubble,
+        .message-bubble.buyer,
+        .message-bubble.seller,
+        .message.buyer .message-bubble,
+        .message.seller .message-bubble {
+            background-color: #111827 !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
+            border-radius: 12px !important;
+        }
+
+        /* 3. System messages — wrap long text, don't overflow */
+        .system-message, .alert-message, .middle-chat-alert,
+        .system-msg, [class*="system"] {
+            display: block !important;
+            width: 100% !important;
+            max-width: 90% !important;
+            text-align: center !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            color: #ffcc00 !important;
+            margin: 10px auto !important;
+        }
+
+        /* 4. Stop ALL blinking / pulsing animations */
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            animation-duration: 0s !important;
+            transition: color 0.2s ease, background-color 0.2s ease !important;
+        }
+        /* Re-allow hover transitions only */
+        button, .control-btn, .menu-toggle, .copy-link-header {
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
+        }
     </style>
 </head>
 <body>
@@ -3158,7 +3211,7 @@
                 messagesPage++;
             } catch (err) {
                 console.error('loadMessages error:', err);
-                await insertSystemMessage('❌ ไม่สามารถโหลดข้อความได้', 'system');
+                await insertSystemMessage('❌ ไม่สามารถโหลดข้อความได้', 'system', 'both');
             } finally {
                 isLoadingMessages = false;
             }
@@ -3385,7 +3438,7 @@
                         if (newPartnerId && newPartnerId !== partnerId && newPartnerId !== currentUser.id) {
                             partnerId = newPartnerId;
                             loadPartnerInfo();
-                            insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system');
+                            insertSystemMessage('👤 คู่ค้าของคุณได้เข้ามาในห้องแล้ว!', 'system', 'both');
                         }
 
                         if (tradeData.timer_started_at && tradeData.timer_minutes) {
@@ -3465,7 +3518,7 @@
                                 if (reconnectTimer) clearTimeout(reconnectTimer);
                                 reconnectTimer = setTimeout(connect, delay);
                             } else {
-                                insertSystemMessage('⚠️ Realtime ล้มเหลว กรุณารีเฟรช', 'system');
+                                insertSystemMessage('⚠️ Realtime ล้มเหลว กรุณารีเฟรช', 'system', 'both');
                             }
                         }
                     });
@@ -3556,7 +3609,7 @@
                     .then(async () => {
                         if (tradeData.buyer_id) await incrementCancelled(tradeData.buyer_id);
                         if (tradeData.seller_id) await incrementCancelled(tradeData.seller_id);
-                        insertSystemMessage('⏰ เวลาหมด! การซื้อขายถูกยกเลิกโดยอัตโนมัติ', 'system');
+                        insertSystemMessage('⏰ เวลาหมด! การซื้อขายถูกยกเลิกโดยอัตโนมัติ', 'system', 'both');
                         setTimeout(() => window.location.href = 'dashboard.html', 2000);
                     })
                     .catch(err => console.error('Error updating trade status:', err));
@@ -3623,11 +3676,11 @@
 
                 tradeStatus = 'received';
                 updateUIByStatus();
-                insertSystemMessage('⏰ หมดเวลารับสินค้า ระบบโอนเงินให้ผู้ขายอัตโนมัติ', 'system');
+                insertSystemMessage('⏰ หมดเวลารับสินค้า ระบบโอนเงินให้ผู้ขายอัตโนมัติ', 'system', 'both');
                 setTimeout(() => { document.getElementById('ratingModal')?.classList.add('active'); }, 5000);
             } catch (err) {
                 console.error('Error in auto complete trade:', err);
-                insertSystemMessage('❌ เกิดข้อผิดพลาดในการโอนเงินอัตโนมัติ กรุณาติดต่อ Admin', 'system');
+                insertSystemMessage('❌ เกิดข้อผิดพลาดในการโอนเงินอัตโนมัติ กรุณาติดต่อ Admin', 'system', 'both');
             }
         }
 
@@ -3759,8 +3812,8 @@
                                         await loadPartnerInfo();
                                         await insertSystemMessage(
                                             `👤 ${currentUser.profile?.display_name || currentUser.profile?.username || 'ผู้ขาย'} ได้เข้ามาในห้องแล้ว`,
-                                            'system'
-                                        );
+                                            'system', 'both'
+                                            );
                                     }
                                 } else {
                                     console.error(`❌ [Seller] อัปเดตล้มเหลว`, updateErr);
@@ -3796,7 +3849,7 @@
 
             } catch (err) {
                 console.error('❌ Auth error:', err);
-                await insertSystemMessage('❌ เกิดข้อผิดพลาด: ' + (err.message || 'unknown error'), 'system');
+                await insertSystemMessage('❌ เกิดข้อผิดพลาด: ' + (err.message || 'unknown error'), 'system', 'both');
             } finally {
                 updateUIByStatus();
             }
@@ -3923,16 +3976,16 @@
                 })
                 .eq('room_id', roomId);
 
+            // แจ้งผู้ซื้อ: ผู้ขายส่งของแล้ว
             await insertSystemMessage(
                 `🎮 ผู้ขายได้ส่งมอบ ID/ไอเทมเรียบร้อยแล้ว กรุณาตรวจสอบ`,
-                'system'
+                'system', 'buyer'
             );
-            if (role === 'seller') {
-                await insertSystemMessage(
-                    `✅ คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
-                    'system'
-                );
-            }
+            // แจ้งผู้ขาย: ยืนยันว่าตัวเองส่งของแล้ว
+            await insertSystemMessage(
+                `✅ คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ`,
+                'system', 'seller'
+            );
 
             document.getElementById('btnShip').disabled = true;
             showAiAlert('🎁 คุณได้ส่งมอบ ID/ไอเทมให้ผู้ซื้อแล้ว รอผู้ซื้อตรวจสอบ...', false);
@@ -4044,16 +4097,16 @@
             document.getElementById('timerLabel').textContent = 'สำเร็จแล้ว';
             document.getElementById('timerDisplay').style.color = 'var(--success)';
 
+            // แจ้งผู้ขาย: เงินกำลังจะโอน
             await insertSystemMessage(
                 `💰 ผู้ซื้อได้รับ ID/ไอเทมเรียบร้อยแล้ว ระบบจะโอนเงิน ${trade.product_price.toLocaleString()} AGS ให้ผู้ขาย`,
-                'system'
+                'system', 'seller'
             );
-            if (role === 'buyer') {
-                await insertSystemMessage(
-                    `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
-                    'system'
-                );
-            }
+            // แจ้งผู้ซื้อ: ยืนยันรับของสำเร็จ
+            await insertSystemMessage(
+                `✅ คุณได้รับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ`,
+                'system', 'buyer'
+            );
 
             // rating จะแสดงผ่าน realtime
         };
@@ -4186,16 +4239,16 @@
                 return;
             }
 
+            // แจ้งผู้ขาย: เงินเข้าระบบกลางแล้ว รอส่งของ
             await insertSystemMessage(
                 `💰 ผู้ซื้อได้โอนเงิน ${price.toLocaleString()} AGS เข้าระบบกลางเรียบร้อยแล้ว กำลังรอผู้ขายส่ง ID/ไอเทม`,
-                'system'
+                'system', 'seller'
             );
-            if (role === 'buyer') {
-                await insertSystemMessage(
-                    `✅ โอนเงินสำเร็จ! ระบบได้รับเงิน ${total.toLocaleString()} AGS ของคุณแล้ว`,
-                    'system'
-                );
-            }
+            // แจ้งผู้ซื้อ: โอนสำเร็จ
+            await insertSystemMessage(
+                `✅ โอนเงินสำเร็จ! ระบบได้รับเงิน ${total.toLocaleString()} AGS ของคุณแล้ว`,
+                'system', 'buyer'
+            );
 
             tradeStatus = 'payment_done';
 
@@ -4486,7 +4539,7 @@
         // OTHER UI FUNCTIONS
         // ============================================
         function showAiAlert(message, showTrackingLink = false, trackingUrl = '') {
-            insertSystemMessage(message, 'system');
+            insertSystemMessage(message, 'system', 'both');
             const alertMsg = document.getElementById('aiAlertMessage');
             if (alertMsg) alertMsg.innerHTML = message;
             const link = document.getElementById('trackingLink');
@@ -4563,7 +4616,7 @@
                     return;
                 }
                 if (tradeData.status === 'banned') {
-                    insertSystemMessage('⚠️ ห้องนี้ถูกแบน ไม่สามารถส่งข้อความได้', 'system');
+                    insertSystemMessage('⚠️ ห้องนี้ถูกแบน ไม่สามารถส่งข้อความได้', 'system', 'both');
                     window.isSendingMessage = false;
                     sendBtn.innerHTML = originalHTML;
                     sendBtn.disabled = false;
@@ -4597,9 +4650,9 @@
                                 detail: 'ห้องถูกแบนอัตโนมัติเนื่องจากละเมิดคำต้องห้ามครบ 5 ครั้ง',
                                 status: 'pending'
                             }]);
-                        insertSystemMessage('⚠️ ห้องนี้ถูกระงับเนื่องจากละเมิดกฎ กรุณารอ Admin ตรวจสอบ', 'system');
+                        insertSystemMessage('⚠️ ห้องนี้ถูกระงับเนื่องจากละเมิดกฎ กรุณารอ Admin ตรวจสอบ', 'system', 'both');
                     } else {
-                        insertSystemMessage(`⚠️ ข้อความของคุณมีคำต้องห้าม (${violations}/5)`, 'system');
+                        insertSystemMessage(`⚠️ ข้อความของคุณมีคำต้องห้าม (${violations}/5)`, 'system', role);
                     }
                     window.isSendingMessage = false;
                     sendBtn.innerHTML = originalHTML;
@@ -5235,7 +5288,7 @@
         function initSystemProtection() {
             const welcomeMsg = "🛡️ ระบบคุ้มครอง AEGIS NEX ทำงาน: ห้ามทำรายการนอกระบบเด็ดขาด เพื่อความปลอดภัยของเงินและไอดีของท่าน";
             if (!document.querySelector('.sys-protected')) {
-                insertSystemMessage(welcomeMsg, 'system');
+                insertSystemMessage(welcomeMsg, 'system', 'both');
             }
         }
 
@@ -5261,7 +5314,38 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // ============================================
+        // FIX 3: RANK SYNC — ซิงค์ยศจาก DB ตรงๆ เหมือน Dashboard
+        // ============================================
+        async function fetchUserRankSync() {
+            if (!currentUser) return;
+            try {
+                const { data: userData, error } = await supabaseClient
+                    .from('users')
+                    .select('rank, xp, deal_count')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                // อัปเดตยศในทุก element ที่แสดงยศของเราเอง
+                const rankEls = document.querySelectorAll('#myRankDisplay, .my-rank-text, [data-my-rank]');
+                rankEls.forEach(el => {
+                    if (el) el.innerText = userData.rank;
+                });
+
+                // ถ้ามีฟังก์ชัน updateRankWingsUI ให้เรียกด้วย
+                if (typeof updateRankWingsUI === 'function') {
+                    updateRankWingsUI(userData.rank);
+                }
+
+                console.log('✅ Rank synced from DB:', userData.rank);
+            } catch (err) {
+                console.error('❌ fetchUserRankSync error:', err);
+            }
+        }
+
+                document.addEventListener('DOMContentLoaded', function() {
             document.title = 'AEGIS NEX: GAME & ITEM TRADE';
             document.documentElement.style.setProperty('--primary', '#bc13fe');
             document.documentElement.style.setProperty('--secondary', '#9d4edd');
@@ -5293,6 +5377,8 @@
         });
 
         window.addEventListener('load', function() {
+            // FIX 3: Sync rank from DB on page load
+            fetchUserRankSync();
             setTimeout(function() {
                 const chat = document.querySelector('.chat-area');
                 const input = document.querySelector('.chat-input-area');
