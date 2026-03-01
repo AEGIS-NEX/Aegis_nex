@@ -574,6 +574,8 @@
             border-radius: 18px;
             position: relative;
             word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
             white-space: pre-wrap;
             display: inline-block;
             max-width: 100%;
@@ -618,7 +620,8 @@
         .message-status {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 6px;
+            flex-wrap: nowrap;
             margin-top: 2px;
             font-size: 10px;
             min-height: 12px;
@@ -627,6 +630,7 @@
         .read-receipt {
             color: var(--primary);
             font-size: 10px;
+            white-space: nowrap;
             display: none;
         }
         
@@ -2981,7 +2985,7 @@
         // ============================================
         // SYSTEM MESSAGE INSERTION
         // ============================================
-        async function insertSystemMessage(content, type = 'system') {
+        async function insertSystemMessage(content, type = 'system', target_role = 'both') {
             try {
                 const userId = currentUser?.id || SYSTEM_BOT_ID;
                 const { error } = await supabaseClient
@@ -2990,12 +2994,13 @@
                         room_id: roomId,
                         user_id: userId,
                         content: content,
-                        type: type
+                        type: type,
+                        target_role: target_role
                     }]);
                 if (error) {
                     console.error('insertSystemMessage error:', error);
                 } else {
-                    console.log('✅ System message inserted:', content);
+                    console.log('✅ System message inserted:', content, '| target:', target_role);
                 }
             } catch (err) {
                 console.error('insertSystemMessage exception:', err);
@@ -3152,6 +3157,13 @@
                 sender = 'system';
             }
 
+            // กรองข้อความระบบตาม target_role
+            if ((msg.type === 'system' || msg.type === 'admin') && msg.target_role && msg.target_role !== 'both') {
+                if (msg.target_role !== role) {
+                    return null; // ไม่แสดงข้อความนี้
+                }
+            }
+
             const username = msg.users_public?.display_name || msg.users_public?.username || (msg.user_id === SYSTEM_BOT_ID ? 'SYSTEM' : 'ผู้ใช้');
 
             // ดึง rankInfo สำหรับ avatar
@@ -3210,11 +3222,11 @@
             const statusDiv = document.createElement('div');
             statusDiv.className = 'message-status';
 
-            // เฉพาะข้อความระหว่างผู้ใช้เท่านั้นที่แสดง read receipt
-            if (sender === 'sent' || sender === 'received') {
+            // แสดง read receipt เฉพาะข้อความที่เราส่ง (sent) เท่านั้น
+            if (sender === 'sent') {
                 const readSpan = document.createElement('span');
                 readSpan.className = 'read-receipt';
-                if (sender === 'sent' && msg.read_by && msg.read_by.length > 0) {
+                if (msg.read_by && msg.read_by.length > 0) {
                     readSpan.style.display = 'inline';
                     readSpan.innerHTML = 'อ่านแล้ว';
                 } else {
@@ -3256,7 +3268,7 @@
 
             // สร้าง element ทั้งหมดแบบ async
             const elements = await Promise.all(messages.map(msg => createMessageElement(msg)));
-            elements.forEach(el => container.appendChild(el));
+            elements.forEach(el => { if (el) container.appendChild(el); });
             scrollToBottom();
             observeMessages();
         }
@@ -3267,7 +3279,7 @@
             messages.push(msg);
             const container = document.getElementById('messagesContainer');
             const el = await createMessageElement(msg);
-            container.appendChild(el);
+            if (el) container.appendChild(el);
             scrollToBottom();
             observeMessages();
         }
@@ -3290,11 +3302,8 @@
                                 .eq('id', msgId)
                                 .then(() => {
                                     msg.read_by = [...(msg.read_by || []), currentUser.id];
-                                    const statusSpan = msgEl.querySelector('.read-receipt');
-                                    if (statusSpan) {
-                                        statusSpan.style.display = 'inline';
-                                        statusSpan.innerHTML = 'อ่านแล้ว';
-                                    }
+                                    // ไม่ต้องอัปเดต read-receipt บน element received (เราเป็นคนอ่าน ไม่ต้องแสดง)
+                                    // read-receipt จะแสดงบน sent element ของคู่ค้า (ผ่าน realtime UPDATE)
                                 });
                         }
                     }
@@ -3394,6 +3403,27 @@
                             }
                         }
                     })
+                    .on('postgres_changes', {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `room_id=eq.${roomId}`
+                    }, (payload) => {
+                        // อัปเดต read_by → แสดง "อ่านแล้ว" บน sent message ของเรา
+                        const updatedMsg = payload.new;
+                        if (updatedMsg.user_id === currentUser?.id && updatedMsg.read_by && updatedMsg.read_by.length > 0) {
+                            const msg = messages.find(m => m.id === updatedMsg.id);
+                            if (msg) msg.read_by = updatedMsg.read_by;
+                            const el = document.getElementById(updatedMsg.id);
+                            if (el) {
+                                const readSpan = el.querySelector('.read-receipt');
+                                if (readSpan) {
+                                    readSpan.style.display = 'inline';
+                                    readSpan.innerHTML = 'อ่านแล้ว';
+                                }
+                            }
+                        }
+                    })
                     .subscribe((status) => {
                         console.log('📡 Realtime status:', status);
                         if (status === 'SUBSCRIBED') {
@@ -3417,6 +3447,26 @@
             }
 
             connect();
+
+            // ฟัง flagged → false (Admin ปล่อยผ่าน) เพื่อเพิ่มยศย้อนหลัง
+            supabaseClient
+                .channel('trade-flag-updates')
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'trades',
+                    filter: `room_id=eq.${roomId}`
+                }, async (payload) => {
+                    if (payload.new.flagged === false && payload.old.flagged === true) {
+                        // Admin ปล่อยผ่านแล้ว → เพิ่มยศให้ทั้งคู่
+                        try {
+                            await supabaseClient.rpc('increment_user_deals', { p_user_id: payload.new.buyer_id, p_increment: 1 });
+                            await supabaseClient.rpc('increment_user_deals', { p_user_id: payload.new.seller_id, p_increment: 1 });
+                        } catch (e) { console.error('Error incrementing deals after flag clear:', e); }
+                        insertSystemMessage('✅ Admin อนุมัติดีลนี้เรียบร้อย ยศของคุณเพิ่มขึ้นแล้ว', 'system', 'both');
+                    }
+                })
+                .subscribe();
 
             supabaseClient
                 .channel('sidebar-updates')
@@ -3936,8 +3986,15 @@
             }
 
             try {
-                await supabaseClient.rpc('increment_user_deals', { p_user_id: currentUser.id, p_increment: 1 });
-                await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
+                if (!tradeData.flagged) {
+                    // ดีลปกติ → เพิ่มยศทันที
+                    await supabaseClient.rpc('increment_user_deals', { p_user_id: currentUser.id, p_increment: 1 });
+                    await supabaseClient.rpc('increment_user_deals', { p_user_id: trade.seller_id, p_increment: 1 });
+                } else {
+                    // ดีลต้องสงสัย → ยังไม่เพิ่มยศ รอ Admin อนุมัติ
+                    await insertSystemMessage('⚠️ ดีลนี้ถูกตรวจสอบโดยระบบความปลอดภัย กรุณารอ Admin ตรวจสอบ (ยศจะเพิ่มเมื่อได้รับการอนุมัติ)', 'system', 'both');
+                    await insertSystemMessage('⏳ ดีลนี้อยู่ระหว่างการตรวจสอบจาก Admin ยศจะเพิ่มเมื่อได้รับการอนุมัติ', 'system', 'both');
+                }
             } catch (dealErr) { console.error('Error incrementing deals:', dealErr); }
 
             await supabaseClient
