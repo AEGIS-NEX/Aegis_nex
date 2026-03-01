@@ -82,10 +82,16 @@
             flex-direction: column;
             height: 100%;
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;        /* FIX5: เต็มหน้าจอ */
             margin: 0 auto;
             position: relative;
             overflow: hidden;
+        }
+        /* จอใหญ่มาก ๆ จำกัดไว้ที่ 900px เพื่อความสบายตา */
+        @media (min-width: 1200px) {
+            .trade-container {
+                max-width: 900px;
+            }
         }
 
         .trade-header {
@@ -496,10 +502,12 @@
             text-align: center;
         }
 
-        /* FIX 2: Profile text สีขาวทั้งหมด */
-        #profileName, #myProfileName, .stat-label, .stat-value, #profileHistory, .deal-stat-title {
-            color: #ffffff !important;
-            text-shadow: none !important;
+        /* FIX4: ลบ override สีขาวบน profileName — ให้ JS (rankInfo.color) ควบคุมสีแทน */
+        .stat-label, .stat-value, #profileHistory, .deal-stat-title {
+            color: #ffffff;
+        }
+        #profileName, #myProfileName {
+            color: inherit; /* สีจะถูก set จาก JS rankInfo.color */
         }
 
         /* Fix: กรอบข้อมูลผู้ซื้อ/ผู้ขาย Uniform Style */
@@ -573,35 +581,28 @@
             padding: 8px 12px;
             border-radius: 18px;
             position: relative;
-            white-space: nowrap;
-            overflow-x: auto;
-            max-width: 280px;
+            white-space: pre-wrap;      /* ขึ้นบรรทัดใหม่ตาม Enter เท่านั้น */
+            overflow: visible;           /* ไม่มี scrollbar */
+            max-width: none;             /* ขยายตามเนื้อหา ไม่จำกัด */
             display: inline-block;
             line-height: 1.4;
             font-size: 13px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) rgba(255,255,255,0.1);
-        }
-
-        .message-bubble::-webkit-scrollbar {
-            height: 4px;
-        }
-        .message-bubble::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
+            word-break: break-word;
         }
         
+        /* FIX2: ทั้ง sent & received เป็นสีขาว ตัวหนังสือดำ เหมือน Facebook Messenger */
+        .message.sent .message-bubble,
+        .message.received .message-bubble {
+            background: #ffffff;
+            color: #1a1a1a;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+        }
         .message.sent .message-bubble {
-            background: linear-gradient(135deg, var(--primary), #9c0bd1);
-            color: #fff;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 4px;   /* ความแตกต่างเล็กน้อยให้รู้ฝั่ง */
             font-weight: 500;
         }
-        
         .message.received .message-bubble {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.1);
             border-bottom-left-radius: 4px;
         }
         
@@ -636,7 +637,7 @@
         }
         
         .read-receipt {
-            color: var(--primary);
+            color: var(--success);      /* FIX3: สีเขียว */
             font-size: 10px;
             white-space: nowrap;
             display: none;
@@ -644,17 +645,17 @@
         
         .message-time {
             font-size: 10px;
-            color: rgba(255,255,255,0.4);
+            color: #888888; /* FIX8: สีเทาอ่านได้บนพื้นขาว */
         }
         
         .message.sent .message-status {
             justify-content: flex-end;
-            color: rgba(255,255,255,0.5);
+            color: #888888; /* FIX9: อ่านได้บนพื้นขาว */
         }
         
         .message.received .message-status {
             justify-content: flex-start;
-            color: rgba(255,255,255,0.4);
+            color: #888888;
         }
         
         .message.admin .message-time,
@@ -3095,7 +3096,17 @@
         // ============================================
         // SYSTEM MESSAGE INSERTION
         // ============================================
+        // ─── กัน system message ซ้ำ (FIX7) ───
+        const _sysDedup = new Map(); // content → timestamp
+
         async function insertSystemMessage(content, type = 'system', target_role = 'both') {
+            const dedupKey = `${content}|${target_role}`;
+            const now = Date.now();
+            if (_sysDedup.has(dedupKey) && now - _sysDedup.get(dedupKey) < 3000) {
+                console.warn('⚠️ insertSystemMessage: ป้องกัน duplicate:', content.slice(0, 40));
+                return;
+            }
+            _sysDedup.set(dedupKey, now);
             try {
                 const userId = currentUser?.id || SYSTEM_BOT_ID;
                 const { error } = await supabaseClient
@@ -3978,13 +3989,28 @@
                 }
 
                 if (isBuyer && tradeStatus === 'waiting_payment') {
-                    document.getElementById('btnTransfer').disabled = false;
+                    // ผู้ซื้อ: เปิดปุ่มโอนเงิน
+                    const btnT = document.getElementById('btnTransfer');
+                    btnT.disabled = false;
+                    btnT.classList.remove('btn-admin-report');
+                    btnT.classList.add('btn-transfer');
+                    btnT.innerHTML = '<i class="fas fa-money-bill-transfer"></i> โอนเงินเข้าระบบ';
+                    btnT.onclick = openTransferModal;
                 }
                 if (isSeller && tradeStatus === 'payment_done') {
                     document.getElementById('btnShip').disabled = false;
                 }
                 if (isBuyer && tradeStatus === 'shipped') {
                     document.getElementById('btnReceive').disabled = false;
+                }
+                // FIX6: ทั้ง buyer และ seller เห็นปุ่ม "แจ้ง Admin" เมื่อเงินเข้าระบบแล้ว
+                if (['payment_done', 'shipped', 'received', 'disputed'].includes(tradeStatus)) {
+                    const btnT = document.getElementById('btnTransfer');
+                    btnT.classList.remove('btn-transfer');
+                    btnT.classList.add('btn-admin-report');
+                    btnT.innerHTML = '<i class="fas fa-exclamation-circle"></i> แจ้ง Admin';
+                    btnT.onclick = openAdminReportModal;
+                    btnT.disabled = (tradeStatus === 'received'); // received แล้วกดไม่ได้
                 }
                 if (tradeStatus === 'waiting_payment' || tradeStatus === 'payment_done') {
                     document.getElementById('btnCancel').disabled = false;
